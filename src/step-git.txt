@@ -1,7 +1,7 @@
 git fetch --all (Ambil semua branch dari GitHub)
 git checkout dev (Pindah ke branch dev)
 git pull origin dev (update code dari org lain)
-git checkout -b feature/add-[namafitur] (buat branch kerja masing-masing)
+git checkout -b feature/add-[nama]-info (buat branch kerja masing-masing)
 
 (TULIS KODE KLIAN)
 
