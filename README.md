@@ -1,7 +1,9 @@
-TES README
+# KELOMPOK 7 
 
-Anggota Kelompok:
-1. Benedhictus Kevin Doni Brillian Everest / L0124006
-2. Shaira Masyhita Putri Hatala / L0124119
-3. Silvi Amalia / L0124120
-4. Nayyara Aqila Azra / L0124138
+### Anggota Kelompok
+| Nomor | NIM        | Nama                         |
+|-------|------------|------------------------------|
+| 1     | 12345678   | Nama 1                       |
+| 2     | 12345679   | Nama 2                       |
+| 3     | 12345680   | Nama 3                       |
+| 4     | L0124138   | Nayyara Aqila Azra           |
