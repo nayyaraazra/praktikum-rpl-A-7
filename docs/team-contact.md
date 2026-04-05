@@ -19,8 +19,8 @@
 
 ## Channel Komunikasi
 
-| Channel       | Kegunaan                     | Tautan                                                                                                                 |
-| ------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Channel       | Kegunaan                     | Tautan                                                                    |
+| ------------- | ---------------------------- | ------------------------------------------------------------------------- |
 | Grup WhatsApp | Koordinasi umum & pengumuman | https://chat.whatsapp.com/FJn0LlLRRovLpC7AmoDlTX                                                                       |
 
 ## Standar Commit Message
