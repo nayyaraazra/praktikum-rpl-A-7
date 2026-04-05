@@ -41,4 +41,4 @@ Jika terjadi perbedaan pendapat atau masalah kinerja:
 2. **Voting:** Jika tidak mencapai konsensus, keputusan diambil berdasarkan suara terbanyak (atau suara final dari Lead).
 3. **Masalah "Free Riding":** * Teguran 1: Pengingat pribadi via chat jika tidak aktif selama 2 hari tanpa kabar.
 4. **Teguran 2:** Peringatan formal dalam meeting tim.
-5. **Eskalasi Akhir:** Melaporkan kepada [Dosen/Atasan/Stakeholder] jika kontribusi tetap tidak ada setelah 2 kali teguran.
+5. **Eskalasi Akhir:** Melaporkan kepada Asisten Praktikum jika kontribusi tetap tidak ada setelah 2 kali teguran.
