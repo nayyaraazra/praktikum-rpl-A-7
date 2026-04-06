@@ -5,9 +5,9 @@
 | Nama                        | Peran                               |
 | --------------------------- | ----------------------------------- |
 | Silvi Amalia _(Ketua Tim)_  | Project Manager & Backend Developer |
-| Benedhictus Kevin Doni B.E. | Documentation                       |
+| Benedhictus Kevin Doni B.E. | Documentation & Tester              |
 | Shaira Masyhita Putri H.    | Frontend Developer & UI/UX Designer |
-| Nayyara Aqila Azra          | System Analyst                      |
+| Nayyara Aqila Azra          | System Analyst & Quality Assurance  |
 
 ## Jadwal Komunikasi
 
