@@ -6,7 +6,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
 
 ## Role: Pembeli
 
-### 1. Search Products
+### 1. US-01: Search Products
 > **As a** Pembeli,  
 > **I want** to search products,  
 > **so that** I can find UMKM products easily.
@@ -20,7 +20,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** halaman dimuat
     * **Then** info tampil lengkap.
 
-### 2. Filter Products
+### 2. US-02: Filter Products
 > **As a** Pembeli,  
 > **I want** to filter products,  
 > **so that** I can narrow down search results.
@@ -34,7 +34,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** filter diterapkan
     * **Then** produk sesuai rentang harga tampil.
 
-### 3. View Product Details
+### 3. US-03: View Product Details
 > **As a** Pembeli,  
 > **I want** to view product details,  
 > **so that** I can understand product info.
@@ -48,7 +48,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** halaman dimuat
     * **Then** info tampil lengkap.
 
-### 4. Fill Order Form
+### 4. US-04: Fill Order Form
 > **As a** Pembeli,  
 > **I want** to fill order form,  
 > **so that** I can order products easily.
@@ -66,7 +66,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
 
 ## Role: Pemilik UMKM
 
-### 1. Register Store Profile
+### 1. US-05: Register Store Profile
 > **As a** Pemilik UMKM,  
 > **I want** to register my store profile,  
 > **so that** my product can be recognized by a lot of people.
@@ -76,7 +76,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** data toko dikirim
     * **Then** sistem dapat menyimpan dan menunggu verifikasi admin.
 
-### 2. Contact Pembeli
+### 2. US-06: Contact Pembeli
 > **As a** Pemilik UMKM,  
 > **I want** to be able to contact directly to my Pembeli,  
 > **so that** information can be distributed correctly.
@@ -86,7 +86,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** pembeli ingin menghubungi penjual
     * **Then** sistem mengarahkan pembeli ke media komunikasi yang tersedia.
 
-### 3. Manage Store Profile
+### 3. US=07: Manage Store Profile
 > **As a** Pelaku UMKM,  
 > **I want** to manage my store profile,  
 > **so that** my info stays updated.
@@ -100,7 +100,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** reload
     * **Then** data terbaru tampil.
 
-### 4. Receive Orders
+### 4. US-08: Receive Orders
 > **As a** Pelaku UMKM,  
 > **I want** to receive orders,  
 > **so that** I can process them.
@@ -118,7 +118,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
 
 ## Role: Admin
 
-### 1. Verify Store Information
+### 1. US-09: Verify Store Information
 > **As an** Admin,  
 > **I want** to memverifikasi informasi toko,  
 > **so that** memastikan data yang ditampilkan valid.
@@ -128,7 +128,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** admin membuka data pendaftaran toko
     * **Then** menampilkan data/daftar toko yang menunggu verifikasi.
 
-### 2. Monitor System Activity
+### 2. US-10: Monitor System Activity
 > **As an** Admin,  
 > **I want** to monitor system activity,  
 > **so that** I can ensure the platform runs properly.
