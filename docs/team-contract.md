@@ -35,7 +35,7 @@
 
 Peran anggota tim akan dirotasi setiap 3 minggu untuk memastikan pemerataan pengalaman dan tanggung jawab.
 
-| Minggu | Project Manager | Frontend Developer | Backend Developer | QA/Docs |
+| Minggu | Project Manager | Frontend Developer | Backend Developer | Quality Assurance/Docs |
 |---|---|---|---|---|
 | 1–3 | Silvi Amalia | Shaira Masyhita Putri Hatala | Nayyara Aqila Azra | Benedhictus Kevin Doni B.E. |
 | 3–6 | Benedhictus Kevin Doni B.E. | Silvi Amalia | Shaira Masyhita Putri Hatala | Nayyara Aqila Azra |
@@ -55,7 +55,7 @@ Peran anggota tim akan dirotasi setiap 3 minggu untuk memastikan pemerataan peng
 - Membuat laporan sprint (sprint summary).
 - Mengambil keputusan jika terjadi konflik dalam tim.
 
-#### QA Tester / Docs
+#### Quality Assurance Tester / Docs
 - Menyusun test plan dan test case.
 - Melakukan pengujian (fungsional, integrasi, dan UI).
 - Melaporkan bug melalui GitHub Issues.
