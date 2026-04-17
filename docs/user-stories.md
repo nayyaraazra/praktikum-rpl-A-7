@@ -12,13 +12,17 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
 > **so that** I can find UMKM products easily.
 
 * **AC-1:**
-    * **Given** pengguna berada di halaman pencarian
-    * **When** memasukkan kata kunci
-    * **Then** sistem menampilkan produk relevan.
+    * **Given** pengguna berada di halaman pencarian dan mengetikkan kata kunci
+    * **When** pengguna menekan tombol cari atau menekan Enter
+    * **Then** sistem menampilkan daftar produk yang relevan dengan kata kunci
 * **AC-2:**
     * **Given** data tersedia
     * **When** halaman dimuat
     * **Then** info tampil lengkap.
+* **AC-3 (Error Handling):**
+    * **Given** pengguna memasukkan kata kunci yang tidak cocok dengan produk apapun
+    * **When** pengguna menekan tombol cari
+    * **Then** sistem menampilkan pesan informatif seperti *"Produk tidak ditemukan. Coba kata kunci lain."* dan tidak menampilkan daftar kosong tanpa keterangan
 
 ### 2. US-02: Filter Products
 > **As a** Pembeli,  
@@ -33,6 +37,11 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **Given** pengguna memilih harga
     * **When** filter diterapkan
     * **Then** produk sesuai rentang harga tampil.
+* **AC-03 (Error Handling):** 
+    * **Given** pengguna telah menerapkan filter kategori atau harga
+    * **When** tidak ada produk yang sesuai dengan kombinasi filter tersebut
+    * **Then** sistem menampilkan pesan *"Tidak ada produk yang sesuai filter ini."* dan menyediakan opsi untuk mereset filter
+
 
 ### 3. US-03: View Product Details
 > **As a** Pembeli,  
