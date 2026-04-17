@@ -15,24 +15,24 @@
 
 ## SHOULD HAVE
 
-| Prioritas | User Story   | Fitur                         | Deskripsi                                                                 |
-|----------|-------------|------------------------------|--------------------------------------------------------------------------|
-| SHOULD HAVE | Pembeli      | Filter produk (kategori & harga) | Pilih kategori/harga → sistem tampilkan produk sesuai filter              |
-| SHOULD HAVE | Pemilik UMKM | Manage/edit profil toko       | Pemilik UMKM dapat memperbarui/mengelola informasi toko seperti deskripsi, kontak, atau produk yang ditampilkan |
-| SHOULD HAVE | Admin        | Monitor system activity       | Dashboard dimuat → aktivitas tampil; update → data terbaru muncul         |
+| Prioritas | User Story   |  Deskripsi                                                                 |
+|----------|-------------|---------------------------------------------------------------------------|
+| SHOULD HAVE | US-02: Filter Products | Pilih kategori/harga → sistem tampilkan produk sesuai filter              |
+| SHOULD HAVE | US-07: Manage Store Profile     | Pemilik UMKM dapat memperbarui/mengelola informasi toko seperti deskripsi, kontak, atau produk yang ditampilkan |
+| SHOULD HAVE | US-10: Monitor System Activity       | Dashboard dimuat → aktivitas tampil; update → data terbaru muncul         |
 
 ---
 
 ## COULD HAVE
 
-| Prioritas | User Story   | Fitur                      | Deskripsi                                                                 |
-|----------|-------------|---------------------------|--------------------------------------------------------------------------|
-| COULD HAVE | Pemilik UMKM | Kontak langsung pembeli    | Pembeli ingin hubungi → diarahkan ke media komunikasi (WA, dll)          |
+| Prioritas | User Story   | Deskripsi                                                                 |
+|----------|-------------|--------------------------------------------------------------------------|
+| COULD HAVE | US-06: Contact Pembeli    | Pembeli ingin hubungi → diarahkan ke media komunikasi (WA, dll)          |
 
 ---
 
 ## WON’T HAVE
 
-| Prioritas | User Story | Fitur | Deskripsi                         |
-|----------|-----------|-------|----------------------------------|
-| WON’T HAVE | -         | -     | Tidak ada (semua masih relevan)  |
+| Prioritas | User Story | Deskripsi                         |
+|----------|-----------|----------------------------------|
+| WON’T HAVE | -         | Tidak ada (semua masih relevan)  |
