@@ -52,7 +52,7 @@ Peran anggota tim akan dirotasi setiap 3 minggu untuk memastikan pemerataan peng
 - Mengatur pembagian task dan memastikan setiap task memiliki assignee.
 - Memantau progres tim dan mengidentifikasi hambatan (blocker).
 - Menjadi penghubung antara tim dan pihak eksternal (dosen/asisten).
-- Membuat laporan sprint (sprint summary).
+- Membuat dokumen laporan sprint (sprint summary).
 - Mengambil keputusan jika terjadi konflik dalam tim.
 
 #### Quality Assurance Tester / Docs
@@ -159,7 +159,7 @@ Alur kerja:
 4. PR harus melalui code review dan disetujui minimal 1 anggota tim.
 5. Setelah disetujui, branch di-merge ke `dev`.
 6. QA melakukan testing terhadap fitur di `dev`.
-7. Jika semua fitur dalam satu sprint sudah lolos QA, maka di-merge ke `staging`.
+7. Jika semua fitur dalam satu sprint sudah lolos Quality Assurance, maka di-merge ke `staging`.
 8. Dilakukan pengujian akhir (integration/regression testing) di `staging`.
 9. Jika stabil, kode di-merge ke `main` sebagai release resmi.
 
