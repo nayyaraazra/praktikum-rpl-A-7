@@ -25,7 +25,7 @@
 | Nama | Peran |
 |---|---|
 | Benedhictus Kevin Doni B.E. | Project Manager |
-| Shaira Masyhita Putri Hatala | QA Tester |
+| Shaira Masyhita Putri Hatala | Quality Assurance Tester |
 | Silvi Amalia | Backend Developer |
 | Nayyara Aqila Azra | Frontend Developer |
 
