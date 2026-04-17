@@ -258,4 +258,3 @@ fix → dev → staging → main
 
 *Dokumen ini berlaku sejak tanggal efektif dan dapat diperbarui sesuai prosedur pada Bagian 8.*
 
-### Struktur Branch
