@@ -95,7 +95,7 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **When** pembeli ingin menghubungi penjual
     * **Then** sistem mengarahkan pembeli ke media komunikasi yang tersedia.
 
-### 3. US=07: Manage Store Profile
+### 3. US-07: Manage Store Profile
 > **As a** Pelaku UMKM,  
 > **I want** to manage my store profile,  
 > **so that** my info stays updated.
