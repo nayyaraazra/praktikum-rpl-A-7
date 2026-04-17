@@ -150,3 +150,9 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
     * **Given** ada aktivitas baru
     * **When** diperbarui
     * **Then** data terbaru muncul.
+* **AC-3 (Error Handling):**
+    * **Given** admin membuka halaman dashboard monitoring
+    * **When** sistem gagal mengambil data aktivitas dari server
+    * **Then** sistem menampilkan pesan "Gagal memuat data aktivitas. Silakan refresh halaman." dan tidak menampilkan data yang sudah kadaluarsa (stale data)
+ 
+      
