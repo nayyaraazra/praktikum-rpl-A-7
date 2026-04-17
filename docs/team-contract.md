@@ -112,8 +112,8 @@ Peran anggota tim akan dirotasi setiap 3 minggu untuk memastikan pemerataan peng
 | Channel | Kegunaan | Response Time |
 |---|---|---|
 | WhatsApp Group | Komunikasi cepat, info mendadak, daily standup | Maks. 3 jam (08.00–21.00) |
-| Discord | Penyimpanan file, diskusi terstruktur, pengelompokan kode/issue | Digunakan sesuai kategori |
-| GitHub Project | Dokumentasi, sprint board, task management, test case | Update setiap ada perubahan |
+| Discord | Penyimpanan file, diskusi terstruktur, pengelompokan kode/issue, serta sarana video conference untuk meeting tim | Digunakan sesuai kategori |
+| GitHub Project | Dokumentasi, sprint board, task management, test case | Update setiap ada perubahan task |
 | GitHub Issues | Pelaporan bug dan diskusi teknis | Maks. 1 hari kerja |
 | Pull Request (GitHub) | Code review dan feedback teknis | Review dalam 1 hari kerja |
 
