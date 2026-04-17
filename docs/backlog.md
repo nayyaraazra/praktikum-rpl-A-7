@@ -2,14 +2,14 @@
 
 ## MUST HAVE
 
-| Prioritas | User Story  |                 | Deskripsi                                                                 |
-|----------|------------|---------------------|--------------------------------------------------------------------------|
+| Prioritas | User Story  |    Deskripsi                                                                             |
+|----------|------------|-----------------------------------------------------------------------------------------------|
 | MUST HAVE | US-01: Search Product           | Input keyword → sistem tampilkan produk relevan; halaman menampilkan info lengkap saat dimuat |
-| MUST HAVE | US-03: View Product Details     |   | Klik produk → detail tampil; data lengkap saat halaman dimuat             |
-| MUST HAVE | US-04: Fill Order Form     | | Form valid → pesanan terkirim ke UMKM                                     |
-| MUST HAVE | US-05: Register Store Profile |   | Pemilik UMKM dapat mendaftarkan toko dengan mengisi data yang diperlukan untuk ditampilkan di platform setelah diverifikasi |
-| MUST HAVE | US-08: Receive Orders |  | Pemilik UMKM dapat melihat daftar pesanan yang masuk beserta detailnya melalui dashboard |
-| MUST HAVE | US-09: Verify Store Information       |      | Admin login → lihat daftar toko → tampil data yang menunggu verifikasi    |
+| MUST HAVE | US-03: View Product Details     |    Klik produk → detail tampil; data lengkap saat halaman dimuat             |
+| MUST HAVE | US-04: Fill Order Form     |  Form valid → pesanan terkirim ke UMKM                                     |
+| MUST HAVE | US-05: Register Store Profile |    Pemilik UMKM dapat mendaftarkan toko dengan mengisi data yang diperlukan untuk ditampilkan di platform setelah diverifikasi |
+| MUST HAVE | US-08: Receive Orders |   Pemilik UMKM dapat melihat daftar pesanan yang masuk beserta detailnya melalui dashboard |
+| MUST HAVE | US-09: Verify Store Information       |       Admin login → lihat daftar toko → tampil data yang menunggu verifikasi    |
 
 ---
 
