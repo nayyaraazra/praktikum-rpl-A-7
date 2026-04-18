@@ -61,7 +61,7 @@ Peran anggota tim akan dirotasi setiap 3 minggu untuk memastikan pemerataan peng
 * Membuat dokumen laporan sprint (sprint summary).
 * Mengambil keputusan jika terjadi konflik dalam tim.
 
-#### Quality Assurance Tester / Docs
+#### Quality Assurance Tester
 
 * Menyusun test plan dan test case.
 * Melakukan pengujian (fungsional, integrasi, dan UI).
