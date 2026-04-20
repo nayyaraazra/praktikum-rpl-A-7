@@ -3,9 +3,15 @@
 **Judul Proyek:** Kulaan.id - Katalog Digital UMKM  
 **Versi SRS:** 1.0  
 **Tanggal:** 2026  
-**Tim Pengembang:** Benedhictus Kevin Doni Brillian Everest (L0124006), Shaira Masyhita Putri Hatala (L0124119), Silvi Amalia (L0124120), Nayyara Aqila Azra (L0124138)  
+**Tim Pengembang:** <br>
+Benedhictus Kevin Doni Brillian Everest (L0124006) <br>
+Shaira Masyhita Putri Hatala (L0124119) <br>
+Silvi Amalia (L0124120) <br>
+Nayyara Aqila Azra (L0124138)  
 **Dosen:** Haryono Setiadi, S.T., M.Eng.  
-**Asisten:** Rifqi Makarim, Ravelin Luthfan Syach Putra
+**Asisten:** <br>
+Rifqi Makarim <br>
+Ravelin Luthfan Syach Putra
 
 ---
 
@@ -333,12 +339,5 @@ Seluruh kode sumber proyek Kulaan.id harus mengikuti konvensi Conventional Commi
 
 ---
 
-## Catatan Revisi
-
-| Versi | Tanggal | Perubahan | Penulis |
-|---|---|---|---|
-| 1.0 | 2026 | Dokumen SRS awal | Tim Kulaan.id |
-
----
 
 **Dokumen ini adalah kontrak resmi antara tim pengembang dan pemangku kepentingan proyek Kulaan.id.**
