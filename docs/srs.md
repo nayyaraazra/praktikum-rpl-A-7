@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS) - Kulaan.id
 
-**Judul Proyek:** Kulaan.id - Katalog Digital UMKM  
+**Judul Proyek:** Kulaan.id 
 **Versi SRS:** 1.0  
 **Tanggal:** 2026  
 **Tim Pengembang:** <br>
