@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS) - Kulaan.id
 
-**Judul Proyek:** Kulaan.id 
+**Judul Proyek:** Kulaan.id <br>
 **Versi SRS:** 1.0  
 **Tanggal:** 2026  
 **Tim Pengembang:** <br>
@@ -338,6 +338,3 @@ Seluruh kode sumber proyek Kulaan.id harus mengikuti konvensi Conventional Commi
 | Autentikasi Pihak Ketiga | Won't Have | Belum mendukung login melalui Google atau Facebook. | - |
 
 ---
-
-
-**Dokumen ini adalah kontrak resmi antara tim pengembang dan pemangku kepentingan proyek Kulaan.id.**
