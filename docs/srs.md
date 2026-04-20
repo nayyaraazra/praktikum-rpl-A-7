@@ -329,12 +329,13 @@ Seluruh kode sumber proyek Kulaan.id harus mengikuti konvensi Conventional Commi
 
 ### 5.3 Hal-hal di Luar Lingkup
 
-| Fitur | Status | Alasan | Detail Teknis |
-|---|---|---|---|
-| Sistem Pembayaran | Won't Have | Sistem hanya sebagai katalog; pembayaran dilakukan secara manual (COD/Transfer langsung) untuk meminimalisir risiko keamanan data finansial. | - |
-| Real-time Tracking | Won't Have | Pengiriman diserahkan sepenuhnya kepada kesepakatan penjual dan pembeli via WhatsApp; tidak ada integrasi API logistik (JNE/J&T). | - |
-| In-App Chat | Won't Have | Untuk menghemat resource server dan menjaga aplikasi tetap ringan, komunikasi dialihkan ke aplikasi pihak ketiga (WhatsApp). | - |
-| External Integration | Won't Have | Kulaan.id bersifat independen untuk UMKM lokal Jebres, tidak melakukan sinkronisasi stok dengan marketplace besar (Shopee/Tokopedia). | - |
-| Autentikasi Pihak Ketiga | Won't Have | Belum mendukung login melalui Google atau Facebook. | - |
+Fitur-fitur berikut tidak termasuk dalam pengembangan Kulaan.id pada fase ini.
+- Sistem pembayaran tidak diimplementasikan karena platform hanya berfungsi sebagai katalog, sehingga transaksi dilakukan secara manual melalui metode seperti Cash on Delivery (COD) atau transfer langsung guna meminimalisir risiko terkait keamanan data finansial.
 
----
+- Selain itu, sistem tidak menyediakan fitur real-time tracking karena proses pengiriman sepenuhnya diserahkan kepada kesepakatan antara penjual dan pembeli melalui komunikasi eksternal, tanpa integrasi dengan API logistik seperti JNE atau J&T.
+
+- Fitur komunikasi dalam aplikasi (in-app chat) juga tidak disediakan untuk menjaga efisiensi penggunaan resource server serta mempertahankan performa aplikasi tetap ringan. Oleh karena itu, komunikasi dialihkan ke platform pihak ketiga seperti WhatsApp.
+
+- Kulaan.id juga tidak melakukan integrasi dengan marketplace eksternal seperti Shopee atau Tokopedia, karena sistem difokuskan sebagai platform independen untuk UMKM lokal di wilayah Jebres.
+
+- Selain itu, autentikasi pihak ketiga seperti login menggunakan Google atau Facebook belum didukung, sehingga sistem hanya mengandalkan autentikasi berbasis email dan password.
