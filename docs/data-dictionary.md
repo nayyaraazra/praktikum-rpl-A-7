@@ -19,7 +19,7 @@
 |-------|-------|-----------|------------|------------|
 | Store | id_store | INT | PK | ID toko |
 | Store | id_user | INT | FK | ID pemilik toko |
-| Store | phone_number | VARCHAR(255) | FK | Nomor telepon penjual |
+| Store | phone_number | VARCHAR(20) | FK | Nomor telepon penjual |
 | Store | store_name | VARCHAR(255) | NOT NULL | Nama toko |
 | Store | description | TEXT | - | Deskripsi toko |
 | Store | address | TEXT | - | Alamat toko |
