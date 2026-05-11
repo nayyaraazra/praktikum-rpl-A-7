@@ -102,3 +102,16 @@
 | Reviews | rating | TINYINT | NOT NULL, CHECK (1-5) | Nilai bintang 1-5 |
 | Reviews | comment | TEXT | - | Komentar opsional dari pembeli |
 | Reviews | created_at | TIMESTAMP | DEFAULT NOW() | Tanggal ulasan dibuat |
+
+---
+
+## Tabel: Notifications
+
+| Tabel | Kolom | Tipe Data | Constraint | Keterangan |
+|-------|-------|-----------|------------|------------|
+| Notifications | id_notification | INT | PK | ID notifikasi |
+| Notifications | id_user | INT | FK, NOT NULL | ID user penerima notifikasi |
+| Notifications | id_order | INT | FK, NOT NULL | ID order yang memicu notifikasi |
+| Notifications | message | TEXT | NOT NULL | Isi pesan notifikasi |
+| Notifications | is_read | TINYINT | NOT NULL | Status sudah dibaca atau belum |
+| Notifications | created_at | TIMESTAMP | DEFAULT NOW() | Waktu notifikasi dibuat |
