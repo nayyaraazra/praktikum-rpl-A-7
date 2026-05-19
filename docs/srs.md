@@ -164,8 +164,6 @@ Prioritas: High | Ref: US-02 (Login Account)
 
 ### 3.3. FR-03: Search Produk
 
-**Deskripsi:**
-
 Sistem menyediakan fitur pencarian produk yang dapat diakses melalui halaman pencarian. 
 Ketika pengguna mengetikkan kata kunci lalu menekan tombol cari atau Enter, sistem menampilkan 
 daftar produk yang relevan dengan kata kunci tersebut. Halaman hasil pencarian memuat informasi 
