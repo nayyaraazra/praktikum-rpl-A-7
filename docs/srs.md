@@ -16,42 +16,44 @@ Ravelin Luthfan Syach Putra
 ---
 
 ## 1. Pendahuluan
-
+ 
 ### 1.1 Tujuan Dokumen
-
+ 
 Dokumen Software Requirements Specification (SRS) ini disusun untuk mendefinisikan secara formal dan terstruktur mengenai seluruh kebutuhan perangkat lunak dari aplikasi Kulaan.id, yakni sebuah katalog digital UMKM yang melayani pelaku usaha dan pembeli di Kelurahan Jebres, Surakarta. Dokumen ini berfungsi sebagai:
-
+ 
 - Kontrak antara tim pengembang (Kelompok 7) dan seluruh pemangku kepentingan proyek.
 - Acuan teknis selama proses pengembangan, pengujian dan penerimaan produk.
 - Referensi traceability yang menghubungkan kebutuhan fungsional dengan user story dari P2.
 
 ### 1.2 Ruang Lingkup
-
+ 
 Kulaan.id adalah aplikasi katalog digital berbasis web yang dirancang untuk:
-
+ 
 - Membantu pelaku UMKM di kelurahan Jebres mendaftarkan, mengelola, dan mempublikasikan profil toko serta produk mereka secara digital.
 - Membantu pembeli menemukan produk UMKM lokal dengan mudah melalui fitur pencarian, filter, dan tampilan detail produk yang terstruktur.
 - Memfasilitasi proses pemesanan secara sederhana tanpa memerlukan sistem pembayaran digital yang kompleks.
 - Memungkinkan admin memverifikasi keabsahan toko dan memantau aktivitas platform.
 
 **Di dalam lingkup sistem:**
-
+ 
+- Sistem autentikasi pengguna (registrasi dan login) untuk pembeli dan pemilik UMKM
 - Semantic Search Engine untuk pencarian produk berbasis makna
 - Manajemen profil UMKM (pendaftaran, pembaruan, verifikasi)
 - Filter dan sorting produk berdasarkan kategori dan harga
 - Form pemesanan sederhana
+- Notifikasi status pemesanan untuk pembeli
 - Dashboard untuk admin dan pemilik UMKM
 - Integrasi WhatsApp untuk komunikasi langsung
 
 **Di luar lingkup sistem (Won't have):**
-
+ 
 - Sistem pembayaran digital (payment gateway)
 - Fitur pelacakan pengiriman real-time
 - Komunikasi dalam aplikasi (in-app chat)
 - Integrasi dengan marketplace eksternal
 
 ### 1.3 Definisi dan Akronim
-
+ 
 | Istilah / Akronim | Definisi |
 |---|---|
 | UMKM | Usaha Mikro, Kecil, dan Menengah |
@@ -70,59 +72,59 @@ Kulaan.id adalah aplikasi katalog digital berbasis web yang dirancang untuk:
 | COD | Cash on Delivery (Metode Pembayaran Tunai) |
 | NLP | Natural Language Processing (Pemrosesan Bahasa Alami) |
 | Elasticsearch | Search engine dan analytics engine |
-
+ 
 ---
-
+ 
 ## 2. Deskripsi Umum
-
+ 
 ### 2.1 Perspektif Produk
-
+ 
 Kulaan.id merupakan aplikasi web mandiri (standalone) yang dibangun dari awal (greenfield) sebagai solusi atas ketiadaan platform terpusat bagi UMKM lokal di kelurahan Jebres. Saat ini, pelaku UMKM mengandalkan platform tidak terstruktur seperti WhatsApp dan media sosial untuk memasarkan produk, sehingga informasi produk tidak tersusun rapi, sulit ditemukan oleh calon pembeli, dan proses transaksi menjadi tidak efisien.
-
+ 
 Aplikasi ini dirancang untuk menjadi:
-
+ 
 - **Solusi Terpusat:** Platform tunggal untuk mendaftarkan, mengelola, dan menemukan produk UMKM lokal
 - **User-Friendly:** Antarmuka intuitif yang dapat diakses oleh pengguna dengan berbagai latar belakang teknis
 - **Efisien:** Mengurangi hambatan komunikasi antara pelaku UMKM dan pembeli potensial
-
 ### 2.2 Fungsi Produk
-
+ 
 Kulaan.id menyediakan fungsi-fungsi utama berikut yang dikelompokkan berdasarkan peran pengguna:
-
+ 
 #### **Untuk Pembeli:**
-
+ 
+- Mendaftarkan akun baru sebagai pembeli
+- Login ke akun pembeli
 - Mencari produk UMKM menggunakan kata kunci dengan semantic search
 - Memfilter produk berdasarkan kategori dan rentang harga
 - Melihat detail produk secara lengkap (nama, deskripsi, harga, foto, kontak toko)
 - Mengisi formulir pemesanan sederhana
+- Menerima notifikasi status pesanan secara real-time
 - Menghubungi penjual melalui WhatsApp
-
 #### **Untuk Pemilik UMKM:**
-
+ 
 - Mendaftarkan profil toko dan mengirimkan data untuk diverifikasi admin
+- Login ke akun dan dashboard toko
 - Mengelola dan memperbarui informasi toko serta produk
 - Menerima dan melihat detail pesanan yang masuk melalui dashboard
 - Menyediakan kontak langsung (WhatsApp) bagi pembeli
-
 #### **Untuk Admin:**
-
+ 
 - Memverifikasi keabsahan data toko yang mendaftar
 - Menerima atau menolak pendaftaran toko
 - Memantau aktivitas platform secara keseluruhan melalui dashboard monitoring
 - Melihat statistik toko terdaftar, pesanan, dan status verifikasi
-
 ### 2.3 Karakteristik Pengguna
-
+ 
 | Peran | Deskripsi | Tingkat Kemampuan Teknis |
 |---|---|---|
 | Pembeli | Masyarakat umum di kelurahan Jebres yang mencari produk UMKM lokal. Mayoritas pengguna mobile, rentang usia beragam. | Rendah hingga menengah sehingga antarmuka harus intuitif dan mudah dipahami tanpa pelatihan khusus |
 | Pemilik UMKM | Pelaku usaha skala mikro hingga kecil yang belum tentu familiar dengan platform digital. Kemampuan literasi digital bervariasi. | Rendah hingga menengah sehingga form dan alur pendaftaran harus sederhana dan berpanduan |
 | Admin | Pengelola platform dari pihak kelurahan atau tim Kulaan.id yang bertanggung jawab atas keabsahan data dan operasional sistem. | Menengah sehingga terbiasa menggunakan dashboard dan melakukan validasi data. |
-
+ 
 ### 2.4 Batasan Sistem
-
+ 
 Sistem Kulaan.id dibangun dengan memperhatikan batasan-batasan berikut:
-
+ 
 - **Batasan Pembayaran:** Sistem tidak mengintegrasikan payment gateway apapun.
 - **Batasan Geografis:** Target pengguna awal terbatas pada pelaku UMKM dan pembeli di kelurahan Jebres, Kecamatan Jebres, Kota Surakarta.
 - **Batasan Autentikasi:** Sistem menggunakan autentikasi berbasis email dan password. Belum mendukung login platform sosial (Google, Facebook)
