@@ -1,5 +1,7 @@
 # Data Dictionary KULAAN.ID
 
+---
+
 ## Tabel: User
 
 | Tabel | Kolom | Tipe Data | Constraint | Keterangan |
@@ -18,8 +20,7 @@
 | Tabel | Kolom | Tipe Data | Constraint | Keterangan |
 |-------|-------|-----------|------------|------------|
 | Store | id_store | INT | PK | ID toko |
-| Store | id_user | INT | FK | ID pemilik toko |
-| Store | phone_number | VARCHAR(20) | FK | Nomor telepon penjual |
+| Store | id_user | INT | FK, NOT NULL | ID pemilik toko |
 | Store | store_name | VARCHAR(255) | NOT NULL | Nama toko |
 | Store | description | TEXT | - | Deskripsi toko |
 | Store | address | TEXT | - | Alamat toko |
@@ -35,7 +36,7 @@
 | Tabel | Kolom | Tipe Data | Constraint | Keterangan |
 |-------|-------|-----------|------------|------------|
 | Categories | id_category | INT | PK | ID kategori |
-| Categories | name | VARCHAR(255) | NOT NULL | Nama kategori |
+| Categories | name_category | VARCHAR(255) | NOT NULL | Nama kategori |
 
 ---
 
@@ -44,8 +45,8 @@
 | Tabel | Kolom | Tipe Data | Constraint | Keterangan |
 |-------|-------|-----------|------------|------------|
 | Products | id_product | INT | PK | ID produk |
-| Products | id_store | INT | FK | ID toko |
-| Products | id_category | INT | FK | ID kategori |
+| Products | id_store | INT | FK, NOT NULL | ID toko |
+| Products | id_category | INT | FK, NOT NULL | ID kategori |
 | Products | name | VARCHAR(255) | NOT NULL | Nama produk |
 | Products | description | TEXT | - | Deskripsi produk |
 | Products | price | DECIMAL | NOT NULL | Harga produk |
@@ -65,15 +66,24 @@
 |-------|-------|-----------|------------|------------|
 | Orders | id_order | INT | PK | ID order |
 | Orders | id_user | INT | FK, NOT NULL | ID pembeli (relasi ke User) |
-| Orders | name | VARCHAR(255) | FK, NOT NULL | Nama pembeli (relasi ke User) |
-| Orders | id_product | INT | FK, NOT NULL | ID produk |
-| Orders | quantity | INT | NOT NULL | Jumlah produk (maks. stok produk) |
 | Orders | order_date | TIMESTAMP | DEFAULT NOW(), NOT NULL | Tanggal order |
-| Orders | total_order | DECIMAL | NOT NULL | Harga total (price x quantity) |
+| Orders | total_order | DECIMAL | NOT NULL | Harga total keseluruhan produk |
 | Orders | status | ENUM | NOT NULL | menunggu / diproses / selesai / dibatalkan |
 | Orders | payment_method | ENUM | NOT NULL | cod / transfer |
 | Orders | shipping_address | TEXT | NOT NULL | Alamat pengiriman |
 | Orders | note | TEXT | - | Catatan pembeli |
+
+---
+
+## Tabel: Order_Items
+
+| Tabel | Kolom | Tipe Data | Constraint | Keterangan |
+|-------|-------|-----------|------------|------------|
+| Order_Items | id_order_detail | INT | PK | ID detail order |
+| Order_Items | id_order | INT | FK, NOT NULL | ID order (relasi ke Orders) |
+| Order_Items | id_product | INT | FK, NOT NULL | ID produk yang dibeli |
+| Order_Items | quantity | INT | NOT NULL | Jumlah produk yang dibeli |
+| Order_Items | price_at_purchase | DECIMAL | NOT NULL | Harga produk saat transaksi |
 
 ---
 
