@@ -135,113 +135,198 @@ Sistem Kulaan.id dibangun dengan memperhatikan batasan-batasan berikut:
 
 Kebutuhan fungsional berikut ditransformasi secara langsung dari user story (US) yang telah disusun pada P2, khususnya dari item-item dengan prioritas Must Have dan Should Have pada product backlog.
 
-### FR-01: Search Produk
+### 3.1. FR-01: Registrasi Akun Pembeli
 
-**Deskripsi:**
+Sistem menyediakan halaman registrasi khusus untuk pembeli. Pembeli dapat
+mengisi nama lengkap, email, nomor telepon, dan password. Setelah form
+dikirimkan, sistem membuat akun baru, mengirimkan email verifikasi, dan
+mengarahkan pengguna ke halaman konfirmasi. Sistem memvalidasi input
+sebelum pembuatan akun; jika email sudah terdaftar atau format email tidak
+valid, sistem menampilkan pesan error yang informatif (misalnya: "Email sudah
+digunakan." atau "Format email tidak valid.").
 
-Sistem menyediakan fitur pencarian produk yang dapat diakses melalui halaman pencarian. Ketika pengguna mengetikkan kata kunci lalu menekan tombol cari atau Enter, sistem menampilkan daftar produk yang relevan dengan kata kunci tersebut. Halaman hasil pencarian memuat informasi produk secara lengkap ketika halaman selesai dimuat. Apabila tidak ada produk yang cocok dengan kata kunci yang dimasukkan, sistem menampilkan pesan informatif seperti *"Produk tidak ditemukan. Coba kata kunci lain."* dan tidak menampilkan daftar kosong tanpa keterangan.
-
-**Prioritas:** High | **Ref:** US-03 (Search Products)
+Prioritas: High | Ref: US-01 (Register Account)
 
 ---
 
-### FR-02: Filter dan Sorting Produk
+### 3.2. FR-02: Login Akun Pembeli
 
-**Deskripsi:**
+Sistem menyediakan halaman login untuk pembeli. Pembeli memasukkan email
+dan password yang valid; jika autentikasi berhasil, sistem mengarahkan
+pengguna ke halaman beranda. Jika email atau password yang dimasukkan
+salah, sistem menampilkan pesan error generik ("Email atau password salah.
+Silakan coba lagi.") tanpa mengungkapkan field mana yang tidak sesuai, untuk
+mencegah enumerasi akun.
 
-Sistem menyediakan mekanisme filter produk berdasarkan kategori produk dan rentang harga. Ketika filter diterapkan, sistem hanya menampilkan produk yang sesuai dengan parameter filter yang dipilih pengguna.
+Prioritas: High | Ref: US-02 (Login Account)
 
-**Prioritas:** High | **Ref:** US-02 (Filter Products)
+---
 
-**Detail Teknis:**
+### 3.3. FR-03: Semantic Search Engine
+
+Sistem menyediakan fitur pencarian produk yang mampu memahami intent
+(niat) pengguna menggunakan Semantic Search Engine (Google Gemini API).
+Sistem tidak hanya mencocokkan kata kunci secara harfiah, tetapi juga makna
+(vektor) dari kueri yang dimasukkan untuk menampilkan daftar produk yang
+paling relevan secara otomatis. Pencarian ini dikombinasikan dengan metode
+keyword-based (Hybrid Search) untuk memastikan akurasi hasil. Halaman hasil
+pencarian memuat informasi produk secara lengkap ketika halaman selesai
+dimuat. Apabila tidak ada produk yang cocok dengan kata kunci yang
+dimasukkan, sistem menampilkan pesan informatif seperti "Produk tidak
+ditemukan. Coba kata kunci lain." dan tidak menampilkan daftar kosong tanpa
+keterangan.
+
+Prioritas: High | Ref: US-03 (Search Products)
+
+Detail Teknis:
+- Integrasi Gemini API untuk semantic understanding (intent detection & query transformation)
+- Implementasi embedding-based search dan vector similarity (kNN)
+- Hybrid search: kombinasi semantic search dan keyword search (BM25)
+- Sinkronisasi data produk ke dalam bentuk vector dan index Elasticsearch
+
+---
+
+### 3.4. FR-04: Filter dan Sorting Produk
+
+Sistem menyediakan mekanisme filter produk berdasarkan kategori produk dan
+rentang harga. Ketika filter diterapkan, sistem hanya menampilkan produk yang
+sesuai dengan parameter filter yang dipilih pengguna. Apabila tidak ada produk
+yang cocok dengan kombinasi filter yang diterapkan, sistem menampilkan pesan
+"Tidak ada produk yang sesuai filter ini." dan menyediakan opsi untuk mereset
+filter.
+
+Prioritas: High | Ref: US-04 (Filter Products)
+
+Detail Teknis:
 - Implementasi logika filter pada sisi Backend
 - Optimasi query database untuk performa
 - UI untuk pemilihan kategori dan input range harga
 
 ---
 
-### FR-03: Detail Produk
+### 3.5. FR-05: Detail Produk
 
-**Deskripsi:**
+Sistem menampilkan halaman detail produk yang memuat informasi lengkap
+meliputi nama produk, deskripsi, harga, foto produk, serta informasi kontak
+toko UMKM, ketika pengguna mengklik produk dari daftar pencarian atau
+katalog.
 
-Sistem menampilkan halaman detail produk yang memuat informasi lengkap meliputi nama produk, deskripsi, harga, foto produk, serta informasi kontak toko UMKM, ketika pengguna mengklik produk dari daftar pencarian atau katalog.
-
-**Prioritas:** High | **Ref:** US-03 (View Product Details)
-
----
-
-### FR-04: Form Pemesanan
-
-**Deskripsi:**
-
-Sistem menyediakan formulir pemesanan yang dapat diisi oleh pembeli (minimal: nama pemesan, jumlah pesanan, dan catatan tambahan). Sistem memvalidasi kelengkapan form sebelum pengiriman; jika form tidak lengkap, sistem menampilkan pesan error yang informatif. Jika form valid dan dikirimkan, sistem meneruskan pesanan kepada pemilik UMKM yang bersangkutan.
-
-**Prioritas:** High | **Ref:** US-04 (Fill Order Form)
+Prioritas: High | Ref: US-05 (View Product Details)
 
 ---
 
-### FR-05: Pendaftaran Profil Toko
+### 3.6. FR-06: Form Pemesanan
 
-**Deskripsi:**
+Sistem menyediakan formulir pemesanan yang dapat diisi oleh pembeli
+(minimal: nama pemesan, jumlah pesanan, dan catatan tambahan). Sistem
+memvalidasi kelengkapan form sebelum pengiriman; jika form tidak lengkap,
+sistem menampilkan pesan error yang informatif. Jika form valid dan
+dikirimkan, sistem meneruskan pesanan kepada pemilik UMKM yang
+bersangkutan.
 
-Sistem memungkinkan pemilik UMKM mendaftarkan profil toko dengan mengisi data yang diperlukan (nama usaha, alamat, kategori, jam operasional, kontak, dan foto toko). Setelah data dikirimkan, sistem menyimpan data tersebut dengan status "menunggu verifikasi" dan meneruskannya kepada admin untuk ditinjau.
-
-**Prioritas:** High | **Ref:** US-05 (Register Store Profile)
-
----
-
-### FR-06: Penerimaan dan Manajemen Pesanan
-
-**Deskripsi:**
-
-Sistem menampilkan daftar pesanan yang masuk pada dashboard pemilik UMKM. Ketika pemilik UMKM memilih salah satu pesanan dari daftar, sistem menampilkan detail pesanan tersebut secara lengkap termasuk nama pemesan, jumlah, dan catatan.
-
-**Prioritas:** High | **Ref:** US-08 (Receive Orders)
+Prioritas: High | Ref: US-06 (Fill Order Form)
 
 ---
 
-### FR-07: Verifikasi Toko (Admin)
+### 3.7. FR-07: Notifikasi Pemesanan Produk
 
-**Deskripsi:**
+Sistem mengirimkan notifikasi kepada pembeli di setiap perubahan status
+pesanan. Notifikasi dikirim pada tiga kondisi: (1) saat pesanan berhasil
+dikirimkan dan sedang menunggu konfirmasi penjual, (2) saat pemilik UMKM
+mengonfirmasi pesanan, dan (3) saat pemilik UMKM menolak pesanan beserta
+alasan penolakan jika tersedia. Jika pengiriman notifikasi gagal, sistem mencoba
+mengirim ulang maksimal 3 kali. Apabila tetap gagal, notifikasi tetap tersimpan
+dan dapat diakses pembeli melalui halaman riwayat pesanan.
 
-Sistem memungkinkan admin yang telah login untuk melihat daftar toko yang sedang menunggu verifikasi, meninjau data pendaftaran masing-masing toko, dan mengambil tindakan berupa persetujuan atau penolakan. Toko yang disetujui akan tampil di direktori publik Kulaan.id.
-
-**Prioritas:** High | **Ref:** US-09 (Verify Store Information)
-
----
-
-### FR-08: Pembaruan Profil Toko
-
-**Deskripsi:**
-
-Sistem memungkinkan pemilik UMKM memperbarui informasi profil toko (termasuk deskripsi, kontak, jam operasional, dan produk) kapan saja. Perubahan yang berhasil disimpan langsung tercermin pada halaman profil toko setelah halaman dimuat ulang.
-
-**Prioritas:** Medium | **Ref:** US-07 (Manage Store Profile)
+Prioritas: Medium | Ref: US-07 (Notifikasi Pemesanan Produk)
 
 ---
 
-### FR-09: Monitoring Aktivitas Platform
+### 3.8. FR-08: Registrasi Akun & Profil Toko
 
-**Deskripsi:**
+Sistem memungkinkan pemilik UMKM mendaftar melalui dua langkah. Pertama,
+pemilik UMKM mengisi data akun (nama, email, nomor telepon, dan password);
+setelah berhasil disimpan, sistem mengarahkan ke langkah berikutnya. Kedua,
+pemilik UMKM mengisi data profil toko (nama toko, deskripsi, kategori, alamat,
+dan kontak); setelah data dikirimkan, sistem menyimpan profil toko dengan
+status "Menunggu Verifikasi Admin" dan meneruskannya kepada admin untuk
+ditinjau. Jika email yang digunakan sudah terdaftar, sistem menampilkan pesan
+"Email sudah digunakan. Silakan gunakan email lain atau login."
 
-Sistem menampilkan data aktivitas platform secara ringkas pada dashboard admin (misalnya: jumlah toko terdaftar, jumlah pesanan, toko baru menunggu verifikasi). Data diperbarui secara otomatis sehingga admin selalu melihat informasi terkini.
-
-**Prioritas:** Medium | **Ref:** US-10 (Monitor System Activity)
+Prioritas: High | Ref: US-08 (Register Account & Store Profile)
 
 ---
 
-### FR-10: Kontak Langsung dengan Penjual
+### 3.9. FR-09: Login Akun Pemilik UMKM
 
-**Deskripsi:**
+Sistem menyediakan halaman login terpisah untuk pemilik UMKM. Pemilik
+UMKM memasukkan email dan password yang valid; jika autentikasi berhasil,
+sistem mengarahkan ke halaman dashboard toko. Apabila toko belum diverifikasi
+admin, sistem menampilkan notifikasi informasi bahwa toko sedang dalam
+proses verifikasi dan beberapa fitur mungkin belum tersedia. Jika email atau
+password yang dimasukkan salah, sistem menampilkan pesan error generik tanpa
+mengungkapkan field mana yang tidak sesuai.
 
-Sistem mengarahkan pembeli ke media komunikasi milik pemilik UMKM (WhatsApp atau kontak lain yang terdaftar) ketika pembeli memilih opsi untuk menghubungi penjual dari halaman detail produk atau halaman toko.
+Prioritas: High | Ref: US-09 (Login Account)
 
-**Prioritas:** Low | **Ref:** US-06 (Contact Pembeli)
+---
 
-**Detail Teknis:**
+### 3.10. FR-10: Kontak Langsung dengan Penjual
+
+Sistem mengarahkan pembeli ke media komunikasi milik pemilik UMKM
+(WhatsApp atau kontak lain yang terdaftar) ketika pembeli memilih opsi untuk
+menghubungi penjual dari halaman detail produk atau halaman toko.
+
+Prioritas: Low | Ref: US-10 (Contact Pembeli)
+
+Detail Teknis:
 - Penggunaan WhatsApp Deep Link (wa.me) untuk mengarahkan pengguna secara otomatis
 
 ---
+
+### 3.11. FR-11: Pembaruan Profil Toko
+
+Sistem memungkinkan pemilik UMKM memperbarui informasi profil toko
+(termasuk deskripsi, kontak, jam operasional, dan produk) kapan saja.
+Perubahan yang berhasil disimpan langsung tercermin pada halaman profil toko
+setelah halaman dimuat ulang.
+
+Prioritas: Medium | Ref: US-11 (Manage Store Profile)
+
+---
+
+### 3.12. FR-12: Penerimaan dan Manajemen Pesanan
+
+Sistem menampilkan daftar pesanan yang masuk pada dashboard pemilik UMKM.
+Ketika pemilik UMKM memilih salah satu pesanan dari daftar, sistem
+menampilkan detail pesanan tersebut secara lengkap termasuk nama pemesan,
+jumlah, dan catatan.
+
+Prioritas: High | Ref: US-12 (Receive Orders)
+
+---
+
+### 3.13. FR-13: Verifikasi Toko (Admin)
+
+Sistem memungkinkan admin yang telah login untuk melihat daftar toko yang
+sedang menunggu verifikasi, meninjau data pendaftaran masing-masing toko,
+dan mengambil tindakan berupa persetujuan atau penolakan. Toko yang
+disetujui akan tampil di direktori publik Kulaan.id.
+
+Prioritas: High | Ref: US-13 (Verify Store Information)
+
+---
+
+### 3.14. FR-14: Monitoring Aktivitas Platform
+
+Sistem menampilkan data aktivitas platform secara ringkas pada dashboard admin
+(misalnya: jumlah toko terdaftar, jumlah pesanan, toko baru menunggu
+verifikasi). Data diperbarui secara otomatis sehingga admin selalu melihat
+informasi terkini. Apabila sistem gagal mengambil data aktivitas dari server,
+sistem menampilkan pesan "Gagal memuat data aktivitas. Silakan refresh
+halaman." dan tidak menampilkan data yang sudah kedaluarsa (stale data).
+
+Prioritas: Medium | Ref: US-14 (Monitor System Activity)
 
 ## 4. Kebutuhan Non-Fungsional
 
