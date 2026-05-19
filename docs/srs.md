@@ -162,27 +162,18 @@ Prioritas: High | Ref: US-02 (Login Account)
 
 ---
 
-### 3.3. FR-03: Semantic Search Engine
+### 3.3. FR-03: Search Produk
 
-Sistem menyediakan fitur pencarian produk yang mampu memahami intent
-(niat) pengguna menggunakan Semantic Search Engine (Google Gemini API).
-Sistem tidak hanya mencocokkan kata kunci secara harfiah, tetapi juga makna
-(vektor) dari kueri yang dimasukkan untuk menampilkan daftar produk yang
-paling relevan secara otomatis. Pencarian ini dikombinasikan dengan metode
-keyword-based (Hybrid Search) untuk memastikan akurasi hasil. Halaman hasil
-pencarian memuat informasi produk secara lengkap ketika halaman selesai
-dimuat. Apabila tidak ada produk yang cocok dengan kata kunci yang
-dimasukkan, sistem menampilkan pesan informatif seperti "Produk tidak
-ditemukan. Coba kata kunci lain." dan tidak menampilkan daftar kosong tanpa
-keterangan.
+**Deskripsi:**
 
-Prioritas: High | Ref: US-03 (Search Products)
+Sistem menyediakan fitur pencarian produk yang dapat diakses melalui halaman pencarian. 
+Ketika pengguna mengetikkan kata kunci lalu menekan tombol cari atau Enter, sistem menampilkan 
+daftar produk yang relevan dengan kata kunci tersebut. Halaman hasil pencarian memuat informasi 
+produk secara lengkap ketika halaman selesai dimuat. Apabila tidak ada produk yang cocok dengan 
+kata kunci yang dimasukkan, sistem menampilkan pesan informatif seperti *"Produk tidak ditemukan. 
+Coba kata kunci lain."* dan tidak menampilkan daftar kosong tanpa keterangan.
 
-Detail Teknis:
-- Integrasi Gemini API untuk semantic understanding (intent detection & query transformation)
-- Implementasi embedding-based search dan vector similarity (kNN)
-- Hybrid search: kombinasi semantic search dan keyword search (BM25)
-- Sinkronisasi data produk ke dalam bentuk vector dan index Elasticsearch
+**Prioritas:** High | **Ref:** US-03 (Search Products)
 
 ---
 
