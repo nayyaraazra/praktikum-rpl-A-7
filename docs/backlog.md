@@ -21,7 +21,6 @@
 | Prioritas | User Story | User Role | Deskripsi |
 |-----------|-----------|-----------|-----------|
 | SHOULD HAVE | **US-04**: Filter Products | Pembeli | Memilih kategori/harga → sistem menampilkan produk sesuai filter; tidak ada produk cocok → muncul pesan dan opsi reset filter |
-| SHOULD HAVE | **US-07**: Notifikasi Pemesanan Produk | Pembeli | Pembeli menerima notifikasi saat pesanan dikirim, dikonfirmasi, atau ditolak penjual; jika pengiriman gagal, sistem retry maksimal 3 kali dan notifikasi tersimpan di riwayat pesanan |
 | SHOULD HAVE | **US-11**: Manage Store Profile | Pemilik UMKM | Pemilik UMKM dapat memperbarui/mengelola informasi toko seperti deskripsi, kontak, atau produk yang ditampilkan |
 | SHOULD HAVE | **US-14**: Monitor System Activity | Admin | Dashboard menampilkan data aktivitas; data terbaru muncul saat diperbarui; gagal memuat → muncul pesan error dan tidak menampilkan data kedaluarsa |
 
@@ -32,6 +31,7 @@
 | Prioritas | User Story | User Role | Deskripsi |
 |-----------|-----------|-----------|-----------|
 | COULD HAVE | **US-10**: Contact Pembeli | Pemilik UMKM | Pembeli yang ingin menghubungi akan diarahkan ke media komunikasi (WA, dll) |
+| COULD HAVE | **US-07**: Notifikasi Pemesanan Produk | Pembeli | Pembeli menerima notifikasi saat pesanan dikirim, dikonfirmasi, atau ditolak penjual; jika pengiriman gagal, sistem retry maksimal 3 kali dan notifikasi tersimpan di riwayat pesanan |
 
 ---
 
