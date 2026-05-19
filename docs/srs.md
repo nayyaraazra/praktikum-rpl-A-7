@@ -142,6 +142,7 @@ Kebutuhan fungsional berikut ditransformasi secara langsung dari user story (US)
 Sistem menyediakan fitur pencarian produk yang dapat diakses melalui halaman pencarian. Ketika pengguna mengetikkan kata kunci lalu menekan tombol cari atau Enter, sistem menampilkan daftar produk yang relevan dengan kata kunci tersebut. Halaman hasil pencarian memuat informasi produk secara lengkap ketika halaman selesai dimuat. Apabila tidak ada produk yang cocok dengan kata kunci yang dimasukkan, sistem menampilkan pesan informatif seperti *"Produk tidak ditemukan. Coba kata kunci lain."* dan tidak menampilkan daftar kosong tanpa keterangan.
 
 **Prioritas:** High | **Ref:** US-03 (Search Products)
+
 ---
 
 ### FR-02: Filter dan Sorting Produk
