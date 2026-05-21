@@ -144,9 +144,9 @@ Dokumen ini merinci kebutuhan pengguna (User Stories) dan kriteria penerimaan (A
 * **AC-1 (Register Akun):**
     * **Given** pemilik UMKM membuka halaman registrasi penjual
     * **When** pemilik UMKM mengisi data akun (nama, email, nomor telepon, password) dan menekan *"Lanjut"*
-    * **Then** sistem menyimpan data akun dan mengarahkan ke langkah pengisian profil toko
+    * **Then** sistem menyimpan data akun dan diarahkan ke halaman login
 * **AC-2 (Register Profil Toko):**
-    * **Given** pemilik UMKM telah berhasil membuat akun dan berada di halaman pengisian profil toko
+    * **Given** pemilik UMKM telah berhasil login ke akun dan berada di halaman pengisian profil toko
     * **When** pemilik UMKM mengisi data toko (nama toko, deskripsi, kategori, alamat, dan kontak) lalu mengirimkan data
     * **Then** sistem menyimpan profil toko dan mengubah status toko menjadi *"Menunggu Verifikasi Admin"*
 * **AC-3 (Validasi Input):**
