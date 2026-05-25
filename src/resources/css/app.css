@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/* Design tokens sesuai desain UI */
+:root {
+  --blue-50:  #E6F1FB;
+  --blue-100: #B5D4F4;
+  --blue-400: #378ADD;
+  --blue-500: #1E6FC5;
+  --blue-600: #185FA5;
+  --blue-700: #124880;
+  --blue-800: #0C447C;
+  --blue-900: #042C53;
+  --gray-50:  #F8F9FB;
+  --gray-100: #EFF1F5;
+  --gray-200: #DDE1E9;
+  --gray-400: #9AA2B1;
+  --gray-600: #5F6A7D;
+  --gray-800: #2D3547;
+  --red-400:  #E24B4A;
+  --red-50:   #FFF0F0;
+  --green-50: #EAF3DE;
+  --green-600:#3B6D11;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--gray-50);
+  min-height: 100vh;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--gray-800);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 100px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success { background: #166534; }
+.toast.error   { background: #991B1B; }
+
+/* Pulse animation untuk brand badge dot */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
+}
+.pulse-dot { animation: pulse 2s ease infinite; }
