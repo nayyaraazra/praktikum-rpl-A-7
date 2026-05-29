@@ -1,70 +1,182 @@
+# KELOMPOK 7 PRAKTIKUM RPL
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Tentang Proyek
+ 
+**KULAAN.id** adalah aplikasi katalog digital berbasis web yang dirancang untuk menghubungkan pelaku UMKM di Kelurahan Jebres, Kecamatan Jebres, Kota Surakarta dengan calon pembeli secara efisien.
+ 
+Saat ini, pelaku UMKM lokal mengandalkan platform tidak terstruktur seperti WhatsApp dan media sosial untuk memasarkan produk. Hal ini menyebabkan informasi produk tidak tersusun rapi, sulit ditemukan, dan proses pemesanan tidak efisien. KULAAN.id hadir sebagai solusi terpusat yang menjembatani keduanya.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-
-# KELOMPOK 7 
-
-### Anggota Kelompok
+## Anggota Kelompok
 | Nomor | NIM        | Nama                         |
 |-------|------------|------------------------------|
 | 1     | L0124006   | Benedhictus Kevin Doni B.E.  |
 | 2     | L0124119   | Shaira Masyhita Putri Hatala |
 | 3     | L0124120   | Silvi Amalia                 |
 | 4     | L0124138   | Nayyara Aqila Azra           |
+
+## Teknologi yang Digunakan
+ 
+| Kategori | Teknologi |
+|----------|-----------|
+| **Frontend** | Vue.js & Vite |
+| **Backend** | Laravel 11 |
+| **Database** | MySQL |
+| **Others Tools** | Composer, Node.js & npm |
+| **Version Control** | Git & GitHub |
+| **Editor** | VS Code |
+
+## Struktur Proyek
+```
+kulaan-project/
+├── docs/                 # [DOKUMENTASI] Dokumen perencanaan proyek, panduan, dan rancangan sistem
+├── tests/                # [PENGUJIAN] Berkas automated testing untuk validasi fitur dan komponen aplikasi
+└── src/                  # [KODE UTAMA] Seluruh source code aplikasi (Backend & Frontend)
+    ├── app/              # Logika bisnis utama Laravel (Controller, Model, Middleware)
+    ├── bootstrap/        # Cache sistem dan pengaturan awal saat aplikasi pertama kali dimuat
+    ├── config/           # Semua file konfigurasi sistem aplikasi (Database, Mail, Auth, dll)
+    ├── database/         # File Migration struktur database dan Seeders data awal
+    ├── public/           # Entry point utama aplikasi (index.php) dan aset web publik (gambar, dll)
+    ├── resources/        # Aset antarmuka aplikasi sebelum dikompilasi
+    │   └── js/           # Sumber kode utama Vue.js
+    │       ├── web/      # Komponen, halaman, dan logika khusus untuk aplikasi Web
+    │       └── mobile/   # Komponen, halaman, dan logika khusus untuk aplikasi Mobile (SOON)
+    ├── routes/           # Manajemen Routing (web.php untuk Web, api.php untuk API Mobile)
+    ├── storage/          # Tempat menyimpan log sistem, file cache, dan file unggahan pengguna
+    ├── .env              # File sensitif berisi kredensial database dan konfigurasi environment lokal (tdk boldeh di push di github)
+    ├── artisan           # Command-line interface (CLI) bawaan Laravel untuk menjalankan perintah terminal
+    ├── composer.json     # Daftar dependensi dan paket library PHP yang digunakan oleh Laravel
+    ├── package.json      # Daftar dependensi library JavaScript (Vue.js, Vite) dan perintah script NPM
+    └── vite.config.js    # Konfigurasi utama bundling dan kompilasi aset frontend menggunakan Vite
+```
+
+## Setup & Run Project
+Berikut merupakan langkah untuk menjalankan project:
+
+### Requirements
+* PHP 8.3
+* Composer 2.x
+* Node.js 20 LTS
+* MySQL 8
+* Git
+
+### Installation
+
+Clone repository:
+
+```bash id="r9n3ht"
+git clone https://github.com/<username>/<repository>.git
+cd kulaan-project/src
+```
+
+Install dependencies:
+
+```bash id="fj3m2a"
+composer install
+npm install
+```
+
+Setup environment:
+
+```bash id="g8x7pw"
+cp .env.example .env
+php artisan key:generate
+```
+
+---
+
+### Database Configuration
+
+Edit `.env` (contoh):
+
+```env id="k2v6qu"
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=kulaan_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Buat database lalu jalankan migration:
+
+```bash id="r1z5yn"
+php artisan migrate
+```
+
+---
+
+### Run Project
+
+Jalankan menggunakan 2 terminal berbeda.
+
+**Backend Laravel**
+
+```bash id="v8m4tx"
+php artisan serve
+```
+
+---
+
+**Frontend Vue.js**
+
+```bash id="s4p9eg"
+npm run dev
+```
+
+## Cara Kontribusi
+ 
+Semua anggota tim harus mengikuti alur kerja berikut untuk membuat perubahan pada repositori. Jangan langsung push ke branch `dev` atau `main`.
+ 
+### Alur Kerja Git (Feature Branch Workflow)
+ 
+**Langkah 1 — Pastikan branch `dev` lokal sudah terbaru**
+ 
+```bash
+git checkout dev
+git pull origin dev
+```
+ 
+**Langkah 2 — Buat branch baru untuk fitur atau tugas**
+ 
+Gunakan konvensi penamaan branch berikut:
+ 
+```bash
+# Format:
+git checkout -b <type>/<deskripsi-singkat>
+ 
+# Contoh:
+git checkout -b feature/halaman-login
+git checkout -b fix/validasi-form-register
+git checkout -b docs/update-readme
+```
+ 
+| Prefix | Digunakan untuk |
+|--------|-----------------|
+| `feature/` | Fitur baru |
+| `fix/` | Perbaikan bug |
+| `docs/` | Perubahan dokumentasi |
+| `refactor/` | Refactoring tanpa mengubah fungsi |
+ 
+**Langkah 3 — Kerjakan perubahan, lalu commit**
+ 
+```bash
+git add .
+git commit -m "<type>(<scope>): <deskripsi singkat>"
+```
+ 
+**Langkah 4 — Push branch ke GitHub**
+ 
+```bash
+git push origin <nama-branch-anda>
+```
+ 
+**Langkah 5 — Buat Pull Request di GitHub**
+ 
+1. Buka repositori di GitHub
+2. Klik **"Compare & pull request"**
+3. Pastikan base branch adalah `dev` (bukan `main`)
+4. Isi judul dan deskripsi PR dengan jelas
+5. Merge PR setelah disetujui
+
