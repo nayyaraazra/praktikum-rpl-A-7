@@ -82,8 +82,6 @@ cp .env.example .env
 php artisan key:generate
 ```
 
----
-
 ### Database Configuration
 
 Edit `.env` (contoh):
@@ -105,8 +103,6 @@ Buat database lalu jalankan migration:
 php artisan migrate
 ```
 
----
-
 ### Run Project
 
 Jalankan menggunakan 2 terminal berbeda.
@@ -117,13 +113,12 @@ Jalankan menggunakan 2 terminal berbeda.
 php artisan serve
 ```
 
----
-
 **Frontend Vue.js**
 
 ```bash id="s4p9eg"
 npm run dev
 ```
+
 
 ## Cara Kontribusi
  
