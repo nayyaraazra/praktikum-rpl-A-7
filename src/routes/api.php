@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\StoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,10 @@ Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me',      [AuthController::class, 'me']);
     });
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('store/setup', [StoreController::class, 'setup']); // onboarding
 });
 
 // ── Produk (diisi nanti P7 — US-03 Search Products) ───────────────────────

@@ -29,7 +29,15 @@ const routes = [
         path: '/home',
         name: 'home',
         component: () => import('@/pages/HomePage.vue'),
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, requiresStoreComplete: true },
+    },
+
+    // Onboarding profil toko untuk seller
+    {
+        path: '/store/setup',
+        name: 'store.setup',
+        component: () => import('@/pages/store/StoreOnboardingPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true },
     },
 
     // Catch-all
@@ -56,25 +64,17 @@ router.beforeEach((to) => {
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return { path: '/login' }
     }
+
+    // Seller yang belum isi profil toko wajib ke onboarding dulu
+    if (
+        auth.isLoggedIn &&
+        auth.isSeller &&
+        to.meta.requiresStoreComplete &&
+        !auth.user?.store &&
+        localStorage.getItem('store_onboarding_skipped') !== '1'
+    ) {
+        return { path: '/store/setup' }
+    }
 })
 
 export default router
-
-// import { createRouter, createWebHistory } from 'vue-router'
-// import { useAuthStore } from '@/stores/auth'
-
-// const routes = [
-    
-//     // ── Auth — satu halaman, tab dikontrol via query (?tab=daftar)
-//     {
-//         path: '/login',
-//         name: 'login',
-//         component: () => import('@/pages/auth/AuthPage.vue'),
-//         meta: { guestOnly: true },
-//     },
-//     {
-//         path: '/register',
-//         name: 'register',
-//         // Redirect ke /login dengan tab daftar aktif
-//         redirect: { name: 'login', query: { tab: 'daftar' } },
-//     },
