@@ -370,19 +370,21 @@ async function handleRegister() {
   isLoading.value = true
   showToast('Membuat akun…')
 
-  // Gabungkan +62 dengan nomor yang diinput
   regForm.phone_number          = '0' + regForm.phone_raw.replace(/^0+/, '')
   regForm.password_confirmation = regForm.password
 
   try {
-    await authStore.register(regForm)
-
-    const msg = selectedRole.value === 'pemilik'
-      ? 'Akun dibuat! Toko Anda menunggu verifikasi admin (1×24 jam).'
-      : 'Akun berhasil dibuat! Selamat datang di Kulaan.id.'
-    showToast(msg, 'success', 4000)
-    setTimeout(() => router.push({ name: 'home' }), 1500)
-
+    const result = await authStore.register(regForm)
+    
+    // Cek role — seller diarahkan ke setup toko
+    const role = result.data.user?.role
+    if (role === 'seller') {
+      showToast('Akun dibuat! Lengkapi profil toko Anda.', 'success', 3000)
+      setTimeout(() => router.push({ name: 'store-setup' }), 1200)
+    } else {
+      showToast('Akun berhasil dibuat! Selamat datang.', 'success')
+      setTimeout(() => router.push({ name: 'home' }), 1200)
+    }
   } catch (err) {
     handleApiError(err)
   } finally {

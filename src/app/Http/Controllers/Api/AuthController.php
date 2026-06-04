@@ -20,18 +20,25 @@ class AuthController extends Controller
      * US-08 step-1: Register Account (Seller)
      */
     public function register(RegisterRequest $request): JsonResponse
-    {
+{
+    try {
         $result = $this->authService->register($request->validated());
-
+    } catch (\Exception $e) {
         return response()->json([
-            'success' => true,
-            'message' => 'Akun berhasil dibuat.',
-            'data'    => [
-                'user'  => $result['user'],
-                'token' => $result['token'],
-            ],
-        ], 201);
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], 422);
     }
+
+     return response()->json([
+        'success' => true,
+        'message' => 'Akun berhasil dibuat.',
+        'data'    => [
+            'user'  => $result['user'],
+            'token' => $result['token'],
+        ],
+    ], 201);
+}
 
     /**
      * POST /api/auth/login

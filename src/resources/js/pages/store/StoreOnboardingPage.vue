@@ -549,7 +549,7 @@ async function handleSubmit() {
     // Perbarui data user di store agar guard tahu profil sudah diisi
     await authStore.fetchCurrentUser()
 
-    setTimeout(() => router.push({ name: 'seller.dashboard' }), 1800)
+    setTimeout(() => router.push({ name: 'home' }), 1800)
 
   } catch (err) {
     const res = err.response

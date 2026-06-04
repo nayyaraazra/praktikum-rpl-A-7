@@ -15,19 +15,39 @@ class AuthService
      * Buat akun baru, kembalikan user + token Sanctum.
      */
     public function register(array $data): array
-    {
-        $user = User::create([
-            'name'         => $data['name'],
-            'email'        => $data['email'],
-            'phone_number' => $data['phone_number'],
-            'password'     => Hash::make($data['password']),
-            'role'         => $data['role'],
-        ]);
+{
+    $newRole = $data['role']; // 'buyer' atau 'seller'
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    // Cek apakah email sudah terdaftar
+    $existingUser = User::where('email', $data['email'])->first();
 
-        return compact('user', 'token');
+    if ($existingUser) {
+        // Cek apakah role yang diminta sudah ada
+        if (in_array($newRole, $existingUser->roles ?? [])) {
+            throw new \Exception("Akun dengan role {$newRole} untuk email ini sudah terdaftar.");
+        }
+
+        // Tambahkan role baru ke akun yang sudah ada
+        $roles = $existingUser->roles ?? [];
+        $roles[] = $newRole;
+        $existingUser->update(['roles' => $roles]);
+
+        $token = $existingUser->createToken('auth_token')->plainTextToken;
+        return ['user' => $existingUser, 'token' => $token];
     }
+
+    // Buat akun baru jika email belum terdaftar
+    $user = User::create([
+        'name'         => $data['name'],
+        'email'        => $data['email'],
+        'phone_number' => $data['phone_number'],
+        'password'     => Hash::make($data['password']),
+        'roles'        => [$newRole],
+    ]);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+    return compact('user', 'token');
+}
 
     /**
      * US-02 (buyer) & US-09 (seller):
