@@ -16,13 +16,40 @@ class AuthService
      */
     public function register(array $data): array
     {
-        $user = User::create([
-            'name'         => $data['name'],
-            'email'        => $data['email'],
-            'phone_number' => $data['phone_number'],
-            'password'     => Hash::make($data['password']),
-            'roles'        => [$data['role']],
-        ]);
+        $existingUser = User::where('email', $data['email'])->first();
+
+        if ($existingUser) {
+            if (!Hash::check($data['password'], $existingUser->password)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['Email sudah terdaftar. Masukkan password yang benar untuk masuk dan menambah peran.']
+                ]);
+            }
+
+            $roles = $existingUser->roles ?? [];
+            if (!in_array($data['role'], $roles)) {
+                $roles[] = $data['role'];
+                $existingUser->roles = $roles;
+                $existingUser->save();
+            }
+
+            $user = $existingUser;
+        } else {
+            if (User::where('phone_number', $data['phone_number'])->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'phone_number' => ['Nomor telepon sudah terdaftar.']
+                ]);
+            }
+
+            $user = User::create([
+                'name'         => $data['name'],
+                'email'        => $data['email'],
+                'phone_number' => $data['phone_number'],
+                'password'     => Hash::make($data['password']),
+                'roles'        => [$data['role']],
+            ]);
+        }
+
+        $user->tokens()->delete();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
