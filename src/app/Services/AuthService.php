@@ -21,7 +21,7 @@ class AuthService
             'email'        => $data['email'],
             'phone_number' => $data['phone_number'],
             'password'     => Hash::make($data['password']),
-            'role'         => $data['role'],
+            'roles'        => [$data['role']],
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
