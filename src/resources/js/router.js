@@ -40,6 +40,14 @@ const routes = [
         meta: { requiresAuth: true, requiresSeller: true },
     },
 
+    // Admin Panel (Hidden Route)
+    {
+        path: '/admin',
+        name: 'admin',
+        component: () => import('@/pages/admin/AdminPage.vue'),
+        meta: { requiresAuth: true },
+    },
+
     // Catch-all
     {
         path: '/:pathMatch(.*)*',

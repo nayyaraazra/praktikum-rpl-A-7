@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
+use App\Http\Controllers\Api\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,10 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('store/setup', [StoreController::class, 'setup']); // onboarding
+    
+    // Admin Routes
+    Route::get('admin/dashboard', [AdminController::class, 'getDashboard']);
+    Route::post('admin/stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
 });
 
 // ── Produk (diisi nanti P7 — US-03 Search Products) ───────────────────────
