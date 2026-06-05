@@ -9,9 +9,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     // ── Getters ──────────────────────────────────────────────────────
     const isLoggedIn = computed(() => !!token.value)
-    const isBuyer    = computed(() => user.value?.role === 'buyer')
-    const isSeller   = computed(() => user.value?.role === 'seller')
-    const isAdmin    = computed(() => user.value?.role === 'admin')
+    const isBuyer    = computed(() => user.value?.roles?.includes('buyer'))
+    const isSeller   = computed(() => user.value?.roles?.includes('seller'))
+    const isAdmin    = computed(() => user.value?.roles?.includes('admin'))
 
     // ── Actions ──────────────────────────────────────────────────────
 

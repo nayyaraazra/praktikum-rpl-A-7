@@ -18,7 +18,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
-        'role',
+        'roles',
     ];
 
     protected $hidden = [
@@ -27,6 +27,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed', // Laravel 10+ auto-hash
+        'roles'    => 'array',
     ];
 
     // Relasi 
@@ -55,16 +56,16 @@ class User extends Authenticatable
 
     public function isBuyer(): bool
     {
-        return $this->role === 'buyer';
+    return in_array('buyer', $this->roles ?? []);
     }
 
     public function isSeller(): bool
     {
-        return $this->role === 'seller';
+    return in_array('seller', $this->roles ?? []);
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+    return in_array('admin', $this->roles ?? []);
     }
 }
