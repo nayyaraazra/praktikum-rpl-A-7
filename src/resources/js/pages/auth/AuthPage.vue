@@ -342,6 +342,16 @@ function selectRole(role) {
   regForm.role         = role === 'pembeli' ? 'buyer' : 'seller'
 }
 
+function getRedirectTarget() {
+  if (authStore.isSeller) {
+    if (!authStore.user?.store && localStorage.getItem('store_onboarding_skipped') !== '1') {
+      return { name: 'store.setup' }
+    }
+    return { name: 'seller.orders' }
+  }
+  return { name: 'home' }
+}
+
 async function handleLogin() {
   clearErrors()
   isLoading.value = true
@@ -353,10 +363,10 @@ async function handleLogin() {
     // AC US-09: notice jika toko belum terverifikasi
     if (result.data.notice) {
       showToast(result.data.notice, 'success', 4000)
-      setTimeout(() => router.push({ name: 'home' }), 2000)
+      setTimeout(() => router.push(getRedirectTarget()), 2000)
     } else {
       showToast('Berhasil masuk! Mengalihkan…', 'success')
-      setTimeout(() => router.push({ name: 'home' }), 1200)
+      setTimeout(() => router.push(getRedirectTarget()), 1200)
     }
   } catch (err) {
     handleApiError(err)
@@ -381,7 +391,7 @@ async function handleRegister() {
       ? 'Akun dibuat! Toko Anda menunggu verifikasi admin (1×24 jam).'
       : 'Akun berhasil dibuat! Selamat datang di Kulaan.id.'
     showToast(msg, 'success', 4000)
-    setTimeout(() => router.push({ name: 'home' }), 1500)
+    setTimeout(() => router.push(getRedirectTarget()), 1500)
 
   } catch (err) {
     handleApiError(err)

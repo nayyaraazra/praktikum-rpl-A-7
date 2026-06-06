@@ -7,7 +7,10 @@ const routes = [
         path: '/',
         redirect: () => {
             const auth = useAuthStore()
-            return auth.isLoggedIn ? '/home' : '/login'
+            if (auth.isLoggedIn) {
+                return auth.isSeller ? '/seller/orders' : '/home'
+            }
+            return '/login'
         },
     },
 
@@ -40,6 +43,40 @@ const routes = [
         meta: { requiresAuth: true, requiresSeller: true },
     },
 
+    // Buyer Routes
+    {
+        path: '/products',
+        name: 'products',
+        component: () => import('@/pages/buyer/SearchProductsPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/products/:id',
+        name: 'product.detail',
+        component: () => import('@/pages/buyer/ProductDetailPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/order/:productId',
+        name: 'order.create',
+        component: () => import('@/pages/buyer/OrderFormPage.vue'),
+        meta: { requiresAuth: true },
+    },
+
+    // Seller Routes
+    {
+        path: '/seller/profile',
+        name: 'seller.profile',
+        component: () => import('@/pages/seller/StoreProfilePage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true },
+    },
+    {
+        path: '/seller/orders',
+        name: 'seller.orders',
+        component: () => import('@/pages/seller/SellerOrdersPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true },
+    },
+
     // Admin Panel (Hidden Route)
     {
         path: '/admin',
@@ -66,11 +103,26 @@ router.beforeEach((to) => {
     const auth = useAuthStore()
 
     if (to.meta.guestOnly && auth.isLoggedIn) {
-        return { path: '/home' }
+        return auth.isSeller ? { path: '/seller/orders' } : { path: '/home' }
     }
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return { path: '/login' }
+    }
+
+    // Guard: requiresSeller
+    if (to.meta.requiresSeller && !auth.isSeller) {
+        return { path: '/home' }
+    }
+
+    // Seller yang login tidak boleh mengakses halaman buyer (halaman yang tidak membutuhkan requiresSeller, kecuali onboarding /store/setup)
+    if (
+        auth.isLoggedIn &&
+        auth.isSeller &&
+        !to.meta.requiresSeller &&
+        to.path !== '/store/setup'
+    ) {
+        return { path: '/seller/orders' }
     }
 
     // Seller yang belum isi profil toko wajib ke onboarding dulu

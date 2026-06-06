@@ -10,6 +10,26 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <template v-if="authStore.isLoggedIn">
+                        <RouterLink
+                            v-if="authStore.isSeller"
+                            to="/seller/orders"
+                            class="text-xs text-blue-100 hover:text-white mr-3 transition-colors"
+                        >
+                            Kelola Pesanan
+                        </RouterLink>
+                        <RouterLink
+                            v-if="authStore.isSeller"
+                            to="/seller/profile"
+                            class="text-xs text-blue-100 hover:text-white mr-3 transition-colors"
+                        >
+                            Profil Toko
+                        </RouterLink>
+                        <RouterLink
+                            to="/products"
+                            class="text-xs text-blue-100 hover:text-white mr-3 transition-colors"
+                        >
+                            Cari Produk
+                        </RouterLink>
                         <span class="text-sm text-blue-100 hidden sm:block">
                             Halo, <strong class="text-white">{{ authStore.user?.name }}</strong>
                         </span>
@@ -46,10 +66,38 @@
             </h2>
             <p class="text-gray-500 text-sm leading-relaxed mb-8">
                 Platform katalog digital untuk UMKM di Kelurahan Jebres, Surakarta.
-                <br />Fitur pencarian produk akan tersedia di P7 (US-03).
             </p>
 
-            <div v-if="!authStore.isLoggedIn" class="flex gap-3 justify-center">
+            <div v-if="authStore.isLoggedIn" class="flex flex-col gap-4 items-center justify-center">
+                <!-- Buyer/All Catalog Search Link -->
+                <RouterLink
+                    to="/products"
+                    style="background:linear-gradient(135deg,#1a7fc4,#1565a8);"
+                    class="px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow hover:shadow-md transition-all w-64 text-center"
+                >
+                    🔍 Cari & Pesan Produk
+                </RouterLink>
+
+                <!-- Seller Dashboard Links -->
+                <template v-if="authStore.isSeller">
+                    <div class="flex gap-3 mt-2">
+                        <RouterLink
+                            to="/seller/orders"
+                            class="px-5 py-2 rounded-lg border border-blue-200 text-blue-600 font-bold text-xs hover:bg-blue-50 transition-all text-center"
+                        >
+                            📋 Kelola Pesanan Masuk
+                        </RouterLink>
+                        <RouterLink
+                            to="/seller/profile"
+                            class="px-5 py-2 rounded-lg border border-blue-200 text-blue-600 font-bold text-xs hover:bg-blue-50 transition-all text-center"
+                        >
+                            🏪 Pengaturan Toko
+                        </RouterLink>
+                    </div>
+                </template>
+            </div>
+
+            <div v-else class="flex gap-3 justify-center">
                 <RouterLink
                     to="/register"
                     style="background:linear-gradient(135deg,#1a7fc4,#1565a8);"

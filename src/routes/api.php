@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,16 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('store/setup', [StoreController::class, 'setup']); // onboarding
+    Route::put('store/profile', [StoreController::class, 'update']); // US-11
+
+    // Product routes (US-03, US-05)
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{id}', [ProductController::class, 'show']);
+
+    // Order routes (US-06, US-12)
+    Route::post('orders', [OrderController::class, 'store']);
+    Route::get('seller/orders', [OrderController::class, 'sellerIndex']);
+    Route::patch('seller/orders/{id}/status', [OrderController::class, 'updateStatus']);
     
     // Admin Routes
     Route::get('admin/dashboard', [AdminController::class, 'getDashboard']);
