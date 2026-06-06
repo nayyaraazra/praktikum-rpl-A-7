@@ -20,15 +20,28 @@ class StoreController extends Controller
             'logo'            => ['nullable', 'image', 'max:2048'],
         ]);
 
-        Store::create([
-            'id_user'             => $request->user()->id_user,
-            'store_name'          => $request->store_name,
-            'description'         => $request->description,
-            'address'             => $request->address,
-            'operating_hours'     => $request->operating_hours,
-            'district'            => $request->district,
-            'verification_status' => 'menunggu',
-        ]);
+        // Cek apakah user sudah punya toko yang disetujui — jangan timpa statusnya
+        $existingStore = Store::where('id_user', $request->user()->id_user)->first();
+        if ($existingStore && $existingStore->verification_status === 'disetujui') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Toko Anda sudah disetujui dan tidak dapat diubah melalui halaman ini.',
+            ], 422);
+        }
+
+        // updateOrCreate: jika sudah ada record untuk user ini, perbarui datanya;
+        // jika belum ada, buat baru. Mencegah duplikat saat tombol diklik berkali-kali.
+        Store::updateOrCreate(
+            ['id_user' => $request->user()->id_user],   // kunci pencarian
+            [
+                'store_name'          => $request->store_name,
+                'description'         => $request->description,
+                'address'             => $request->address,
+                'operating_hours'     => $request->operating_hours,
+                'district'            => $request->district,
+                'verification_status' => 'menunggu',
+            ]
+        );
 
         return response()->json(['success' => true, 'message' => 'Profil toko berhasil disimpan.'], 201);
     }

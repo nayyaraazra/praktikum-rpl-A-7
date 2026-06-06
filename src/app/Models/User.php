@@ -25,6 +25,10 @@ class User extends Authenticatable
         'password',
     ];
 
+    protected $attributes = [
+        'roles' => '["buyer"]', // default role jika tidak diisi
+    ];
+
     protected $casts = [
         'password' => 'hashed', // Laravel 10+ auto-hash
         'roles'    => 'array',
