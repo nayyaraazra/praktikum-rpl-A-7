@@ -1,17 +1,23 @@
+// resources/js/router.js
+// Vue Router — mencakup semua halaman buyer, seller, dan auth
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
-    // Root redirect ke login jika belum login, ke home jika sudah
+    // ── Root redirect ─────────────────────────────────────────────
     {
         path: '/',
         redirect: () => {
             const auth = useAuthStore()
-            return auth.isLoggedIn ? '/home' : '/login'
+            if (!auth.isLoggedIn) return '/login'
+            return auth.isSeller ? '/seller/dashboard' : '/products'
         },
     },
 
-    // Auth
+    // ══════════════════════════════════════════════════════════════
+    // AUTH
+    // ══════════════════════════════════════════════════════════════
     {
         path: '/login',
         name: 'login',
@@ -21,18 +27,13 @@ const routes = [
     {
         path: '/register',
         name: 'register',
+        // Redirect ke halaman auth dengan tab daftar aktif
         redirect: { name: 'login', query: { tab: 'daftar' } },
     },
 
-    // Beranda setelah login
-    {
-        path: '/home',
-        name: 'home',
-        component: () => import('@/pages/HomePage.vue'),
-        meta: { requiresAuth: true, requiresStoreComplete: true },
-    },
-
-    // Onboarding profil toko untuk seller
+    // ══════════════════════════════════════════════════════════════
+    // STORE ONBOARDING (seller, setelah register)
+    // ══════════════════════════════════════════════════════════════
     {
         path: '/store/setup',
         name: 'store.setup',
@@ -40,7 +41,82 @@ const routes = [
         meta: { requiresAuth: true, requiresSeller: true },
     },
 
-    // Admin Panel (Hidden Route)
+    // ══════════════════════════════════════════════════════════════
+    // BUYER PAGES
+    // ══════════════════════════════════════════════════════════════
+
+    // US-03 + US-04 — Product List & Search
+    {
+        path: '/products',
+        name: 'buyer.products',
+        component: () => import('@/pages/buyer/ProductListPage.vue'),
+        meta: { requiresAuth: true, requiresBuyer: true },
+    },
+
+    // US-05 — Product Detail
+    {
+        path: '/products/:id',
+        name: 'buyer.product.detail',
+        component: () => import('@/pages/buyer/ProductDetailPage.vue'),
+        meta: { requiresAuth: true, requiresBuyer: true },
+        props: true,
+    },
+
+    // US-06 — Order Form
+    {
+        path: '/order',
+        name: 'buyer.order',
+        component: () => import('@/pages/buyer/OrderFormPage.vue'),
+        meta: { requiresAuth: true, requiresBuyer: true },
+    },
+
+    // US-07 — Notifications
+    {
+        path: '/notifications',
+        name: 'buyer.notifications',
+        component: () => import('@/pages/buyer/NotificationPage.vue'),
+        meta: { requiresAuth: true, requiresBuyer: true },
+    },
+
+    // ══════════════════════════════════════════════════════════════
+    // SELLER PAGES
+    // ══════════════════════════════════════════════════════════════
+
+    // US-10 + US-12 — Seller Dashboard (pesanan masuk)
+    {
+        path: '/seller/dashboard',
+        name: 'seller.dashboard',
+        component: () => import('@/pages/seller/SellerDashboardPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true, requiresStoreComplete: true },
+    },
+
+    // US-11 — Manage Store Profile
+    {
+        path: '/seller/store',
+        name: 'seller.store',
+        component: () => import('@/pages/seller/ManageStorePage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true, requiresStoreComplete: true },
+    },
+
+    // Placeholder: Daftar produk milik seller (ditambah di iterasi berikutnya)
+    {
+        path: '/seller/products',
+        name: 'seller.products',
+        component: () => import('@/pages/seller/SellerDashboardPage.vue'), // sementara redirect ke dashboard
+        meta: { requiresAuth: true, requiresSeller: true },
+    },
+
+    // Placeholder: Tambah produk (ditambah di iterasi berikutnya)
+    {
+        path: '/seller/products/add',
+        name: 'seller.products.add',
+        component: () => import('@/pages/seller/SellerDashboardPage.vue'), // sementara
+        meta: { requiresAuth: true, requiresSeller: true },
+    },
+
+    // ══════════════════════════════════════════════════════════════
+    // ADMIN (hidden route)
+    // ══════════════════════════════════════════════════════════════
     {
         path: '/admin',
         name: 'admin',
@@ -48,7 +124,19 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
-    // Catch-all
+    // ══════════════════════════════════════════════════════════════
+    // LEGACY / LEGACY HOME
+    // ══════════════════════════════════════════════════════════════
+    {
+        path: '/home',
+        name: 'home',
+        redirect: () => {
+            const auth = useAuthStore()
+            return auth.isSeller ? '/seller/dashboard' : '/products'
+        },
+    },
+
+    // ── 404 catch-all ─────────────────────────────────────────────
     {
         path: '/:pathMatch(.*)*',
         redirect: '/login',
@@ -58,22 +146,33 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
+    // Selalu scroll ke atas saat navigasi
+    scrollBehavior: () => ({ top: 0, behavior: 'smooth' }),
 })
 
-// Guard: halaman guestOnly tidak bisa diakses setelah login
-// Guard: halaman requiresAuth tidak bisa diakses sebelum login
+// ── Navigation Guards ─────────────────────────────────────────
 router.beforeEach((to) => {
     const auth = useAuthStore()
 
+    // Halaman guestOnly tidak bisa diakses setelah login
     if (to.meta.guestOnly && auth.isLoggedIn) {
-        return { path: '/home' }
+        return auth.isSeller ? { path: '/seller/dashboard' } : { path: '/products' }
     }
 
+    // Halaman yang butuh login
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return { path: '/login' }
     }
 
-    // Seller yang belum isi profil toko wajib ke onboarding dulu
+    // Role guard: halaman buyer tidak untuk seller (dan sebaliknya)
+    if (to.meta.requiresBuyer && auth.isSeller) {
+        return { path: '/seller/dashboard' }
+    }
+    if (to.meta.requiresSeller && auth.isBuyer) {
+        return { path: '/products' }
+    }
+
+    // Seller yang belum isi profil toko → wajib onboarding dulu
     if (
         auth.isLoggedIn &&
         auth.isSeller &&
