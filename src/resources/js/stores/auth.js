@@ -41,6 +41,13 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('auth_user', JSON.stringify(data.data))
     }
 
+    async function updateProfile(payload) {
+        const { data } = await authApi.updateProfile(payload)
+        user.value = data.data
+        localStorage.setItem('auth_user', JSON.stringify(data.data))
+        return data
+    }
+
     // ── Internal helpers ─────────────────────────────────────────────
 
     function persistSession(userData, authToken) {
@@ -60,6 +67,6 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         user, token,
         isLoggedIn, isBuyer, isSeller, isAdmin,
-        register, login, logout, fetchCurrentUser,
+        register, login, logout, fetchCurrentUser, updateProfile,
     }
 })

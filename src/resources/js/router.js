@@ -37,7 +37,7 @@ const routes = [
         path: '/store/setup',
         name: 'store.setup',
         component: () => import('@/pages/store/StoreOnboardingPage.vue'),
-        meta: { requiresAuth: true, requiresSeller: true },
+        meta: { requiresAuth: true },
     },
 
     // Admin Panel (Hidden Route)
@@ -46,6 +46,14 @@ const routes = [
         name: 'admin',
         component: () => import('@/pages/admin/AdminPage.vue'),
         meta: { requiresAuth: true },
+    },
+
+    // Seller Dashboard
+    {
+        path: '/seller/dashboard',
+        name: 'seller.dashboard',
+        component: () => import('@/pages/store/SellerDashboardPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true },
     },
 
     // Catch-all
@@ -71,6 +79,11 @@ router.beforeEach((to) => {
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return { path: '/login' }
+    }
+
+    // Pastikan user adalah seller jika halaman membutuhkan role seller
+    if (to.meta.requiresSeller && !auth.isSeller) {
+        return { path: '/home' }
     }
 
     // Seller yang belum isi profil toko wajib ke onboarding dulu

@@ -29,19 +29,43 @@ class StoreController extends Controller
             ], 422);
         }
 
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/logos'), $fileName);
+            $logoPath = '/uploads/logos/' . $fileName;
+        }
+
+        $existingStore = Store::where('id_user', $request->user()->id_user)->first();
+        if (!$logoPath && $existingStore) {
+            $logoPath = $existingStore->logo;
+        }
+
         // updateOrCreate: jika sudah ada record untuk user ini, perbarui datanya;
         // jika belum ada, buat baru. Mencegah duplikat saat tombol diklik berkali-kali.
         Store::updateOrCreate(
             ['id_user' => $request->user()->id_user],   // kunci pencarian
             [
                 'store_name'          => $request->store_name,
+                'store_category'      => $request->category,
                 'description'         => $request->description,
                 'address'             => $request->address,
                 'operating_hours'     => $request->operating_hours,
                 'district'            => $request->district,
+                'logo'                => $logoPath,
                 'verification_status' => 'menunggu',
             ]
         );
+
+        // Update user roles to include 'seller'
+        $user = $request->user();
+        $roles = $user->roles ?? [];
+        if (!in_array('seller', $roles)) {
+            $roles[] = 'seller';
+            $user->roles = $roles;
+            $user->save();
+        }
 
         return response()->json(['success' => true, 'message' => 'Profil toko berhasil disimpan.'], 201);
     }

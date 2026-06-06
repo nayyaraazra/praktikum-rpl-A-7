@@ -94,4 +94,30 @@ class AuthController extends Controller
             'data'    => $request->user()->load('store'),
         ]);
     }
+
+    /**
+     * POST /api/auth/profile
+     * Update authenticated user's name and phone number.
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name'         => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number,' . $user->id_user . ',id_user'],
+        ], [
+            'phone_number.unique' => 'Nomor telepon sudah terdaftar.'
+        ]);
+
+        $user->name = $request->name;
+        $user->phone_number = $request->phone_number;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui.',
+            'data'    => $user->load('store')
+        ], 200);
+    }
 }

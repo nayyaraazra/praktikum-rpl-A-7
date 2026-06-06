@@ -80,39 +80,6 @@
         >Daftar</button>
       </div>
 
-      <!-- Role selector — tampil di kedua tab -->
-      <div style="margin-bottom:24px;">
-        <div class="role-label">Pilih Peran</div>
-        <div class="role-grid">
-          <button
-            id="rolePembeli"
-            type="button"
-            :aria-pressed="selectedRole === 'pembeli'"
-            :class="['role-card', selectedRole === 'pembeli' && 'selected']"
-            @click="selectRole('pembeli')"
-          >
-            <div class="role-icon">
-              <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-            </div>
-            <div class="role-name">Pembeli</div>
-            <div class="role-desc">Cari &amp; Pesan</div>
-          </button>
-          <button
-            id="rolePemilik"
-            type="button"
-            :aria-pressed="selectedRole === 'pemilik'"
-            :class="['role-card', selectedRole === 'pemilik' && 'selected']"
-            @click="selectRole('pemilik')"
-          >
-            <div class="role-icon">
-              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            </div>
-            <div class="role-name">Pemilik UMKM</div>
-            <div class="role-desc">Daftarkan toko</div>
-          </button>
-        </div>
-      </div>
-
       <!-- ── FORM MASUK ── -->
       <form v-if="activeTab === 'masuk'" novalidate @submit.prevent="handleLogin">
 
@@ -337,11 +304,6 @@ function switchTab(tab) {
   clearErrors()
 }
 
-function selectRole(role) {
-  selectedRole.value   = role
-  regForm.role         = role === 'pembeli' ? 'buyer' : 'seller'
-}
-
 async function handleLogin() {
   clearErrors()
   isLoading.value = true
@@ -350,13 +312,15 @@ async function handleLogin() {
   try {
     const result = await authStore.login(loginForm)
 
-    // AC US-09: notice jika toko belum terverifikasi
+    // Redirect to seller dashboard if user is a seller
+    const targetRoute = authStore.isSeller ? 'seller.dashboard' : 'home'
+
     if (result.data.notice) {
       showToast(result.data.notice, 'success', 4000)
-      setTimeout(() => router.push({ name: 'home' }), 2000)
+      setTimeout(() => router.push({ name: targetRoute }), 2000)
     } else {
       showToast('Berhasil masuk! Mengalihkan…', 'success')
-      setTimeout(() => router.push({ name: 'home' }), 1200)
+      setTimeout(() => router.push({ name: targetRoute }), 1200)
     }
   } catch (err) {
     handleApiError(err)
@@ -377,12 +341,12 @@ async function handleRegister() {
   try {
     await authStore.register(regForm)
 
+    const targetRoute = authStore.isSeller ? 'seller.dashboard' : 'home'
     const msg = selectedRole.value === 'pemilik'
       ? 'Akun dibuat! Toko Anda menunggu verifikasi admin (1×24 jam).'
       : 'Akun berhasil dibuat! Selamat datang di Kulaan.id.'
     showToast(msg, 'success', 4000)
-    setTimeout(() => router.push({ name: 'home' }), 1500)
-
+    setTimeout(() => router.push({ name: targetRoute }), 1500)
   } catch (err) {
     handleApiError(err)
   } finally {

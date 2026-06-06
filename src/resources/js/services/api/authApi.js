@@ -16,4 +16,8 @@ export const authApi = {
     me() {
         return apiClient.get('/auth/me')
     },
+
+    updateProfile(payload) {
+        return apiClient.post('/auth/profile', payload)
+    },
 }

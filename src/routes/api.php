@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me',      [AuthController::class, 'me']);
+        Route::post('profile', [AuthController::class, 'updateProfile']);
     });
 });
 
@@ -31,8 +33,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Routes
     Route::get('admin/dashboard', [AdminController::class, 'getDashboard']);
     Route::post('admin/stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
+
+    // Seller Routes
+    Route::prefix('seller')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\Api\SellerController::class, 'getDashboard']);
+        Route::get('store', [\App\Http\Controllers\Api\SellerController::class, 'getStore']);
+        Route::post('products', [\App\Http\Controllers\Api\SellerController::class, 'addProduct']);
+        Route::post('orders/{id_order}/status', [\App\Http\Controllers\Api\SellerController::class, 'updateOrderStatus']);
+        Route::get('categories', [\App\Http\Controllers\Api\SellerController::class, 'getCategories']);
+        Route::post('profile', [\App\Http\Controllers\Api\SellerController::class, 'updateProfile']);
+    });
 });
 
 // ── Produk (diisi nanti P7 — US-03 Search Products) ───────────────────────
-// Route::get('products', [ProductController::class, 'index']);
-// Route::get('products/{id}', [ProductController::class, 'show']);
+Route::get('products', [ProductController::class, 'index']);
+Route::get('products/{id}', [ProductController::class, 'show']);

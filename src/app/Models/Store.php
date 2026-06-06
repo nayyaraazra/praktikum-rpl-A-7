@@ -19,6 +19,7 @@ class Store extends Model
         'verification_status',
         'operating_hours',
         'district',
+        'logo',
     ];
 
     public function owner(): BelongsTo

@@ -567,9 +567,7 @@ async function handleSubmit() {
 }
 
 function handleSkip() {
-  // Simpan flag agar guard tahu user melewati onboarding
-  localStorage.setItem('store_onboarding_skipped', '1')
-  router.push({ name: 'seller.dashboard' })
+  router.push({ name: 'home' })
 }
 
 // ── Helpers ───────────────────────────────────────────────────
