@@ -4,27 +4,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Review extends Model
+class OrderItem extends Model
 {
-    protected $table = 'reviews';
-    protected $primaryKey = 'id_review';
+    protected $table = 'order_items';
+    protected $primaryKey = 'id_order_detail';
 
     protected $fillable = [
         'id_order',
-        'id_user',
         'id_product',
-        'rating',
-        'comment',
+        'quantity',
+        'price_at_purchase',
     ];
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'id_order', 'id_order');
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
     public function product(): BelongsTo

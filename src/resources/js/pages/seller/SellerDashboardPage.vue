@@ -200,22 +200,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { mockOrders } from '@/data/mockData'
+import { ref, computed, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import apiClient from '@/services/api'
 
-// ── Store info (would come from authStore in real app) ────────
-const storeName     = ref('Toko Batik Nusantara')
-const storeDistrict = ref('Jebres')
-const storeCategory = ref('Fashion & Batik')
-const storeStatus   = ref('disetujui') // menunggu | disetujui | dibatalkan
+const authStore = useAuthStore()
+
+// ── Store info from authStore ────────────────────────────────
+const store = computed(() => authStore.user?.store || {})
+const storeName     = computed(() => store.value.store_name || 'Nama Toko')
+const storeDistrict = computed(() => store.value.district || 'Jebres')
+const storeCategory = computed(() => getCategoryLabel(store.value.store_category))
+const storeStatus   = computed(() => store.value.verification_status || 'menunggu')
 
 const storeStatusLabel = computed(() => {
   const map = { menunggu: 'Menunggu Verifikasi', disetujui: 'Toko Aktif', dibatalkan: 'Ditolak' }
   return map[storeStatus.value] || storeStatus.value
 })
 
-// ── Metrics ───────────────────────────────────────────────────
-const orders = ref(mockOrders || generateMockOrders())
+// ── Metrics & Orders ──────────────────────────────────────────
+const orders = ref([])
+const loading = ref(false)
+
+async function fetchSellerOrders() {
+  loading.value = true
+  try {
+    const { data } = await apiClient.get('/orders/seller')
+    orders.value = data.data
+  } catch (err) {
+    console.error('Gagal memuat pesanan masuk:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchSellerOrders()
+})
 
 const metrics = computed(() => ({
   totalOrders:     orders.value.length,
@@ -247,20 +268,39 @@ const filteredOrders = computed(() => {
       o.items.some(i => i.name.toLowerCase().includes(q))
     )
   }
-  return result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  return result
 })
 
 // ── Actions ───────────────────────────────────────────────────
-function handleStatusChange(order) {
-  // Would call API in real app
-  console.log(`Order #${order.id} status updated to: ${order.status}`)
+async function handleStatusChange(order) {
+  try {
+    await apiClient.put(`/orders/${order.id}/status`, {
+      status: order.status
+    })
+    fetchSellerOrders()
+  } catch (err) {
+    console.error('Gagal mengubah status pesanan:', err)
+  }
 }
 
 function getWAMessage(order) {
-  return `Halo ${order.buyer_name}, pesanan Anda #${order.id.toString().padStart(4,'0')} di Kulaan.id sedang ${getStatusLabel(order.status)}. Total: Rp ${formatPrice(order.total)}. Terima kasih!`
+  return `Halo ${order.buyer_name}, pesanan Anda #${order.id.toString()} di Kulaan.id sedang ${getStatusLabel(order.status)}. Total: Rp ${formatPrice(order.total)}. Terima kasih!`
 }
 
 // ── Helpers ───────────────────────────────────────────────────
+function getCategoryLabel(value) {
+  const map = {
+    makanan_minuman: 'Makanan & Minuman',
+    fashion_batik:   'Fashion & Batik',
+    kerajinan:       'Kerajinan Tangan',
+    elektronik:      'Elektronik & Aksesori',
+    kecantikan:      'Kecantikan & Perawatan',
+    pertanian:       'Pertanian & Hasil Bumi',
+    jasa:            'Jasa & Layanan',
+    lainnya:         'Lainnya',
+  }
+  return map[value] || value || 'Toko'
+}
 function getStatusLabel(status) {
   const map = { menunggu:'Menunggu', diproses:'Diproses', selesai:'Selesai', dibatalkan:'Dibatalkan' }
   return map[status] || status
@@ -282,39 +322,6 @@ function formatTime(dateStr) {
 function getCategoryEmoji(cat) {
   const map = { makanan_minuman:'🍱', fashion_batik:'👗', kerajinan:'🧶', kecantikan:'💄', pertanian:'🌾', jasa:'🛠️' }
   return map[cat] || '📦'
-}
-
-// Fallback mock orders jika mockData.js belum punya mockOrders
-function generateMockOrders() {
-  return [
-    {
-      id: 1001, buyer_name: 'Budi Santoso', buyer_phone: '628123456789',
-      shipping_address: 'Jl. Adi Sucipto No. 10, Jebres',
-      items: [{ product_id: 1, name: 'Batik Tulis Jebres', category: 'fashion_batik', qty: 2, price: 185000 }],
-      total: 370000, status: 'menunggu', payment_method: 'transfer',
-      note: 'Tolong dikemas dengan bubble wrap ya.',
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-    },
-    {
-      id: 1002, buyer_name: 'Dewi Rahayu', buyer_phone: '628987654321',
-      shipping_address: 'Jl. Surya No. 5, Jebres',
-      items: [
-        { product_id: 2, name: 'Kue Klepon Pandan', category: 'makanan_minuman', qty: 3, price: 25000 },
-        { product_id: 3, name: 'Es Teh Jebres', category: 'makanan_minuman', qty: 5, price: 8000 },
-      ],
-      total: 115000, status: 'diproses', payment_method: 'cod',
-      note: '',
-      created_at: new Date(Date.now() - 86400000).toISOString(),
-    },
-    {
-      id: 1003, buyer_name: 'Ahmad Fauzi', buyer_phone: '628555123456',
-      shipping_address: 'Jl. Kebangkitan No. 3, Mojosongo',
-      items: [{ product_id: 4, name: 'Kerajinan Bambu', category: 'kerajinan', qty: 1, price: 85000 }],
-      total: 85000, status: 'selesai', payment_method: 'transfer',
-      note: '',
-      created_at: new Date(Date.now() - 172800000).toISOString(),
-    },
-  ]
 }
 </script>
 

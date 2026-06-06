@@ -160,26 +160,44 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { mockProducts, mockReviews } from '@/data/mockData'
+import apiClient from '@/services/api'
 
 const router = useRouter()
 const route  = useRoute()
 
 const productId = Number(route.params.id)
-const product   = mockProducts.find(p => p.id === productId) || null
-const reviews   = mockReviews.filter(r => r.product_id === productId)
-
+const product   = ref(null)
+const reviews   = ref([])
+const loading   = ref(false)
 const showFullDesc = ref(false)
 
 const stockPercent = computed(() => {
-  if (!product) return 0
+  if (!product.value) return 0
   // Anggap max stok 100 untuk visual
-  return Math.min(100, (product.stock / 100) * 100)
+  return Math.min(100, (product.value.stock / 100) * 100)
+})
+
+async function fetchProductDetail() {
+  loading.value = true
+  try {
+    const { data } = await apiClient.get(`/products/${productId}`)
+    product.value = data.data.product
+    reviews.value = data.data.reviews
+  } catch (err) {
+    console.error('Gagal memuat detail produk:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchProductDetail()
 })
 
 function formatPrice(n) {
+  if (n === undefined || n === null) return '0'
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 function formatDate(d) {
@@ -190,7 +208,9 @@ function getCategoryEmoji(cat) {
   return map[cat] || '📦'
 }
 function goToOrder() {
-  if (product) router.push({ name: 'buyer.order', params: { productId: product.id } })
+  if (product.value) {
+    router.push({ name: 'buyer.order', query: { productId: product.value.id } })
+  }
 }
 </script>
 

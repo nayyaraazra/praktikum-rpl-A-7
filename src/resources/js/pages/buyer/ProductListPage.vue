@@ -219,20 +219,24 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { mockProducts, mockCategories, mockNotifications } from '@/data/mockData'
+import apiClient from '@/services/api'
+import { mockCategories } from '@/data/mockData'
 
 const router = useRouter()
 
 // State
-const searchQuery     = ref('')
+const products         = ref([])
+const loading          = ref(false)
+const searchQuery      = ref('')
 const selectedCategory = ref('')
-const priceMin        = ref(null)
-const priceMax        = ref(null)
-const filterInStock   = ref(false)
-const minRating       = ref(0)
-const sortBy          = ref('default')
-const showFilterPanel = ref(false)
-const sortOpen        = ref(false)
+const priceMin         = ref(null)
+const priceMax         = ref(null)
+const filterInStock    = ref(false)
+const minRating        = ref(0)
+const sortBy           = ref('default')
+const showFilterPanel  = ref(false)
+const sortOpen         = ref(false)
+const unreadCount      = ref(0)
 
 const categories = mockCategories
 const sortOptions = [
@@ -243,83 +247,72 @@ const sortOptions = [
   { value: 'newest',      label: 'Terbaru' },
 ]
 
-const unreadCount = computed(() =>
-  mockNotifications.filter(n => !n.is_read).length
-)
+// Fetch products from backend API (US-03 & US-04)
+async function fetchProducts() {
+  loading.value = true
+  try {
+    const params = {}
+    if (searchQuery.value.trim()) params.search = searchQuery.value
+    if (selectedCategory.value) params.category = selectedCategory.value
+    if (priceMin.value !== null && priceMin.value !== '') params.price_min = priceMin.value
+    if (priceMax.value !== null && priceMax.value !== '') params.price_max = priceMax.value
+    if (filterInStock.value) params.in_stock = true
+    if (minRating.value > 0) params.min_rating = minRating.value
+    if (sortBy.value && sortBy.value !== 'default') params.sort_by = sortBy.value
 
-// Filter & sort logic
-const filteredProducts = computed(() => {
-  let result = [...mockProducts]
-
-  // Search
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase()
-    result = result.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.store_name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q)
-    )
+    const { data } = await apiClient.get('/products', { params })
+    products.value = data.data
+  } catch (err) {
+    console.error('Gagal memuat produk:', err)
+  } finally {
+    loading.value = false
   }
+}
 
-  // Category
-  if (selectedCategory.value) {
-    result = result.filter(p => p.category === selectedCategory.value)
+// Fetch unread notifications count (US-07)
+async function fetchNotificationsCount() {
+  try {
+    const { data } = await apiClient.get('/notifications')
+    unreadCount.value = data.data.filter(n => !n.is_read).length
+  } catch (err) {
+    console.error('Gagal memuat count notifikasi:', err)
   }
+}
 
-  // Price range
-  if (priceMin.value) {
-    result = result.filter(p => p.price >= priceMin.value)
-  }
-  if (priceMax.value) {
-    result = result.filter(p => p.price <= priceMax.value)
-  }
-
-  // In stock
-  if (filterInStock.value) {
-    result = result.filter(p => p.stock > 0)
-  }
-
-  // Min rating
-  if (minRating.value > 0) {
-    result = result.filter(p => p.rating >= minRating.value)
-  }
-
-  // Sort
-  switch (sortBy.value) {
-    case 'price_asc':
-      result.sort((a, b) => a.price - b.price); break
-    case 'price_desc':
-      result.sort((a, b) => b.price - a.price); break
-    case 'rating_desc':
-      result.sort((a, b) => b.rating - a.rating); break
-    default:
-      break
-  }
-
-  return result
+onMounted(() => {
+  fetchProducts()
+  fetchNotificationsCount()
 })
+
+const filteredProducts = computed(() => products.value)
 
 // Actions
 function handleSearch() {
   sortOpen.value = false
+  fetchProducts()
 }
 function clearSearch() {
   searchQuery.value = ''
+  fetchProducts()
 }
 function selectCategory(val) {
   selectedCategory.value = val
   showFilterPanel.value = false
   sortOpen.value = false
+  fetchProducts()
 }
 function applyFilters() {
   sortOpen.value = false
+  fetchProducts()
 }
 function setMinRating(r) {
   minRating.value = minRating.value === r ? 0 : r
+  fetchProducts()
 }
 function selectSort(val) {
   sortBy.value = val
   sortOpen.value = false
+  fetchProducts()
 }
 function resetFilters() {
   filterInStock.value = false
@@ -327,6 +320,7 @@ function resetFilters() {
   priceMin.value = null
   priceMax.value = null
   showFilterPanel.value = false
+  fetchProducts()
 }
 function resetAll() {
   searchQuery.value = ''
@@ -334,7 +328,7 @@ function resetAll() {
   resetFilters()
 }
 function goToDetail(id) {
-  router.push({ name: 'buyer.product', params: { id } })
+  router.push({ name: 'buyer.product.detail', params: { id } })
 }
 
 // Helpers

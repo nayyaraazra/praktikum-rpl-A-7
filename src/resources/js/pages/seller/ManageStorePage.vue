@@ -311,23 +311,51 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { mockStore, mockProducts } from '@/data/mockData'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import apiClient from '@/services/api'
+
+const authStore = useAuthStore()
 
 // ── State ─────────────────────────────────────────────────────
 const isEditing = ref(false)
 const isSaving  = ref(false)
 const logoPreview = ref(null)
+const products = ref([])
 
-const store = reactive({ ...mockStore })
+const store = computed(() => authStore.user?.store || {})
 
 const form = reactive({
-  store_name:      store.store_name,
-  store_category:  store.store_category,
-  description:     store.description || '',
-  district:        store.district,
-  address:         store.address,
-  operating_hours: store.operating_hours,
+  store_name:      '',
+  store_category:  '',
+  description:     '',
+  district:        '',
+  address:         '',
+  operating_hours: '',
+})
+
+function initForm() {
+  form.store_name      = store.value.store_name || ''
+  form.store_category  = store.value.store_category || ''
+  form.description     = store.value.description || ''
+  form.district        = store.value.district || ''
+  form.address         = store.value.address || ''
+  form.operating_hours = store.value.operating_hours || ''
+}
+
+async function fetchStoreProducts() {
+  if (!store.value.id_store) return
+  try {
+    const { data } = await apiClient.get('/products')
+    products.value = data.data.filter(p => p.store_id === store.value.id_store)
+  } catch (err) {
+    console.error('Gagal memuat produk toko:', err)
+  }
+}
+
+onMounted(() => {
+  initForm()
+  fetchStoreProducts()
 })
 
 const errors = reactive({})
@@ -336,7 +364,7 @@ const toast = reactive({ visible: false, message: '', type: '' })
 
 // ── Computed ──────────────────────────────────────────────────
 const storeProducts = computed(() =>
-  mockProducts.filter(p => p.store_id === store.id_store).slice(0, 4)
+  products.value.slice(0, 4)
 )
 
 // ── Data ──────────────────────────────────────────────────────
@@ -371,13 +399,7 @@ const statusLabels = {
 
 // ── Methods ───────────────────────────────────────────────────
 function startEdit() {
-  // Sync form ke data store terkini
-  form.store_name      = store.store_name
-  form.store_category  = store.store_category
-  form.description     = store.description || ''
-  form.district        = store.district
-  form.address         = store.address
-  form.operating_hours = store.operating_hours
+  initForm()
   clearErrors()
   isEditing.value = true
 }
@@ -414,7 +436,7 @@ function validate() {
   return valid
 }
 
-function handleSave() {
+async function handleSave() {
   if (!validate()) {
     showToast('Periksa kembali isian form.', 'error')
     return
@@ -422,20 +444,28 @@ function handleSave() {
 
   isSaving.value = true
 
-  // Simulasi API call — nanti ganti dengan apiClient.post('/store/setup', ...)
-  setTimeout(() => {
-    // Update local store state
-    store.store_name      = form.store_name
-    store.store_category  = form.store_category
-    store.description     = form.description
-    store.district        = form.district
-    store.address         = form.address
-    store.operating_hours = form.operating_hours
+  try {
+    const { data } = await apiClient.post('/store/profile', {
+      store_name:      form.store_name,
+      store_category:  form.store_category,
+      description:     form.description,
+      district:        form.district,
+      address:         form.address,
+      operating_hours: form.operating_hours,
+    })
 
-    isSaving.value  = false
+    // Refresh auth user data
+    await authStore.fetchCurrentUser()
+    
     isEditing.value = false
     showToast('Profil toko berhasil diperbarui!', 'success')
-  }, 900)
+    fetchStoreProducts()
+  } catch (err) {
+    console.error('Gagal memperbarui profil toko:', err)
+    showToast(err.response?.data?.message || 'Gagal memperbarui profil toko.', 'error')
+  } finally {
+    isSaving.value = false
+  }
 }
 
 function handleLogoChange(e) {

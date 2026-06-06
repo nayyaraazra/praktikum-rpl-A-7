@@ -195,32 +195,47 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { mockProducts } from '@/data/mockData'
+import apiClient from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route  = useRoute()
+const authStore = useAuthStore()
 
 // ── Cart State ────────────────────────────────────────────────
-// Ambil produk dari route query atau gunakan mock data
 const cartItems = ref([])
 
-onMounted(() => {
+onMounted(async () => {
+  // Pre-fill buyer name if user is logged in
+  if (authStore.user) {
+    form.buyer_name = authStore.user.name || ''
+  }
+
   const productId = Number(route.params.productId || route.query.productId)
   if (productId) {
-    const product = mockProducts.find(p => p.id === productId)
-    if (product) {
-      cartItems.value = [{
-        ...product,
-        qty: product.min_order || 1
-      }]
+    try {
+      const { data } = await apiClient.get(`/products/${productId}`)
+      const product = data.data.product
+      if (product) {
+        cartItems.value = [{
+          ...product,
+          qty: product.min_order || 1
+        }]
+      }
+    } catch (err) {
+      console.error('Gagal memuat produk untuk order:', err)
     }
   } else {
-    // Simulasi cart multi-produk jika tidak ada product id spesifik
-    const sampleItems = mockProducts.slice(0, 2).map(p => ({
-      ...p,
-      qty: p.min_order || 1
-    }))
-    cartItems.value = sampleItems
+    try {
+      const { data } = await apiClient.get('/products')
+      const sampleItems = data.data.slice(0, 2).map(p => ({
+        ...p,
+        qty: p.min_order || 1
+      }))
+      cartItems.value = sampleItems
+    } catch (err) {
+      console.error('Gagal memuat sampel produk untuk order:', err)
+    }
   }
 })
 
@@ -290,15 +305,32 @@ async function handleSubmit() {
   if (!validate()) return
 
   isLoading.value = true
-  // Simulasi pengiriman ke API
-  await new Promise(r => setTimeout(r, 1400))
-  isLoading.value   = false
-  submitSuccess.value = true
-
-  // Redirect ke halaman notifikasi setelah 2 detik
-  setTimeout(() => {
-    router.push({ name: 'buyer.notifications' })
-  }, 2000)
+  globalError.value = ''
+  
+  try {
+    const payload = {
+      shipping_address: form.shipping_address,
+      payment_method: form.payment_method,
+      note: form.note,
+      items: cartItems.value.map(item => ({
+        id: item.id,
+        qty: item.qty
+      }))
+    }
+    
+    await apiClient.post('/orders', payload)
+    submitSuccess.value = true
+    
+    // Redirect ke halaman notifikasi setelah 2 detik
+    setTimeout(() => {
+      router.push({ name: 'buyer.notifications' })
+    }, 2000)
+  } catch (err) {
+    console.error('Gagal mengirim pesanan:', err)
+    globalError.value = err.response?.data?.message || 'Gagal mengirim pesanan. Silakan coba lagi.'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // ── Helpers ───────────────────────────────────────────────────
