@@ -1,54 +1,16 @@
 <template>
-  <div style="display:flex;min-height:100vh;align-items:stretch;">
+  <div class="onboarding-container">
+    <div class="top-nav">
+      <button type="button" @click="handleSkip" class="btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Kembali ke Dashboard
+      </button>
+    </div>
 
     <!-- ══════════════════════════════════════════════════
-         KIRI — Brand Panel (biru) — sama persis dengan AuthPage
-    ══════════════════════════════════════════════════ -->
-    <aside class="brand-panel">
-      <div class="brand-circle brand-circle--top"></div>
-      <div class="brand-circle brand-circle--bottom"></div>
-
-      <!-- Logo area -->
-      <div style="position:relative;z-index:1;">
-        <div class="brand-badge">
-          <div class="pulse-dot" style="width:7px;height:7px;background:#6EE7B7;border-radius:50%;"></div>
-          <span style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:500;letter-spacing:0.3px;">
-            Katalog UMKM Lokal Jebres
-          </span>
-        </div>
-        <div class="brand-wordmark">
-          KULAAN<span style="color:rgba(255,255,255,0.45);">.id</span>
-        </div>
-        <div class="brand-tagline">
-          Temukan produk lokal, dukung UMKM sekitar.
-        </div>
-      </div>
-
-      <!-- Step progress -->
-      <div style="position:relative;z-index:1;">
-        <div class="steps-label">Langkah Pendaftaran</div>
-        <div v-for="(step, i) in steps" :key="i" class="step-item">
-          <div :class="['step-dot', step.status]">
-            <svg v-if="step.status === 'done'" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            <span v-else>{{ i + 1 }}</span>
-          </div>
-          <div>
-            <div :class="['step-title', step.status]">{{ step.title }}</div>
-            <div class="step-desc">{{ step.desc }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="brand-footer" style="position:relative;z-index:1;">
-        <p>© 2026 <strong>Kulaan.id</strong> — Kelurahan Jebres, Surakarta</p>
-      </div>
-    </aside>
-
-    <!-- ══════════════════════════════════════════════════
-         KANAN — Form Panel (putih)
-    ══════════════════════════════════════════════════ -->
-    <main class="form-panel">
+         Form Panel (putih) - Lebar dan Terpusat
+     ══════════════════════════════════════════════════ -->
+    <main class="form-panel-wide">
 
       <!-- Header -->
       <div class="form-header">
@@ -312,9 +274,6 @@
 
         <!-- Tombol submit -->
         <div class="action-row">
-          <button type="button" class="btn-skip" @click="handleSkip">
-            Lewati, isi nanti
-          </button>
           <button type="submit" class="btn-primary" :disabled="isLoading">
             <span v-if="isLoading" style="display:flex;align-items:center;gap:8px;">
               <svg style="width:16px;height:16px;animation:spin 1s linear infinite;" viewBox="0 0 24 24" fill="none">
@@ -598,107 +557,66 @@ function showToast(msg, type = '', duration = 3200) {
 </script>
 
 <style scoped>
-/* ── Brand panel — identik dengan AuthPage ─────────────────── */
-.brand-panel {
-  flex: 1 1 480px;
-  background: var(--blue-600);
+/* ── Layout & Container ───────────────────────────────────── */
+.onboarding-container {
+  min-height: 100vh;
+  background-color: var(--gray-50, #F8F9FB);
+  background-image: radial-gradient(var(--gray-200, #DDE1E9) 1px, transparent 1px);
+  background-size: 20px 20px;
+  padding: 40px 24px 80px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 48px 56px;
-  position: relative;
-  overflow: hidden;
-  min-height: 100vh;
+  align-items: center;
+  width: 100%;
 }
-.brand-circle {
-  position: absolute;
-  border-radius: 50%;
+
+.top-nav {
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-start;
 }
-.brand-circle--top {
-  top: -120px; right: -120px;
-  width: 480px; height: 480px;
-  background: rgba(255,255,255,0.05);
-}
-.brand-circle--bottom {
-  bottom: -80px; left: -80px;
-  width: 320px; height: 320px;
-  background: rgba(255,255,255,0.04);
-}
-.brand-badge {
-  display: inline-flex;
+
+.btn-back {
+  display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 100px;
-  padding: 6px 14px;
-  margin-bottom: 40px;
+  background: #fff;
+  border: 1.5px solid var(--gray-200, #DDE1E9);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600, #5F6A7D);
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.15s ease;
 }
-.brand-wordmark {
-  font-size: 52px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -1.5px;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.brand-tagline {
-  font-family: 'Lora', serif;
-  font-style: italic;
-  color: rgba(255,255,255,0.65);
-  font-size: 16px;
-  margin-bottom: 48px;
-}
-.brand-footer {
-  border-top: 1px solid rgba(255,255,255,0.12);
-  padding-top: 24px;
-}
-.brand-footer p   { font-size: 12px; color: rgba(255,255,255,0.4); }
-.brand-footer strong { color: rgba(255,255,255,0.65); font-weight: 600; }
 
-/* ── Step progress ─────────────────────────────────────────── */
-.steps-label {
-  font-size: 11px; font-weight: 600;
-  color: rgba(255,255,255,0.45);
-  text-transform: uppercase; letter-spacing: 0.8px;
-  margin-bottom: 16px;
+.btn-back:hover {
+  color: var(--blue-600, #185FA5);
+  border-color: var(--blue-200, #C8DBED);
+  background: var(--blue-50, #E8F1FB);
+  box-shadow: 0 4px 12px rgba(24, 95, 165, 0.08);
 }
-.step-item {
-  display: flex; align-items: flex-start; gap: 14px;
-  margin-bottom: 22px;
-}
-.step-dot {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
+
+.btn-back svg {
   flex-shrink: 0;
-  transition: all 0.2s;
 }
-.step-dot.done   { background: #6EE7B7; color: #064E3B; }
-.step-dot.active { background: #fff; color: var(--blue-700); box-shadow: 0 0 0 4px rgba(255,255,255,0.2); }
-.step-dot.pending { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); border: 1.5px solid rgba(255,255,255,0.2); }
-.step-dot svg {
-  width: 15px; height: 15px;
-  fill: none; stroke: currentColor;
-  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
-}
-.step-title.done   { color: rgba(255,255,255,0.7); }
-.step-title.active { color: #fff; font-weight: 700; }
-.step-title.pending { color: rgba(255,255,255,0.35); }
-.step-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; transition: color 0.2s; }
-.step-desc  { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.4; }
 
 /* ── Form panel ─────────────────────────────────────────────── */
-.form-panel {
-  flex: 0 0 580px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 52px 60px 60px;
+.form-panel-wide {
+  width: 100%;
+  max-width: 680px;
   background: #fff;
-  overflow-y: auto;
-  max-height: 100vh;
+  border-radius: 16px;
+  border: 1px solid var(--gray-200, #DDE1E9);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.02);
+  padding: 40px 48px 48px;
+  box-sizing: border-box;
 }
 
 /* Form header */
@@ -1004,8 +922,7 @@ function showToast(msg, type = '', duration = 3200) {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .brand-panel { display: none; }
-  .form-panel  { flex: 1; padding: 32px 20px 48px; max-height: unset; }
+  .form-panel-wide { padding: 32px 20px 48px; }
   .time-row { flex-direction: column; }
   .time-separator { display: none; }
   .action-row { flex-direction: column-reverse; }
