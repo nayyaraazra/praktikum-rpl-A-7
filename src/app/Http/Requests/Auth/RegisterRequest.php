@@ -30,7 +30,6 @@ class RegisterRequest extends FormRequest
     {
         return [
             'email.email'         => 'Format email tidak valid.',
-            'email.unique'        => 'Email sudah terdaftar.',
             'phone_number.unique' => 'Nomor telepon sudah terdaftar.',
             'password.confirmed'  => 'Konfirmasi password tidak cocok.',
             'password.min'        => 'Password minimal 8 karakter.',

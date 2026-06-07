@@ -21,7 +21,15 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $result = $this->authService->register($request->validated());
+        try {
+            $result = $this->authService->register($request->validated());
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors'  => ['email' => [$e->getMessage()]],
+            ], 422);
+        }
 
         return response()->json([
             'success' => true,
@@ -92,6 +100,30 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $request->user()->load('store'),
+        ]);
+    }
+
+    /**
+     * PUT /api/auth/profile
+     * Update user profile (name, email, phone_number, address).
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'         => ['required', 'string', 'max:255'],
+            'email'        => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id_user . ',id_user'],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number,' . $user->id_user . ',id_user'],
+            'address'      => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui.',
+            'data'    => $user->fresh()->load('store'),
         ]);
     }
 }

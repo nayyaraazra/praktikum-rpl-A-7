@@ -80,8 +80,8 @@
         >Daftar</button>
       </div>
 
-      <!-- Role selector — tampil di kedua tab -->
-      <div style="margin-bottom:24px;">
+      <!-- Role selector — hanya untuk daftar -->
+      <div v-if="activeTab === 'daftar'" style="margin-bottom:24px;">
         <div class="role-label">Pilih Peran</div>
         <div class="role-grid">
           <button
@@ -276,6 +276,30 @@
 
     </main>
 
+    <!-- Role picker modal — dual-role user -->
+    <div v-if="showRolePicker" class="role-picker-overlay">
+      <div class="role-picker-modal">
+        <h2 class="role-picker-title">Pilih Peran</h2>
+        <p class="role-picker-subtitle">Akun Anda memiliki dua peran. Pilih cara masuk:</p>
+        <div class="role-picker-grid">
+          <button class="role-picker-card" @click="pickRole('buyer')">
+            <div class="role-picker-icon">
+              <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            </div>
+            <div class="role-picker-name">Pembeli</div>
+            <div class="role-picker-desc">Cari &amp; Pesan produk</div>
+          </button>
+          <button class="role-picker-card" @click="pickRole('seller')">
+            <div class="role-picker-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div class="role-picker-name">Pemilik UMKM</div>
+            <div class="role-picker-desc">Kelola toko Anda</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast -->
     <div :class="['toast', toastType, toastVisible && 'show']" role="alert" aria-live="polite">
       {{ toastMsg }}
@@ -299,6 +323,10 @@ const isLoading    = ref(false)
 const showLoginPw  = ref(false)
 const showRegPw    = ref(false)
 const errors       = reactive({})
+
+// Role picker untuk dual-role user
+const showRolePicker   = ref(false)
+const pendingLoginData = ref(null)
 
 const loginForm = reactive({ email: '', password: '' })
 const regForm   = reactive({
@@ -349,20 +377,38 @@ async function handleLogin() {
 
   try {
     const result = await authStore.login(loginForm)
+    const u = result.data.user
 
-    // AC US-09: notice jika toko belum terverifikasi
+    // Dual-role (buyer + seller): tampilkan role picker
+    const roles = u?.roles ?? []
+    if (roles.includes('buyer') && roles.includes('seller')) {
+      pendingLoginData.value = result
+      showToast('Berhasil masuk! Pilih peran Anda.', 'success')
+      showRolePicker.value = true
+      return
+    }
+
+    // Single role: redirect langsung
+    const target = roles.includes('seller') ? '/seller/dashboard' : roles.includes('admin') ? '/admin' : '/buyer/dashboard'
     if (result.data.notice) {
       showToast(result.data.notice, 'success', 4000)
-      setTimeout(() => router.push({ name: 'home' }), 2000)
+      setTimeout(() => router.push(target), 2000)
     } else {
       showToast('Berhasil masuk! Mengalihkan…', 'success')
-      setTimeout(() => router.push({ name: 'home' }), 1200)
+      setTimeout(() => router.push(target), 1200)
     }
   } catch (err) {
     handleApiError(err)
   } finally {
     isLoading.value = false
   }
+}
+
+function pickRole(role) {
+  const target = role === 'seller' ? '/seller/dashboard' : '/buyer/dashboard'
+  showRolePicker.value = false
+  showToast('Berhasil masuk! Mengalihkan…', 'success')
+  setTimeout(() => router.push(target), 200)
 }
 
 async function handleRegister() {
@@ -381,7 +427,8 @@ async function handleRegister() {
       ? 'Akun dibuat! Toko Anda menunggu verifikasi admin (1×24 jam).'
       : 'Akun berhasil dibuat! Selamat datang di Kulaan.id.'
     showToast(msg, 'success', 4000)
-    setTimeout(() => router.push({ name: 'home' }), 1500)
+    const regTarget = selectedRole.value === 'pemilik' ? '/seller/dashboard' : '/buyer/dashboard'
+    setTimeout(() => router.push(regTarget), 1500)
 
   } catch (err) {
     handleApiError(err)
@@ -721,6 +768,60 @@ function showToast(msg, type = '', duration = 3200) {
 
 /* Spin keyframe untuk loading button */
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Role picker modal ──────────────────────────────────────── */
+.role-picker-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.role-picker-modal {
+  background: #fff; border-radius: 16px;
+  padding: 40px 36px; max-width: 420px; width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.role-picker-title {
+  font-size: 22px; font-weight: 700; color: var(--gray-800);
+  margin: 0 0 4px;
+}
+.role-picker-subtitle {
+  font-size: 14px; color: var(--gray-400);
+  margin: 0 0 28px;
+}
+.role-picker-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.role-picker-card {
+  border: 2px solid #E5E7EB; border-radius: 12px;
+  padding: 24px 16px; cursor: pointer;
+  background: #fff; transition: all 0.18s;
+  font-family: inherit;
+}
+.role-picker-card:hover {
+  border-color: var(--blue-500);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.12);
+  transform: translateY(-2px);
+}
+.role-picker-icon {
+  width: 48px; height: 48px;
+  background: #EFF6FF; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+}
+.role-picker-icon svg {
+  width: 24px; height: 24px;
+  fill: none; stroke: var(--blue-600);
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+}
+.role-picker-name {
+  font-size: 15px; font-weight: 700; color: var(--gray-800);
+  margin-bottom: 4px;
+}
+.role-picker-desc {
+  font-size: 12px; color: var(--gray-400);
+}
 
 /* ── Responsive: sembunyikan brand panel di layar kecil ──────── */
 @media (max-width: 768px) {

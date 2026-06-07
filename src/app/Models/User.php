@@ -19,10 +19,15 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'roles',
+        'address',
     ];
 
     protected $hidden = [
         'password',
+    ];
+
+    protected $attributes = [
+        'roles' => '["buyer"]', // default role jika tidak diisi
     ];
 
     protected $casts = [

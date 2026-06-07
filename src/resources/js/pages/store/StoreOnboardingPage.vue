@@ -378,14 +378,19 @@ const logoInput   = ref(null)
 
 // ── Data options ──────────────────────────────────────────────
 const categories = [
-  { value: 'makanan_minuman',  icon: '🍱', label: 'Makanan & Minuman' },
-  { value: 'fashion_batik',    icon: '👗', label: 'Fashion & Batik' },
-  { value: 'kerajinan',        icon: '🧶', label: 'Kerajinan Tangan' },
-  { value: 'elektronik',       icon: '📱', label: 'Elektronik & Aksesori' },
-  { value: 'kecantikan',       icon: '💄', label: 'Kecantikan & Perawatan' },
-  { value: 'pertanian',        icon: '🌾', label: 'Pertanian & Hasil Bumi' },
-  { value: 'jasa',             icon: '🛠️', label: 'Jasa & Layanan' },
-  { value: 'lainnya',          icon: '📦', label: 'Lainnya' },
+  { value: 'pakaian',                   icon: '👕', label: 'Pakaian' },
+  { value: 'fashion & aksesoris',        icon: '🕶️', label: 'Fashion & Aksesoris' },
+  { value: 'makanan & minuman',          icon: '🍱', label: 'Makanan & Minuman' },
+  { value: 'perawatan & kecantikan',     icon: '💄', label: 'Perawatan & Kecantikan' },
+  { value: 'perlengkapan rumah',         icon: '🏠', label: 'Perlengkapan Rumah' },
+  { value: 'hobi & koleksi',             icon: '🎨', label: 'Hobi & Koleksi' },
+  { value: 'kesehatan',                  icon: '💊', label: 'Kesehatan' },
+  { value: 'olahraga & outdoor',         icon: '🏕️', label: 'Olahraga & Outdoor' },
+  { value: 'buku & alat tulis',          icon: '📚', label: 'Buku & Alat Tulis' },
+  { value: 'kerajinan tangan',           icon: '🧶', label: 'Kerajinan Tangan' },
+  { value: 'sembako & kebutuhan pokok',  icon: '🌾', label: 'Sembako & Kebutuhan Pokok' },
+  { value: 'Jasa & Layanan',             icon: '🛠️', label: 'Jasa & Layanan' },
+  { value: 'Katering',                   icon: '🍲', label: 'Katering' },
 ]
 
 const districts = [

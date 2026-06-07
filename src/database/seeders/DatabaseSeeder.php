@@ -8,18 +8,22 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
+use WithoutModelEvents;
+ 
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Admin user
+        User::firstOrCreate(
+            ['email' => 'admin@kulaan.id'],
+            [
+                'name'         => 'Admin Kulaan',
+                'password'     => Hash::make('password'),
+                'phone_number' => '081200000000',
+                'roles'        => ['admin'],
+            ]
+        );
+ 
+        // Jalankan seeder pesanan (termasuk seller + buyer + produk dummy)
+        $this->call(OrderSeeder::class);
     }
 }

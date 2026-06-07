@@ -12,44 +12,20 @@ class AuthService
 {
     /**
      * US-01 (buyer) & US-08 step-1 (seller):
-     * Buat akun baru, kembalikan user + token Sanctum.
+     * Buat akun baru — jika email sudah terdaftar, tambahkan role ke user
+     * yang sudah ada agar satu orang bisa memiliki dua peran.
+     *
+     * @throws \RuntimeException user sudah memiliki role tsb
      */
     public function register(array $data): array
     {
-        $existingUser = User::where('email', $data['email'])->first();
-
-        if ($existingUser) {
-            if (!Hash::check($data['password'], $existingUser->password)) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'email' => ['Email sudah terdaftar. Masukkan password yang benar untuk masuk dan menambah peran.']
-                ]);
-            }
-
-            $roles = $existingUser->roles ?? [];
-            if (!in_array($data['role'], $roles)) {
-                $roles[] = $data['role'];
-                $existingUser->roles = $roles;
-                $existingUser->save();
-            }
-
-            $user = $existingUser;
-        } else {
-            if (User::where('phone_number', $data['phone_number'])->exists()) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'phone_number' => ['Nomor telepon sudah terdaftar.']
-                ]);
-            }
-
-            $user = User::create([
-                'name'         => $data['name'],
-                'email'        => $data['email'],
-                'phone_number' => $data['phone_number'],
-                'password'     => Hash::make($data['password']),
-                'roles'        => [$data['role']],
-            ]);
-        }
-
-        $user->tokens()->delete();
+        $user = User::create([
+            'name'         => $data['name'],
+            'email'        => $data['email'],
+            'phone_number' => $data['phone_number'],
+            'password'     => Hash::make($data['password']),
+            'roles'        => [$data['role']],
+        ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
