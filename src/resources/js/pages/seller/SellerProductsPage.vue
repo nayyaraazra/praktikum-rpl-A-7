@@ -187,7 +187,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import SellerSidebar from '@/components/seller/SellerSidebar.vue'
 import { sellerApi } from '@/services/api/sellerApi'
-import apiClient from '@/services/api'
 
 const products        = ref([])
 const loading         = ref(true)
@@ -315,9 +314,6 @@ async function handleSave() {
     const hasFile = imageFile.value instanceof File
     if (hasFile) {
       const fd = buildFormData(form, imageFile.value)
-      for (const [k, v] of fd.entries()) console.log(k, v instanceof File ? `File(name=${v.name}, type=${v.type}, size=${v.size})` : v)
-      const debugRes = await apiClient.post('/debug-upload', fd)
-      console.log('DEBUG UPLOAD RESPONSE:', JSON.stringify(debugRes.data, null, 2))
       if (isUpdate) {
         await sellerApi.updateProduct(editingProduct.value.id_product, fd)
       } else {
