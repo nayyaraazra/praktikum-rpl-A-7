@@ -138,14 +138,12 @@ router.beforeEach((to) => {
     }
 
     // Seller yang belum isi profil toko → onboarding dulu
-    // (kecuali sudah di halaman onboarding atau memilih skip)
     if (
         auth.isLoggedIn &&
         auth.isSeller &&
         to.name !== 'store.setup' &&
         to.meta.requiresRole === 'seller' &&
-        !auth.user?.store &&
-        localStorage.getItem('store_onboarding_skipped') !== '1'
+        !auth.user?.store
     ) {
         return { path: '/store/setup' }
     }
