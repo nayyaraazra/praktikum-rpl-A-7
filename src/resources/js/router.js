@@ -2,16 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
-    // Root redirect ke login jika belum login, ke home jika sudah
+    // Root redirect berdasarkan role
     {
         path: '/',
         redirect: () => {
             const auth = useAuthStore()
-            return auth.isLoggedIn ? '/home' : '/login'
+            if (!auth.isLoggedIn) return '/login'
+            if (auth.isSeller)   return '/seller/dashboard'
+            if (auth.isAdmin)    return '/admin'
+            return '/home'
         },
     },
 
-    // Auth
+    // ── Auth ────────────────────────────────────────────────────────────
     {
         path: '/login',
         name: 'login',
@@ -24,31 +27,46 @@ const routes = [
         redirect: { name: 'login', query: { tab: 'daftar' } },
     },
 
-    // Beranda setelah login
+    // ── Buyer ────────────────────────────────────────────────────────────
     {
         path: '/home',
         name: 'home',
         component: () => import('@/pages/HomePage.vue'),
-        meta: { requiresAuth: true, requiresStoreComplete: true },
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
     },
 
-    // Onboarding profil toko untuk seller
+    // ── Seller ───────────────────────────────────────────────────────────
+    // Onboarding profil toko (US-08 langkah 2)
     {
         path: '/store/setup',
         name: 'store.setup',
         component: () => import('@/pages/store/StoreOnboardingPage.vue'),
-        meta: { requiresAuth: true, requiresSeller: true },
+        meta: { requiresAuth: true, requiresRole: 'seller' },
+    },
+    // Dashboard utama seller (FR-12)
+    {
+        path: '/seller/dashboard',
+        name: 'seller.dashboard',
+        component: () => import('@/pages/seller/SellerDashboardPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'seller' },
+    },
+    // Kelola produk seller
+    {
+        path: '/seller/products',
+        name: 'seller.products',
+        component: () => import('@/pages/seller/SellerProductsPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'seller' },
     },
 
-    // Admin Panel (Hidden Route)
+    // ── Admin ────────────────────────────────────────────────────────────
     {
         path: '/admin',
         name: 'admin',
         component: () => import('@/pages/admin/AdminPage.vue'),
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, requiresRole: 'admin' },
     },
 
-    // Catch-all
+    // ── Catch-all ────────────────────────────────────────────────────────
     {
         path: '/:pathMatch(.*)*',
         redirect: '/login',
@@ -60,24 +78,36 @@ const router = createRouter({
     routes,
 })
 
-// Guard: halaman guestOnly tidak bisa diakses setelah login
-// Guard: halaman requiresAuth tidak bisa diakses sebelum login
 router.beforeEach((to) => {
     const auth = useAuthStore()
 
+    // Halaman guest-only tidak bisa diakses setelah login
     if (to.meta.guestOnly && auth.isLoggedIn) {
+        if (auth.isSeller) return { path: '/seller/dashboard' }
+        if (auth.isAdmin)  return { path: '/admin' }
         return { path: '/home' }
     }
 
+    // Halaman protected tidak bisa diakses sebelum login
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return { path: '/login' }
     }
 
-    // Seller yang belum isi profil toko wajib ke onboarding dulu
+    // Guard role — seller tidak bisa akses halaman buyer, dan sebaliknya
+    if (auth.isLoggedIn && to.meta.requiresRole) {
+        const role = to.meta.requiresRole
+        if (role === 'buyer'  && !auth.isBuyer)  return { path: '/seller/dashboard' }
+        if (role === 'seller' && !auth.isSeller) return { path: '/home' }
+        if (role === 'admin'  && !auth.isAdmin)  return { path: '/home' }
+    }
+
+    // Seller yang belum isi profil toko → onboarding dulu
+    // (kecuali sudah di halaman onboarding atau memilih skip)
     if (
         auth.isLoggedIn &&
         auth.isSeller &&
-        to.meta.requiresStoreComplete &&
+        to.name !== 'store.setup' &&
+        to.meta.requiresRole === 'seller' &&
         !auth.user?.store &&
         localStorage.getItem('store_onboarding_skipped') !== '1'
     ) {

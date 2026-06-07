@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SellerDashboardController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\AdminController;
@@ -18,7 +20,6 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']); // US-01, US-08
     Route::post('login',    [AuthController::class, 'login']);    // US-02, US-09
 
-    // Endpoint berikut butuh token
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me',      [AuthController::class, 'me']);
@@ -26,13 +27,25 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('store/setup', [StoreController::class, 'setup']); // onboarding
-    
-    // Admin Routes
-    Route::get('admin/dashboard', [AdminController::class, 'getDashboard']);
-    Route::post('admin/stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
-});
+    // ── Store onboarding (US-08 langkah 2) ──────────────────────────────
+    Route::post('store/setup', [StoreController::class, 'setup']);
 
-// ── Produk (diisi nanti P7 — US-03 Search Products) ───────────────────────
-// Route::get('products', [ProductController::class, 'index']);
-// Route::get('products/{id}', [ProductController::class, 'show']);
+    // ── Admin ────────────────────────────────────────────────────────────
+    Route::prefix('admin')->group(function () {
+        Route::get('dashboard',                 [AdminController::class, 'getDashboard']);
+        Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
+    });
+
+    // ── Seller ───────────────────────────────────────────────────────────
+    Route::prefix('seller')->group(function () {
+        // FR-12: Dashboard metrik + pesanan terbaru
+        Route::get('dashboard',   [SellerDashboardController::class, 'index']);
+        Route::get('orders/{id}', [SellerDashboardController::class, 'show']);
+
+        // Kelola produk toko
+        Route::get('products',        [ProductController::class, 'index']);
+        Route::post('products',       [ProductController::class, 'store']);
+        Route::put('products/{id}',   [ProductController::class, 'update']);
+        Route::delete('products/{id}',[ProductController::class, 'destroy']);
+    });
+});

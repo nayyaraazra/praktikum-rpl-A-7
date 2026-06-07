@@ -12,17 +12,41 @@ class AuthService
 {
     /**
      * US-01 (buyer) & US-08 step-1 (seller):
-     * Buat akun baru, kembalikan user + token Sanctum.
+     * Buat akun baru — jika email sudah terdaftar, tambahkan role ke user
+     * yang sudah ada agar satu orang bisa memiliki dua peran.
+     *
+     * @throws \RuntimeException user sudah memiliki role tsb
      */
     public function register(array $data): array
     {
-        $user = User::create([
-            'name'         => $data['name'],
-            'email'        => $data['email'],
-            'phone_number' => $data['phone_number'],
-            'password'     => Hash::make($data['password']),
-            'roles'        => [$data['role']],
-        ]);
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            // User dengan email ini sudah ada — tambahkan role
+            $roles = $user->roles ?? [];
+
+            if (in_array($data['role'], $roles)) {
+                throw new \RuntimeException(
+                    'Anda sudah terdaftar sebagai ' . ($data['role'] === 'seller' ? 'Pemilik UMKM' : 'Pembeli') . '.'
+                );
+            }
+
+            $roles[] = $data['role'];
+            $user->update([
+                'name'         => $data['name'],
+                'phone_number' => $data['phone_number'],
+                'roles'        => $roles,
+            ]);
+            $user->load('store');
+        } else {
+            $user = User::create([
+                'name'         => $data['name'],
+                'email'        => $data['email'],
+                'phone_number' => $data['phone_number'],
+                'password'     => Hash::make($data['password']),
+                'roles'        => [$data['role']],
+            ]);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
