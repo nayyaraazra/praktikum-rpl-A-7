@@ -257,6 +257,7 @@ class ProductController extends Controller
             'store'        => $store
                 ? [
                     'store_name'      => $store->store_name,
+                    'logo'            => $store->store_logo ? asset('storage/' . $store->store_logo) : null,
                     'description'     => $store->description,
                     'address'         => $store->address,
                     'district'        => $store->district,

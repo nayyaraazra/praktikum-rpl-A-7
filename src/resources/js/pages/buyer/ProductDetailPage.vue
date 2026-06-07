@@ -121,8 +121,14 @@
           </div>
 
           <div v-if="product.store" class="store-card">
-            <div class="store-avatar">🏪</div>
-            <div>
+          <img
+            v-if="product.store?.logo"
+            :src="product.store.logo"
+            class="store-logo-img"
+            alt="Logo Toko"
+          />
+          <div v-else class="store-avatar">🏪</div>
+          <div>
               <div class="store-name">{{ product.store.store_name }}</div>
               <div class="store-location">{{ product.store.address || product.store.district }}</div>
             </div>
@@ -671,6 +677,15 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  flex-shrink: 0;
+}
+
+.store-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--gray-100);
   flex-shrink: 0;
 }
 
