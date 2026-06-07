@@ -148,6 +148,88 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * GET /api/products
+     * Katalog produk publik (buyer & guest) — hanya produk published.
+     */
+    public function catalog(Request $request): JsonResponse
+    {
+        $query = Product::published()
+            ->with([
+                'store:id_store,store_name,district',
+                'category:id_category,name_category',
+            ]);
+
+        // Keyword search (name + description)
+        if ($keyword = $request->input('keyword')) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
+        // Category filter
+        if ($category = $request->input('category')) {
+            $query->where('id_category', $category);
+        }
+
+        // Price range
+        if ($minPrice = $request->input('min_price')) {
+            $query->where('price', '>=', $minPrice);
+        }
+        if ($maxPrice = $request->input('max_price')) {
+            $query->where('price', '<=', $maxPrice);
+        }
+
+        // Sort by rating DESC
+        $query->orderBy('rating', 'desc');
+
+        // Paginate 12 per page
+        $perPage = min((int) $request->input('per_page', 12), 48);
+        $products = $query->paginate($perPage);
+
+        // Transform items
+        $products->getCollection()->transform(fn($p) => $this->formatCatalogItem($p));
+
+        return response()->json([
+            'success' => true,
+            'data'    => $products->items(),
+            'meta'    => [
+                'current_page' => $products->currentPage(),
+                'last_page'    => $products->lastPage(),
+                'per_page'     => $products->perPage(),
+                'total'        => $products->total(),
+            ],
+        ]);
+    }
+
+    private function formatCatalogItem(Product $product): array
+    {
+        return [
+            'id_product'   => $product->id_product,
+            'name'         => $product->name,
+            'price'        => $product->price,
+            'unit'         => $product->unit,
+            'stock'        => $product->stock,
+            'rating'       => $product->rating,
+            'review_count' => $product->review_count,
+            'image_url'    => $product->image_product
+                ? asset('storage/' . $product->image_product)
+                : null,
+            'store'        => $product->store
+                ? [
+                    'store_name' => $product->store->store_name,
+                    'district'   => $product->store->district,
+                ]
+                : null,
+            'category'     => $product->category
+                ? [
+                    'name_category' => $product->category->name_category,
+                ]
+                : null,
+        ];
+    }
+
     private function formatProduct(Product $product): array
     {
         $data = $product->toArray();

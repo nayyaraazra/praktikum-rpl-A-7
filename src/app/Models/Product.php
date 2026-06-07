@@ -44,4 +44,10 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class, 'id_product', 'id_product');
     }
+
+    public function scopePublished($query)
+    {
+        return $query->where('is_active', 1)
+            ->whereHas('store', fn($q) => $q->where('verification_status', 'disetujui'));
+    }
 }

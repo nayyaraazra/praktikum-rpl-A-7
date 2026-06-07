@@ -389,7 +389,7 @@ async function handleLogin() {
     }
 
     // Single role: redirect langsung
-    const target = roles.includes('seller') ? '/seller/dashboard' : roles.includes('admin') ? '/admin' : '/home'
+    const target = roles.includes('seller') ? '/seller/dashboard' : roles.includes('admin') ? '/admin' : '/buyer/dashboard'
     if (result.data.notice) {
       showToast(result.data.notice, 'success', 4000)
       setTimeout(() => router.push(target), 2000)
@@ -405,7 +405,7 @@ async function handleLogin() {
 }
 
 function pickRole(role) {
-  const target = role === 'seller' ? '/seller/dashboard' : '/home'
+  const target = role === 'seller' ? '/seller/dashboard' : '/buyer/dashboard'
   showRolePicker.value = false
   showToast('Berhasil masuk! Mengalihkan…', 'success')
   setTimeout(() => router.push(target), 200)
@@ -427,7 +427,7 @@ async function handleRegister() {
       ? 'Akun dibuat! Toko Anda menunggu verifikasi admin (1×24 jam).'
       : 'Akun berhasil dibuat! Selamat datang di Kulaan.id.'
     showToast(msg, 'success', 4000)
-    const regTarget = selectedRole.value === 'pemilik' ? '/seller/dashboard' : '/home'
+    const regTarget = selectedRole.value === 'pemilik' ? '/seller/dashboard' : '/buyer/dashboard'
     setTimeout(() => router.push(regTarget), 1500)
 
   } catch (err) {

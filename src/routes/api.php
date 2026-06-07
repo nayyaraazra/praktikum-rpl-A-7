@@ -36,30 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
     });
 
-    // ── Debug ──────────────────────────────────────────────────────────────
-    Route::post('debug-upload', function (\Illuminate\Http\Request $req) {
-        $file = $req->file('image');
-        return response()->json([
-            'content_type' => $req->header('Content-Type'),
-            'hasFile'      => $req->hasFile('image'),
-            'hasFileKey'   => $req->has('image'),
-            'file'         => $file ? [
-                'originalName'  => $file->getClientOriginalName(),
-                'mimeType'      => $file->getMimeType(),
-                'size'          => $file->getSize(),
-                'isValid'       => $file->isValid(),
-                'error'         => $file->getError(),
-                'path'          => $file->getRealPath(),
-                'extension'     => $file->extension(),
-            ] : null,
-            'files'        => $_FILES,
-            'method'       => $req->method(),
-            'all'          => $req->except(['_method']),
-            'files_keys'   => array_keys($req->allFiles()),
-            'php_version'  => phpversion(),
-        ]);
-    });
-
     // ── Seller ───────────────────────────────────────────────────────────
     Route::prefix('seller')->group(function () {
         // FR-12: Dashboard metrik + pesanan terbaru
@@ -76,4 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('store',  [StoreController::class, 'show']);
         Route::match(['put', 'post'], 'store', [StoreController::class, 'update']);
     });
+});
+
+// ── Buyer / Public ──────────────────────────────────────────────────────
+Route::get('products',   [ProductController::class, 'catalog']);
+Route::get('categories', function () {
+    return App\Models\Category::select('id_category', 'name_category')->get();
 });

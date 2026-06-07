@@ -10,7 +10,7 @@ const routes = [
             if (!auth.isLoggedIn) return '/login'
             if (auth.isSeller)   return '/seller/dashboard'
             if (auth.isAdmin)    return '/admin'
-            return '/home'
+            return '/buyer/dashboard'
         },
     },
 
@@ -29,9 +29,9 @@ const routes = [
 
     // ── Buyer ────────────────────────────────────────────────────────────
     {
-        path: '/home',
-        name: 'home',
-        component: () => import('@/pages/HomePage.vue'),
+        path: '/buyer/dashboard',
+        name: 'buyer.dashboard',
+        component: () => import('@/pages/buyer/HomePage.vue'),
         meta: { requiresAuth: true, requiresRole: 'buyer' },
     },
 
@@ -92,7 +92,7 @@ router.beforeEach((to) => {
     if (to.meta.guestOnly && auth.isLoggedIn) {
         if (auth.isSeller) return { path: '/seller/dashboard' }
         if (auth.isAdmin)  return { path: '/admin' }
-        return { path: '/home' }
+        return { path: '/buyer/dashboard' }
     }
 
     // Halaman protected tidak bisa diakses sebelum login
@@ -104,8 +104,8 @@ router.beforeEach((to) => {
     if (auth.isLoggedIn && to.meta.requiresRole) {
         const role = to.meta.requiresRole
         if (role === 'buyer'  && !auth.isBuyer)  return { path: '/seller/dashboard' }
-        if (role === 'seller' && !auth.isSeller) return { path: '/home' }
-        if (role === 'admin'  && !auth.isAdmin)  return { path: '/home' }
+        if (role === 'seller' && !auth.isSeller) return { path: '/buyer/dashboard' }
+        if (role === 'admin'  && !auth.isAdmin)  return { path: '/buyer/dashboard' }
     }
 
     // Seller yang belum isi profil toko → onboarding dulu
