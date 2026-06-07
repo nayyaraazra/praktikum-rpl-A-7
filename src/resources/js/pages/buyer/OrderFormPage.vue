@@ -15,21 +15,30 @@
           </svg>
           Cari Produk
         </router-link>
-        <a class="nav-item active" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.orders' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
           Pesanan Saya
-        </a>
-        <a class="nav-item" href="#">
+          <span v-if="activeOrdersCount > 0" class="nav-badge">{{ activeOrdersCount }}</span>
+        </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
           Notifikasi
-        </a>
+          <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
+        </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.profile' }">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Profil Saya
+        </router-link>
       </div>
       <div class="sidebar-user">
         <div class="avatar">{{ userInitials }}</div>
@@ -88,15 +97,20 @@
                 <span v-if="errors.phone_number" class="error-msg">{{ errors.phone_number }}</span>
               </div>
             </div>
-            <div>
-              <label class="form-label">Alamat Pengiriman <span class="req">*</span></label>
-              <textarea
-                v-model="form.shipping_address"
-                class="form-input-plain"
-                placeholder="Alamat lengkap termasuk RT/RW, kelurahan"
-                :class="{ 'border-red-400': errors.shipping_address }"
-              ></textarea>
-              <span v-if="errors.shipping_address" class="error-msg">{{ errors.shipping_address }}</span>
+            <div class="address-preview-box">
+              <label class="form-label">Alamat Pengiriman</label>
+              <div v-if="authStore.user?.address" class="address-text-wrapper">
+                <div class="address-text">{{ authStore.user.address }}</div>
+                <router-link :to="{ name: 'buyer.profile' }" class="change-address-link">Ubah Alamat</router-link>
+              </div>
+              <div v-else class="address-warning-alert">
+                <span class="warning-icon">⚠️</span>
+                <div class="warning-body">
+                  <span class="warning-title">Alamat Belum Diatur</span>
+                  <p class="warning-text">Anda harus mengisi alamat pengiriman di profil sebelum membuat pesanan.</p>
+                  <router-link :to="{ name: 'buyer.profile' }" class="btn-warning-link">Atur Alamat Sekarang</router-link>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -193,7 +207,7 @@
             </div>
             <button
               class="btn-order"
-              :disabled="submitting"
+              :disabled="submitting || !authStore.user?.address"
               @click="submitOrder"
             >
               {{ submitting ? 'Mengirim...' : 'Kirim Pesanan' }}
@@ -229,18 +243,18 @@ const error = ref(false)
 const quantity = ref(Number(route.query.qty) || 1)
 const selectedPayment = ref('cod')
 const submitting = ref(false)
+const unreadCount = ref(0)
+const activeOrdersCount = ref(0)
 
 const form = reactive({
   name: authStore.user?.name || '',
   phone_number: authStore.user?.phone_number || '',
-  shipping_address: '',
   note: '',
 })
 
 const errors = reactive({
   name: '',
   phone_number: '',
-  shipping_address: '',
 })
 
 // Toast notification state
@@ -281,7 +295,6 @@ function showToast(msg, type = '', duration = 3200) {
 function clearErrors() {
   errors.name = ''
   errors.phone_number = ''
-  errors.shipping_address = ''
 }
 
 function validateForm() {
@@ -296,8 +309,8 @@ function validateForm() {
     errors.phone_number = 'Nomor WhatsApp wajib diisi.'
     valid = false
   }
-  if (!form.shipping_address.trim()) {
-    errors.shipping_address = 'Alamat pengiriman wajib diisi.'
+  if (!authStore.user?.address) {
+    showToast('Silakan atur alamat pengiriman terlebih dahulu.', 'error')
     valid = false
   }
 
@@ -312,12 +325,13 @@ async function submitOrder() {
 
   submitting.value = true
   try {
+    const address = authStore.user?.address || ''
     const payload = {
       id_product: product.value.id_product,
       quantity: quantity.value,
       name: form.name,
       phone_number: form.phone_number,
-      shipping_address: form.shipping_address,
+      shipping_address: address,
       payment_method: selectedPayment.value === 'cod' ? 'cod' : 'transfer',
       note: form.note,
     }
@@ -333,7 +347,7 @@ async function submitOrder() {
       if (storePhone) {
         const cleanedPhone = storePhone.replace(/[^0-9]/g, '')
         const msg = encodeURIComponent(
-          `Halo, saya ${form.name} telah memesan ${product.value.name} sebanyak ${quantity.value} ${product.value.unit} dengan total Rp ${formatPrice(totalPrice.value)} melalui Kulaan.id.\n\nAlamat: ${form.shipping_address}\nCatatan: ${form.note || '-'}\nMetode Pembayaran: ${selectedPayment.value.toUpperCase()}`
+          `Halo, saya ${form.name} telah memesan ${product.value.name} sebanyak ${quantity.value} ${product.value.unit} dengan total Rp ${formatPrice(totalPrice.value)} melalui Kulaan.id.\n\nAlamat: ${address}\nCatatan: ${form.note || '-'}\nMetode Pembayaran: ${selectedPayment.value.toUpperCase()}`
         )
         const waUrl = `https://wa.me/${cleanedPhone}?text=${msg}`
         
@@ -354,7 +368,6 @@ async function submitOrder() {
       const fieldErrors = res.data.errors ?? {}
       if (fieldErrors.name) errors.name = fieldErrors.name[0]
       if (fieldErrors.phone_number) errors.phone_number = fieldErrors.phone_number[0]
-      if (fieldErrors.shipping_address) errors.shipping_address = fieldErrors.shipping_address[0]
       showToast(res.data.message || 'Periksa kembali data Anda.', 'error')
     } else {
       showToast(res?.data?.message || 'Gagal mengirim pesanan. Silakan coba lagi.', 'error')
@@ -379,8 +392,34 @@ async function fetchProduct() {
   }
 }
 
+async function fetchUnreadNotificationsCount() {
+  try {
+    const res = await buyerApi.getNotifications()
+    if (res.data.success) {
+      unreadCount.value = res.data.data.filter(n => n.is_read === 0 || n.is_read === false).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch unread notifications count:', err)
+  }
+}
+
+async function fetchActiveOrdersCount() {
+  try {
+    const res = await buyerApi.getOrders()
+    if (res.data.success) {
+      activeOrdersCount.value = res.data.data.filter(
+        o => o.status === 'menunggu' || o.status === 'diproses'
+      ).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch active orders count:', err)
+  }
+}
+
 onMounted(() => {
   fetchProduct()
+  fetchUnreadNotificationsCount()
+  fetchActiveOrdersCount()
 })
 </script>
 
@@ -479,6 +518,15 @@ onMounted(() => {
 .nav-item:hover {
   background: var(--gray-50);
   color: var(--gray-800);
+}
+.nav-badge {
+  margin-left: auto;
+  background: var(--red-400);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
 }
 .nav-item.active {
   background: var(--brand-50);
@@ -844,4 +892,81 @@ textarea.form-input-plain {
 }
 .toast.success { background: #15803d; }
 .toast.error   { background: #b91c1c; }
+
+/* Address Preview Styling */
+.address-preview-box {
+  margin-top: 16px;
+  background: var(--gray-0);
+  border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.address-text-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.address-text {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.5;
+  flex: 1;
+}
+.change-address-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-600);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.change-address-link:hover {
+  color: var(--brand-800);
+  text-decoration: underline;
+}
+
+.address-warning-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-md);
+}
+.warning-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.warning-body {
+  flex: 1;
+}
+.warning-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400E;
+  margin-bottom: 4px;
+}
+.warning-text {
+  font-size: 13px;
+  color: #B45309;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+.btn-warning-link {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #D97706;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.btn-warning-link:hover {
+  background: #B45309;
+}
 </style>

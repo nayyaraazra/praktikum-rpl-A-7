@@ -16,23 +16,30 @@
           </svg>
           Cari Produk
         </a>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.orders' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
           Pesanan Saya
-          <span class="nav-badge">2</span>
-        </a>
-        <a class="nav-item" href="#">
+          <span v-if="activeOrdersCount > 0" class="nav-badge">{{ activeOrdersCount }}</span>
+        </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
           Notifikasi
-          <span class="nav-badge" style="background:var(--brand-500);">3</span>
-        </a>
+          <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
+        </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.profile' }">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Profil Saya
+        </router-link>
       </div>
 
       <div class="nav-section">
@@ -124,24 +131,50 @@
         </div>
       </div>
 
-      <!-- Category Pills -->
-      <div class="category-row">
-        <button
-          class="category-pill"
-          :class="{ active: selectedCategory === null }"
-          @click="selectCategory(null)"
+      <!-- Category Pills with Scroll Buttons -->
+      <div class="category-container">
+        <button 
+          v-show="showLeftArrow" 
+          class="scroll-btn left" 
+          @click="scrollCategoryRow('left')"
+          type="button"
+          aria-label="Scroll left"
         >
-          <span class="category-pill-icon">🔥</span> Semua
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <button
-          v-for="cat in categories"
-          :key="cat.id_category"
-          class="category-pill"
-          :class="{ active: selectedCategory === cat.id_category }"
-          @click="selectCategory(cat.id_category)"
+
+        <div 
+          ref="categoryRowRef" 
+          class="category-row"
+          @scroll="checkScroll"
         >
-          <span class="category-pill-icon">{{ categoryEmoji(cat.name_category) }}</span>
-          {{ cat.name_category }}
+          <button
+            class="category-pill"
+            :class="{ active: selectedCategory === null }"
+            @click="selectCategory(null)"
+          >
+            <span class="category-pill-icon">🔥</span> Semua
+          </button>
+          <button
+            v-for="cat in categories"
+            :key="cat.id_category"
+            class="category-pill"
+            :class="{ active: selectedCategory === cat.id_category }"
+            @click="selectCategory(cat.id_category)"
+          >
+            <span class="category-pill-icon">{{ categoryEmoji(cat.name_category) }}</span>
+            {{ cat.name_category }}
+          </button>
+        </div>
+
+        <button 
+          v-show="showRightArrow" 
+          class="scroll-btn right" 
+          @click="scrollCategoryRow('right')"
+          type="button"
+          aria-label="Scroll right"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
 
@@ -212,7 +245,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
@@ -231,6 +264,30 @@ const loading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const perPage = 12
+const unreadCount = ref(0)
+const activeOrdersCount = ref(0)
+
+const categoryRowRef = ref(null)
+const showLeftArrow = ref(false)
+const showRightArrow = ref(false)
+
+function checkScroll() {
+  const el = categoryRowRef.value
+  if (!el) return
+  showLeftArrow.value = el.scrollLeft > 2
+  showRightArrow.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 2
+}
+
+function scrollCategoryRow(direction) {
+  const el = categoryRowRef.value
+  if (!el) return
+  const scrollAmount = 300
+  if (direction === 'left') {
+    el.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+  } else {
+    el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  }
+}
 
 let debounceTimer = null
 
@@ -290,9 +347,20 @@ function productEmoji(product) {
 
 function categoryEmoji(name) {
   const map = {
-    'Makanan': '🍱', 'Snack': '🥟', 'Kue': '🥟', 'Fashion': '👘', 'Batik': '👘',
-    'Kerajinan': '🎁', 'Minuman': '🌿', 'Kosmetik': '💄', 'Jajanan': '🥟',
-    'Oleh-oleh': '🎁',
+    'pakaian': '👕',
+    'fashion & aksesoris': '🕶️',
+    'makanan & minuman': '🍱',
+    'perawatan & kecantikan': '💄',
+    'perlengkapan rumah': '🏠',
+    'hobi & koleksi': '🎨',
+    'kesehatan': '💊',
+    'olahraga & outdoor': '🏕️',
+    'buku & alat tulis': '📚',
+    'kerajinan tangan': '🧶',
+    'sembako & kebutuhan pokok': '🌾',
+    'Jasa & Layanan': '🛠️',
+    'Katering': '🍲',
+    'lain lain': '📦',
   }
   if (!name) return '📌'
   for (const [key, emoji] of Object.entries(map)) {
@@ -363,8 +431,35 @@ async function fetchCategories() {
   try {
     const res = await buyerApi.getCategories()
     categories.value = res.data
+    setTimeout(() => {
+      checkScroll()
+    }, 100)
   } catch (err) {
     console.error('Failed to fetch categories:', err)
+  }
+}
+
+async function fetchUnreadNotificationsCount() {
+  try {
+    const res = await buyerApi.getNotifications()
+    if (res.data.success) {
+      unreadCount.value = res.data.data.filter(n => n.is_read === 0 || n.is_read === false).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch unread notifications count:', err)
+  }
+}
+
+async function fetchActiveOrdersCount() {
+  try {
+    const res = await buyerApi.getOrders()
+    if (res.data.success) {
+      activeOrdersCount.value = res.data.data.filter(
+        o => o.status === 'menunggu' || o.status === 'diproses'
+      ).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch active orders count:', err)
   }
 }
 
@@ -376,6 +471,13 @@ async function handleLogout() {
 onMounted(() => {
   fetchCategories()
   fetchProducts()
+  fetchUnreadNotificationsCount()
+  fetchActiveOrdersCount()
+  window.addEventListener('resize', checkScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScroll)
 })
 </script>
 
@@ -770,17 +872,65 @@ onMounted(() => {
 }
 
 /* ── Category Pills ── */
+.category-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
 .category-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 24px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  padding: 4px 0;
+  scroll-behavior: smooth;
+  width: 100%;
 }
 
 .category-row::-webkit-scrollbar {
   display: none;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  z-index: 10;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--gray-700);
+}
+
+.scroll-btn:hover {
+  background: var(--brand-50);
+  border-color: var(--brand-400);
+  color: var(--brand-700);
+  box-shadow: 0 6px 16px rgba(24, 95, 165, 0.15), 0 2px 6px rgba(24, 95, 165, 0.08);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.scroll-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.scroll-btn.left {
+  left: -19px;
+}
+
+.scroll-btn.right {
+  right: -19px;
 }
 
 .category-pill {

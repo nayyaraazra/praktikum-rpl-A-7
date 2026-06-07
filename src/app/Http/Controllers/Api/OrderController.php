@@ -178,6 +178,7 @@ class OrderController extends Controller
                     'id_product' => $item->product->id_product,
                     'name'       => $item->product->name,
                     'unit'       => $item->product->unit,
+                    'image_url'  => $item->product->image_product ? asset('storage/' . $item->product->image_product) : null,
                     'store'      => $item->product->store ? [
                         'id_store'     => $item->product->store->id_store,
                         'store_name'   => $item->product->store->store_name,
