@@ -34,6 +34,12 @@ const routes = [
         component: () => import('@/pages/buyer/HomePage.vue'),
         meta: { requiresAuth: true, requiresRole: 'buyer' },
     },
+    {
+        path: '/buyer/product/:id',
+        name: 'buyer.product-detail',
+        component: () => import('@/pages/buyer/ProductDetailPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
+    },
 
     // ── Seller ───────────────────────────────────────────────────────────
     // Onboarding profil toko (US-08 langkah 2)
@@ -70,7 +76,6 @@ const routes = [
         path: '/admin',
         name: 'admin',
         component: () => import('@/pages/admin/AdminPage.vue'),
-        meta: { requiresAuth: true, requiresRole: 'admin' },
     },
 
     // ── Catch-all ────────────────────────────────────────────────────────

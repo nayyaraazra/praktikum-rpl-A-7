@@ -333,7 +333,7 @@ function goToPage(page) {
 }
 
 function goToProduct(id) {
-  console.log('Navigate to product', id)
+  router.push({ name: 'buyer.product-detail', params: { id } })
 }
 
 async function fetchProducts() {

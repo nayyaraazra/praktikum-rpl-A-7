@@ -149,6 +149,37 @@ class ProductController extends Controller
     }
 
     /**
+     * GET /api/products/{id}
+     * Detail produk publik — hanya produk published.
+     */
+    public function show(int $id): JsonResponse
+    {
+        $product = Product::published()
+            ->with([
+                'category:id_category,name_category',
+                'store' => function ($q) {
+                    $q->with([
+                        'owner:id_user,phone_number',
+                        'paymentAccounts' => function ($q) {
+                            $q->where('is_active', 1);
+                        },
+                    ]);
+                },
+                'reviews' => function ($q) {
+                    $q->with('user:id_user,name')
+                        ->latest()
+                        ->take(5);
+                },
+            ])
+            ->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $this->formatDetailItem($product),
+        ]);
+    }
+
+    /**
      * GET /api/products
      * Katalog produk publik (buyer & guest) — hanya produk published.
      */
@@ -201,6 +232,51 @@ class ProductController extends Controller
                 'total'        => $products->total(),
             ],
         ]);
+    }
+
+    private function formatDetailItem(Product $product): array
+    {
+        $store = $product->store;
+
+        return [
+            'id_product'   => $product->id_product,
+            'name'         => $product->name,
+            'description'  => $product->description,
+            'price'        => $product->price,
+            'stock'        => $product->stock,
+            'unit'         => $product->unit,
+            'min_order'    => $product->min_order,
+            'rating'       => $product->rating,
+            'review_count' => $product->review_count,
+            'image_url'    => $product->image_product
+                ? asset('storage/' . $product->image_product)
+                : null,
+            'category'     => $product->category
+                ? ['name_category' => $product->category->name_category]
+                : null,
+            'store'        => $store
+                ? [
+                    'store_name'      => $store->store_name,
+                    'description'     => $store->description,
+                    'address'         => $store->address,
+                    'district'        => $store->district,
+                    'operating_hours' => $store->operating_hours,
+                    'phone_number'    => $store->owner?->phone_number,
+                    'payment_accounts' => $store->paymentAccounts->map(fn($pa) => [
+                        'bank_name'      => $pa->bank_name,
+                        'account_number' => $pa->account_number,
+                        'account_name'   => $pa->account_name,
+                        'qris_code'      => $pa->qris_code,
+                    ]),
+                ]
+                : null,
+            'reviews'      => $product->reviews->map(fn($r) => [
+                'rating'     => $r->rating,
+                'comment'    => $r->comment,
+                'user'       => $r->user ? ['name' => $r->user->name] : null,
+                'created_at' => $r->created_at,
+            ]),
+        ];
     }
 
     private function formatCatalogItem(Product $product): array

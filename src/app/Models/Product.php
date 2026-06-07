@@ -45,6 +45,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class, 'id_product', 'id_product');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'id_product', 'id_product');
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_active', 1)

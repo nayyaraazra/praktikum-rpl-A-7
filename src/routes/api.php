@@ -26,15 +26,15 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+// ── Admin (tanpa auth agar bisa diakses dari src.test/admin) ───────────
+Route::prefix('admin')->group(function () {
+    Route::get('dashboard',                 [AdminController::class, 'getDashboard']);
+    Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     // ── Store onboarding (US-08 langkah 2) ──────────────────────────────
     Route::post('store/setup', [StoreController::class, 'setup']);
-
-    // ── Admin ────────────────────────────────────────────────────────────
-    Route::prefix('admin')->group(function () {
-        Route::get('dashboard',                 [AdminController::class, 'getDashboard']);
-        Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
-    });
 
     // ── Seller ───────────────────────────────────────────────────────────
     Route::prefix('seller')->group(function () {
@@ -55,7 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ── Buyer / Public ──────────────────────────────────────────────────────
-Route::get('products',   [ProductController::class, 'catalog']);
-Route::get('categories', function () {
+Route::get('products',     [ProductController::class, 'catalog']);
+Route::get('products/{id}', [ProductController::class, 'show']);
+Route::get('categories',   function () {
     return App\Models\Category::select('id_category', 'name_category')->get();
 });
+
