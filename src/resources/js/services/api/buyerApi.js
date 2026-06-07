@@ -19,4 +19,13 @@ export const buyerApi = {
     getOrder(id) {
         return apiClient.get(`/orders/${id}`)
     },
+    getNotifications() {
+        return apiClient.get('/notifications')
+    },
+    markAllNotificationsAsRead() {
+        return apiClient.post('/notifications/mark-read')
+    },
+    markNotificationAsRead(id) {
+        return apiClient.post(`/notifications/${id}/read`)
+    },
 }

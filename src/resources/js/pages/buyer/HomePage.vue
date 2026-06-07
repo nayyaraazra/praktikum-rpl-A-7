@@ -25,14 +25,14 @@
           Pesanan Saya
           <span class="nav-badge">2</span>
         </a>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
           Notifikasi
-          <span class="nav-badge" style="background:var(--brand-500);">3</span>
-        </a>
+          <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
+        </router-link>
       </div>
 
       <div class="nav-section">
@@ -231,6 +231,7 @@ const loading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const perPage = 12
+const unreadCount = ref(0)
 
 let debounceTimer = null
 
@@ -368,6 +369,17 @@ async function fetchCategories() {
   }
 }
 
+async function fetchUnreadNotificationsCount() {
+  try {
+    const res = await buyerApi.getNotifications()
+    if (res.data.success) {
+      unreadCount.value = res.data.data.filter(n => n.is_read === 0 || n.is_read === false).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch unread notifications count:', err)
+  }
+}
+
 async function handleLogout() {
   await authStore.logout()
   router.push({ name: 'login' })
@@ -376,6 +388,7 @@ async function handleLogout() {
 onMounted(() => {
   fetchCategories()
   fetchProducts()
+  fetchUnreadNotificationsCount()
 })
 </script>
 

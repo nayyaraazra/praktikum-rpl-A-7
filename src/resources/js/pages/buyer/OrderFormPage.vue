@@ -23,13 +23,14 @@
           </svg>
           Pesanan Saya
         </a>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
           Notifikasi
-        </a>
+          <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
+        </router-link>
       </div>
       <div class="sidebar-user">
         <div class="avatar">{{ userInitials }}</div>
@@ -229,6 +230,7 @@ const error = ref(false)
 const quantity = ref(Number(route.query.qty) || 1)
 const selectedPayment = ref('cod')
 const submitting = ref(false)
+const unreadCount = ref(0)
 
 const form = reactive({
   name: authStore.user?.name || '',
@@ -379,8 +381,20 @@ async function fetchProduct() {
   }
 }
 
+async function fetchUnreadNotificationsCount() {
+  try {
+    const res = await buyerApi.getNotifications()
+    if (res.data.success) {
+      unreadCount.value = res.data.data.filter(n => n.is_read === 0 || n.is_read === false).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch unread notifications count:', err)
+  }
+}
+
 onMounted(() => {
   fetchProduct()
+  fetchUnreadNotificationsCount()
 })
 </script>
 
@@ -479,6 +493,15 @@ onMounted(() => {
 .nav-item:hover {
   background: var(--gray-50);
   color: var(--gray-800);
+}
+.nav-badge {
+  margin-left: auto;
+  background: var(--red-400);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
 }
 .nav-item.active {
   background: var(--brand-50);

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('orders',      [OrderController::class, 'index']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
     Route::post('orders',     [OrderController::class, 'store']);
+
+    // ── Notifications ───────────────────────────────────────────────────
+    Route::get('notifications',             [NotificationController::class, 'index']);
+    Route::post('notifications/mark-read',  [NotificationController::class, 'markAllRead']);
+    Route::post('notifications/{id}/read',  [NotificationController::class, 'markAsRead']);
 
     // ── Seller ───────────────────────────────────────────────────────────
     Route::prefix('seller')->group(function () {
