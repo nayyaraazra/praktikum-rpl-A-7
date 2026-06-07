@@ -28,4 +28,7 @@ export const buyerApi = {
     markNotificationAsRead(id) {
         return apiClient.post(`/notifications/${id}/read`)
     },
+    updateProfile(payload) {
+        return apiClient.put('/auth/profile', payload)
+    },
 }

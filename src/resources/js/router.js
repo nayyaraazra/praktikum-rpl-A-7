@@ -58,6 +58,12 @@ const routes = [
         component: () => import('@/pages/buyer/MyOrdersPage.vue'),
         meta: { requiresAuth: true, requiresRole: 'buyer' },
     },
+    {
+        path: '/buyer/profile',
+        name: 'buyer.profile',
+        component: () => import('@/pages/buyer/ProfilePage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
+    },
 
     // ── Seller ───────────────────────────────────────────────────────────
     // Onboarding profil toko (US-08 langkah 2)

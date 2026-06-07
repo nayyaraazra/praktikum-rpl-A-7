@@ -33,6 +33,13 @@
           Notifikasi
           <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
         </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.profile' }">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Profil Saya
+        </router-link>
       </div>
 
       <div class="nav-section">
