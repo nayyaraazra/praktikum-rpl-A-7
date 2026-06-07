@@ -79,7 +79,23 @@
 
             <div class="field">
               <label class="field-label" for="prodCategory">Kategori <span class="req">*</span></label>
-              <input v-model="form.category_name" id="prodCategory" class="form-input" placeholder="mis. Makanan & Minuman" />
+              <select v-model="form.category_name" id="prodCategory" class="form-input form-select">
+                <option value="" disabled>Pilih kategori...</option>
+                <option value="pakaian">pakaian</option>
+                <option value="fashion & aksesoris">fashion & aksesoris</option>
+                <option value="makanan & minuman">makanan & minuman</option>
+                <option value="perawatan & kecantikan">perawatan & kecantikan</option>
+                <option value="perlengkapan rumah">perlengkapan rumah</option>
+                <option value="hobi & koleksi">hobi & koleksi</option>
+                <option value="kesehatan">kesehatan</option>
+                <option value="olahraga & outdoor">olahraga & outdoor</option>
+                <option value="buku & alat tulis">buku & alat tulis</option>
+                <option value="kerajinan tangan">kerajinan tangan</option>
+                <option value="sembako & kebutuhan pokok">sembako & kebutuhan pokok</option>
+                <option value="Jasa & Layanan">Jasa & Layanan</option>
+                <option value="Katering">Katering</option>
+                <option value="lain lain">lain lain</option>
+              </select>
               <span v-if="errors.category_name" class="field-error-show">{{ errors.category_name }}</span>
             </div>
 

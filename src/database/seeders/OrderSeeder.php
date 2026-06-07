@@ -16,7 +16,7 @@ class OrderSeeder extends Seeder
     public function run(): void
     {
         // ── 1. Kategori ──────────────────────────────────────────────
-        $cat = Category::firstOrCreate(['name_category' => 'Makanan & Minuman']);
+        $cat = Category::firstOrCreate(['name_category' => 'makanan & minuman']);
 
         // ── 2. Seller (Dapur Bunda Sari) ────────────────────────────
         $seller = User::firstOrCreate(

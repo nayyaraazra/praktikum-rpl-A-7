@@ -14,14 +14,15 @@
           </svg>
           Cari Produk
         </router-link>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.orders' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" y1="6" x2="21" y2="6" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
           Pesanan Saya
-        </a>
+          <span v-if="activeOrdersCount > 0" class="nav-badge">{{ activeOrdersCount }}</span>
+        </router-link>
         <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -186,6 +187,7 @@ const loading = ref(true)
 const error = ref(false)
 const quantity = ref(1)
 const unreadCount = ref(0)
+const activeOrdersCount = ref(0)
 
 const userInitials = computed(() => {
   const name = authStore.user?.name || 'P'
@@ -282,6 +284,19 @@ async function fetchUnreadNotificationsCount() {
   }
 }
 
+async function fetchActiveOrdersCount() {
+  try {
+    const res = await buyerApi.getOrders()
+    if (res.data.success) {
+      activeOrdersCount.value = res.data.data.filter(
+        o => o.status === 'menunggu' || o.status === 'diproses'
+      ).length
+    }
+  } catch (err) {
+    console.error('Failed to fetch active orders count:', err)
+  }
+}
+
 async function handleLogout() {
   await authStore.logout()
   router.push({ name: 'login' })
@@ -290,6 +305,7 @@ async function handleLogout() {
 onMounted(() => {
   fetchProduct()
   fetchUnreadNotificationsCount()
+  fetchActiveOrdersCount()
 })
 </script>
 

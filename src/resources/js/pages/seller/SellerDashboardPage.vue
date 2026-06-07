@@ -392,7 +392,8 @@ function statusClass(status) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
-  const date = new Date(dateStr)
+  const cleanStr = dateStr.replace('T', ' ').split('.')[0].replace('Z', '')
+  const date = new Date(cleanStr)
   return date.toLocaleString('id-ID', {
     day: 'numeric',
     month: 'long',
