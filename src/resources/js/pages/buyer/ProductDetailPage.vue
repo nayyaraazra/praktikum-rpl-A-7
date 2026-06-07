@@ -240,7 +240,11 @@ function decrementQty() {
 
 function orderNow() {
   if (!product.value || product.value.stock < 1) return
-  alert(`Pesanan: ${product.value.name}\nJumlah: ${quantity.value} ${product.value.unit}\nTotal: Rp ${formatPrice(totalPrice.value)}\n\nFitur pemesanan akan segera tersedia.`)
+  router.push({
+    name: 'buyer.order',
+    params: { productId: product.value.id_product },
+    query: { qty: quantity.value }
+  })
 }
 
 async function fetchProduct() {

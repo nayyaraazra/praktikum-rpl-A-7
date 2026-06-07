@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,12 @@ class SellerDashboardController extends Controller
             ->distinct('id_order')
             ->count('id_order');
 
+        // Pesanan diproses (status diproses)
+        $processedOrders = OrderItem::whereIn('id_product', $productIds)
+            ->whereHas('order', fn ($q) => $q->where('status', 'diproses'))
+            ->distinct('id_order')
+            ->count('id_order');
+
         // ── Daftar pesanan terbaru (10 terakhir) ─────────────────────
         $recentOrders = Order::whereHas('items', fn ($q) =>
                 $q->whereIn('id_product', $productIds)
@@ -102,11 +109,12 @@ class SellerDashboardController extends Controller
                     'verification_status' => $store->verification_status,
                 ],
                 'metrics' => [
-                    'total_orders'    => $totalOrders,
-                    'monthly_revenue' => (float) $monthlyRevenue,
-                    'active_products' => $activeProducts,
-                    'low_stock_count' => $lowStockCount,
-                    'new_orders'      => $newOrders,
+                    'total_orders'     => $totalOrders,
+                    'monthly_revenue'  => (float) $monthlyRevenue,
+                    'active_products'  => $activeProducts,
+                    'low_stock_count'  => $lowStockCount,
+                    'new_orders'       => $newOrders,
+                    'processed_orders' => $processedOrders,
                 ],
                 'recent_orders' => $recentOrders,
             ],
@@ -132,5 +140,52 @@ class SellerDashboardController extends Controller
             ->findOrFail($id);
 
         return response()->json(['success' => true, 'data' => $order]);
+    }
+
+    /**
+     * PUT /api/seller/orders/{id}/status
+     * Ubah status pesanan (milik toko seller yang login).
+     */
+    public function updateStatus(Request $request, int $id): JsonResponse
+    {
+        $user  = $request->user();
+        $store = $user->store;
+
+        if (! $store) {
+            return response()->json(['success' => false, 'message' => 'Toko belum terdaftar.'], 404);
+        }
+
+        $productIds = Product::where('id_store', $store->id_store)->pluck('id_product');
+
+        $order = Order::whereHas('items', fn ($q) =>
+                $q->whereIn('id_product', $productIds)
+            )->findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:menunggu,diproses,selesai,dibatalkan'],
+        ]);
+
+        $order->update(['status' => $validated['status']]);
+
+        // Kirim notifikasi ke pembeli
+        $statusLabels = [
+            'menunggu'   => 'Menunggu',
+            'diproses'   => 'Diproses',
+            'selesai'    => 'Selesai',
+            'dibatalkan' => 'Dibatalkan',
+        ];
+        $label = $statusLabels[$validated['status']] ?? $validated['status'];
+
+        Notification::create([
+            'id_user'  => $order->id_user,
+            'id_order' => $order->id_order,
+            'message'  => "Status pesanan Anda #{$order->id_order} telah diubah menjadi: {$label}.",
+            'is_read'  => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pesanan berhasil diperbarui.',
+        ]);
     }
 }

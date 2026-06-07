@@ -8,6 +8,9 @@ export const sellerApi = {
     getOrderDetail(id) {
         return apiClient.get(`/seller/orders/${id}`)
     },
+    updateOrderStatus(id, status) {
+        return apiClient.put(`/seller/orders/${id}/status`, { status })
+    },
 
     // Produk
     getProducts() {

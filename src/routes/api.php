@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,11 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Store onboarding (US-08 langkah 2) ──────────────────────────────
     Route::post('store/setup', [StoreController::class, 'setup']);
 
+    // ── Buyer Orders ─────────────────────────────────────────────────────
+    Route::get('orders',      [OrderController::class, 'index']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+    Route::post('orders',     [OrderController::class, 'store']);
+
     // ── Seller ───────────────────────────────────────────────────────────
     Route::prefix('seller')->group(function () {
         // FR-12: Dashboard metrik + pesanan terbaru
-        Route::get('dashboard',   [SellerDashboardController::class, 'index']);
-        Route::get('orders/{id}', [SellerDashboardController::class, 'show']);
+        Route::get('dashboard',          [SellerDashboardController::class, 'index']);
+        Route::get('orders/{id}',        [SellerDashboardController::class, 'show']);
+        Route::put('orders/{id}/status', [SellerDashboardController::class, 'updateStatus']);
 
         // Kelola produk toko
         Route::get('products',        [ProductController::class, 'index']);
