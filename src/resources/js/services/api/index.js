@@ -1,10 +1,9 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-    baseURL: '/api', // sama-origin: tidak ada CORS karena Laravel serve Vue
+    baseURL: '/api',
     headers: {
-        'Content-Type': 'application/json',
-        'Accept':       'application/json',
+        'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
     },
     withCredentials: true,
@@ -16,6 +15,7 @@ apiClient.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
+    // Biarkan axios mengatur Content-Type (FormData → multipart, JSON → application/json)
     return config
 })
 

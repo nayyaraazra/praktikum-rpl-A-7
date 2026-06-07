@@ -176,7 +176,6 @@ const handleVerify = async (id, status) => {
     try {
         const res = await adminService.verifyStore(id, status);
         if (res.success) {
-            // Refresh data
             fetchDashboard();
         }
     } catch (error) {
