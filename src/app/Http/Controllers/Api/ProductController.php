@@ -27,7 +27,8 @@ class ProductController extends Controller
         $products = Product::where('id_store', $store->id_store)
             ->with('category:id_category,name_category')
             ->latest()
-            ->get();
+            ->get()
+            ->map(fn($p) => $this->formatProduct($p));
 
         return response()->json(['success' => true, 'data' => $products]);
     }
@@ -53,6 +54,7 @@ class ProductController extends Controller
             'min_order'   => ['required', 'integer', 'min:1'],
             'category_name' => ['required', 'string', 'max:100'],
             'is_active'   => ['boolean'],
+            'image'       => ['nullable', 'image', 'max:2048'],
         ]);
 
         // Cari atau buat kategori
@@ -60,24 +62,30 @@ class ProductController extends Controller
             ['name_category' => $validated['category_name']]
         );
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
         $product = Product::create([
-            'id_store'    => $store->id_store,
-            'id_category' => $category->id_category,
-            'name'        => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'price'       => $validated['price'],
-            'stock'       => $validated['stock'],
-            'unit'        => $validated['unit'],
-            'min_order'   => $validated['min_order'],
-            'is_active'   => $validated['is_active'] ?? 1,
-            'rating'      => 0.00,
-            'review_count'=> 0,
+            'id_store'      => $store->id_store,
+            'id_category'   => $category->id_category,
+            'name'          => $validated['name'],
+            'description'   => $validated['description'] ?? null,
+            'price'         => $validated['price'],
+            'stock'         => $validated['stock'],
+            'unit'          => $validated['unit'],
+            'min_order'     => $validated['min_order'],
+            'is_active'     => $validated['is_active'] ?? 1,
+            'image_product' => $imagePath,
+            'rating'        => 0.00,
+            'review_count'  => 0,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil ditambahkan.',
-            'data'    => $product->load('category'),
+            'data'    => $this->formatProduct($product->load('category')),
         ], 201);
     }
 
@@ -99,6 +107,7 @@ class ProductController extends Controller
             'min_order'     => ['sometimes', 'integer', 'min:1'],
             'category_name' => ['sometimes', 'string', 'max:100'],
             'is_active'     => ['boolean'],
+            'image'         => ['nullable', 'image', 'max:2048'],
         ]);
 
         if (isset($validated['category_name'])) {
@@ -109,12 +118,16 @@ class ProductController extends Controller
             unset($validated['category_name']);
         }
 
+        if ($request->hasFile('image')) {
+            $validated['image_product'] = $request->file('image')->store('products', 'public');
+        }
+
         $product->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil diperbarui.',
-            'data'    => $product->fresh()->load('category'),
+            'data'    => $this->formatProduct($product->fresh()->load('category')),
         ]);
     }
 
@@ -133,5 +146,14 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Produk berhasil dihapus.',
         ]);
+    }
+
+    private function formatProduct(Product $product): array
+    {
+        $data = $product->toArray();
+        $data['image_url'] = $product->image_product
+            ? asset('storage/' . $product->image_product)
+            : null;
+        return $data;
     }
 }

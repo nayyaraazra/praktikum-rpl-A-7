@@ -30,7 +30,7 @@
         Kelola Produk
       </RouterLink>
 
-      <RouterLink :to="{ name: 'store.setup' }" class="nav-item" active-class="active">
+      <RouterLink :to="{ name: 'seller.store-profile' }" class="nav-item" active-class="active">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-width="1.8"/>
         </svg>

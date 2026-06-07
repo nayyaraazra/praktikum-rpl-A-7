@@ -17,9 +17,22 @@ export const sellerApi = {
         return apiClient.post('/seller/products', payload)
     },
     updateProduct(id, payload) {
-        return apiClient.put(`/seller/products/${id}`, payload)
+        return payload instanceof FormData
+            ? apiClient.post(`/seller/products/${id}`, payload)
+            : apiClient.put(`/seller/products/${id}`, payload)
     },
     deleteProduct(id) {
         return apiClient.delete(`/seller/products/${id}`)
+    },
+
+    // Profil toko
+    getStore() {
+        return apiClient.get('/seller/store')
+    },
+    updateStore(payload) {
+        const isFormData = payload instanceof FormData
+        return isFormData
+            ? apiClient.post('/seller/store', payload)
+            : apiClient.put('/seller/store', payload)
     },
 }

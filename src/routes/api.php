@@ -36,6 +36,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
     });
 
+    // ── Debug ──────────────────────────────────────────────────────────────
+    Route::post('debug-upload', function (\Illuminate\Http\Request $req) {
+        $file = $req->file('image');
+        return response()->json([
+            'content_type' => $req->header('Content-Type'),
+            'hasFile'      => $req->hasFile('image'),
+            'hasFileKey'   => $req->has('image'),
+            'file'         => $file ? [
+                'originalName'  => $file->getClientOriginalName(),
+                'mimeType'      => $file->getMimeType(),
+                'size'          => $file->getSize(),
+                'isValid'       => $file->isValid(),
+                'error'         => $file->getError(),
+                'path'          => $file->getRealPath(),
+                'extension'     => $file->extension(),
+            ] : null,
+            'files'        => $_FILES,
+            'method'       => $req->method(),
+            'all'          => $req->except(['_method']),
+            'files_keys'   => array_keys($req->allFiles()),
+            'php_version'  => phpversion(),
+        ]);
+    });
+
     // ── Seller ───────────────────────────────────────────────────────────
     Route::prefix('seller')->group(function () {
         // FR-12: Dashboard metrik + pesanan terbaru
@@ -45,7 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Kelola produk toko
         Route::get('products',        [ProductController::class, 'index']);
         Route::post('products',       [ProductController::class, 'store']);
-        Route::put('products/{id}',   [ProductController::class, 'update']);
+        Route::match(['put', 'post'], 'products/{id}', [ProductController::class, 'update']);
         Route::delete('products/{id}',[ProductController::class, 'destroy']);
+
+        // Profil toko
+        Route::get('store',  [StoreController::class, 'show']);
+        Route::match(['put', 'post'], 'store', [StoreController::class, 'update']);
     });
 });

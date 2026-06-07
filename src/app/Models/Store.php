@@ -14,11 +14,14 @@ class Store extends Model
         'id_user',
         'store_name',
         'store_category',
+        'store_logo',
         'description',
         'address',
         'verification_status',
         'operating_hours',
         'district',
+        'instagram',
+        'whatsapp',
     ];
 
     public function owner(): BelongsTo

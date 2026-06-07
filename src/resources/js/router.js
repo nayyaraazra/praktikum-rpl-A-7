@@ -57,6 +57,13 @@ const routes = [
         component: () => import('@/pages/seller/SellerProductsPage.vue'),
         meta: { requiresAuth: true, requiresRole: 'seller' },
     },
+    // Profil toko seller
+    {
+        path: '/seller/store-profile',
+        name: 'seller.store-profile',
+        component: () => import('@/pages/seller/SellerStoreProfilePage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'seller' },
+    },
 
     // ── Admin ────────────────────────────────────────────────────────────
     {

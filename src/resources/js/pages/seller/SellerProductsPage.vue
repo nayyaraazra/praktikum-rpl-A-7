@@ -126,6 +126,22 @@
               <span v-if="errors.description" class="field-error-show">{{ errors.description }}</span>
             </div>
 
+            <div class="field">
+              <label class="field-label">Gambar Produk</label>
+              <div class="image-upload-wrap">
+                <label class="image-upload-btn">
+                  <input type="file" accept="image/*" @change="onImageChange" />
+                  <span v-if="form.imagePreview">Ganti Gambar</span>
+                  <span v-else>Pilih Gambar</span>
+                </label>
+                <div v-if="form.imagePreview" class="image-preview-sm">
+                  <img :src="form.imagePreview" alt="Preview" />
+                  <button type="button" class="image-remove" @click="removeImage">&times;</button>
+              </div>
+              <span v-if="errors.image" class="field-error-show">{{ errors.image }}</span>
+            </div>
+          </div>
+
             <div class="toggle-row">
               <span class="toggle-label">Produk Aktif</span>
               <button type="button" role="switch" :aria-checked="form.is_active" :class="['toggle-switch', form.is_active && 'active']" @click="form.is_active = !form.is_active">
@@ -171,6 +187,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import SellerSidebar from '@/components/seller/SellerSidebar.vue'
 import { sellerApi } from '@/services/api/sellerApi'
+import apiClient from '@/services/api'
 
 const products        = ref([])
 const loading         = ref(true)
@@ -181,6 +198,7 @@ const showDeleteConfirm = ref(false)
 const deletingProduct = ref(null)
 const errors          = reactive({})
 const globalError     = ref('')
+const imageFile       = ref(null)
 
 const emptyForm = () => ({
   name: '',
@@ -191,6 +209,7 @@ const emptyForm = () => ({
   min_order: 1,
   description: '',
   is_active: true,
+  imagePreview: null,
 })
 
 const form = reactive(emptyForm())
@@ -212,22 +231,42 @@ async function fetchProducts() {
 function openAddModal() {
   editingProduct.value = null
   Object.assign(form, emptyForm())
+  imageFile.value = null
   clearErrors()
   showModal.value = true
 }
 
 function openEditModal(product) {
   editingProduct.value = product
-  form.name          = product.name
-  form.category_name = product.category?.name_category || ''
-  form.price         = product.price
-  form.stock         = product.stock
-  form.unit          = product.unit
-  form.min_order     = product.min_order
-  form.description   = product.description || ''
-  form.is_active     = !!product.is_active
+  form.name           = product.name
+  form.category_name  = product.category?.name_category || ''
+  form.price          = product.price
+  form.stock          = product.stock
+  form.unit           = product.unit
+  form.min_order      = product.min_order
+  form.description    = product.description || ''
+  form.is_active      = !!product.is_active
+  imageFile.value     = null
+  form.imagePreview   = product.image_url || null
   clearErrors()
   showModal.value = true
+}
+
+function onImageChange(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) {
+    errors.image = 'Maksimal 2MB.'
+    return
+  }
+  imageFile.value = file
+  form.imagePreview = URL.createObjectURL(file)
+  delete errors.image
+}
+
+function removeImage() {
+  imageFile.value = null
+  form.imagePreview = null
 }
 
 function closeModal() {
@@ -250,27 +289,55 @@ function validate() {
   let valid = true
   if (!form.name.trim())              { errors.name = 'Nama produk wajib diisi.'; valid = false }
   if (!form.category_name.trim())     { errors.category_name = 'Kategori wajib diisi.'; valid = false }
-  if (!form.price || form.price < 0)  { errors.price = 'Harga harus diisi (min 0).'; valid = false }
+  if (form.price === '' || isNaN(form.price) || form.price < 0)  { errors.price = 'Harga harus diisi (min 0).'; valid = false }
   if (form.stock === '' || form.stock < 0) { errors.stock = 'Stok harus diisi (min 0).'; valid = false }
   if (!form.unit)                     { errors.unit = 'Pilih satuan.'; valid = false }
   if (!form.min_order || form.min_order < 1) { errors.min_order = 'Min. pesan minimal 1.'; valid = false }
   return valid
 }
 
+function buildFormData(data, file) {
+  const fd = new FormData()
+  Object.keys(data).forEach(k => {
+    if (k === 'imagePreview') return
+    if (k === 'is_active') { fd.append(k, data[k] ? '1' : '0'); return }
+    fd.append(k, data[k])
+  })
+  if (file) fd.append('image', file)
+  return fd
+}
+
 async function handleSave() {
   if (!validate()) return
   saving.value = true
   try {
-    if (editingProduct.value) {
-      await sellerApi.updateProduct(editingProduct.value.id_product, form)
+    const isUpdate = !!editingProduct.value
+    const hasFile = imageFile.value instanceof File
+    if (hasFile) {
+      const fd = buildFormData(form, imageFile.value)
+      for (const [k, v] of fd.entries()) console.log(k, v instanceof File ? `File(name=${v.name}, type=${v.type}, size=${v.size})` : v)
+      const debugRes = await apiClient.post('/debug-upload', fd)
+      console.log('DEBUG UPLOAD RESPONSE:', JSON.stringify(debugRes.data, null, 2))
+      if (isUpdate) {
+        await sellerApi.updateProduct(editingProduct.value.id_product, fd)
+      } else {
+        await sellerApi.createProduct(fd)
+      }
     } else {
-      await sellerApi.createProduct(form)
+      const payload = Object.assign({}, form)
+      delete payload.imagePreview
+      if (isUpdate) {
+        await sellerApi.updateProduct(editingProduct.value.id_product, payload)
+      } else {
+        await sellerApi.createProduct(payload)
+      }
     }
     closeModal()
     await fetchProducts()
   } catch (err) {
     const res = err.response
     if (res?.status === 422) {
+      console.error('422 details:', JSON.stringify(res.data, null, 2))
       const fieldErrors = res.data.errors ?? {}
       Object.keys(fieldErrors).forEach(f => { errors[f] = fieldErrors[f][0] })
     } else {
