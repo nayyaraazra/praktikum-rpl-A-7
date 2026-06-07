@@ -50,6 +50,17 @@
     ══════════════════════════════════════════════════ -->
     <main class="form-panel">
 
+      <!-- Back Link -->
+      <div>
+        <button type="button" class="back-link" @click="handleSkip">
+          <svg style="width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Kembali ke Beranda
+        </button>
+      </div>
+
       <!-- Header -->
       <div class="form-header">
         <div class="form-header-icon">🏪</div>
@@ -546,6 +557,7 @@ async function handleSubmit() {
 
     showToast('Profil toko berhasil disimpan! Menunggu verifikasi admin.', 'success', 3000)
 
+    localStorage.removeItem('store_onboarding_skipped')
     // Perbarui data user di store agar guard tahu profil sudah diisi
     await authStore.fetchCurrentUser()
 
@@ -567,6 +579,7 @@ async function handleSubmit() {
 }
 
 function handleSkip() {
+  localStorage.setItem('store_onboarding_skipped', '1')
   router.push({ name: 'home' })
 }
 
@@ -1003,5 +1016,24 @@ function showToast(msg, type = '', duration = 3200) {
   .time-separator { display: none; }
   .action-row { flex-direction: column-reverse; }
   .btn-primary { max-width: 100%; }
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--blue-600, #185FA5);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: color 0.18s;
+}
+.back-link:hover {
+  color: var(--blue-850, #0f4880);
+  text-decoration: underline;
 }
 </style>

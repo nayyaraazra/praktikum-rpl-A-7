@@ -62,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null
         localStorage.removeItem('auth_user')
         localStorage.removeItem('auth_token')
+        localStorage.removeItem('store_onboarding_skipped')
     }
 
     return {
