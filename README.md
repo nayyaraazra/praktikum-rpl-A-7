@@ -49,8 +49,8 @@ kulaan-project/
     └── vite.config.js    # Konfigurasi utama bundling dan kompilasi aset frontend menggunakan Vite
 ```
 ## Fitur yang Sudah Ada
-US-01: Register Account
-US-02: Login Account
+* US-01: Register Account
+* US-02: Login Account
 
 
 ## Setup & Run Project
