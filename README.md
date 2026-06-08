@@ -48,6 +48,10 @@ kulaan-project/
     ├── package.json      # Daftar dependensi library JavaScript (Vue.js, Vite) dan perintah script NPM
     └── vite.config.js    # Konfigurasi utama bundling dan kompilasi aset frontend menggunakan Vite
 ```
+## Fitur yang Sudah Ada
+US-01: Register Account
+US-02: Login Account
+
 
 ## Setup & Run Project
 Berikut merupakan langkah untuk menjalankan project:
@@ -173,5 +177,7 @@ git push origin <nama-branch-anda>
 2. Klik **"Compare & pull request"**
 3. Pastikan base branch adalah `dev` (bukan `main`)
 4. Isi judul dan deskripsi PR dengan jelas
-5. Merge PR setelah disetujui
+
+
+6. Merge PR setelah disetujui
 
