@@ -97,9 +97,16 @@ const routes = [
 
     // ── Admin ────────────────────────────────────────────────────────────
     {
+        path: '/admin/login',
+        name: 'admin.login',
+        component: () => import('@/pages/admin/AdminLoginPage.vue'),
+        meta: { guestOnlyAdmin: true },
+    },
+    {
         path: '/admin',
         name: 'admin',
         component: () => import('@/pages/admin/AdminPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'admin' },
     },
 
     // ── Catch-all ────────────────────────────────────────────────────────
@@ -124,8 +131,17 @@ router.beforeEach((to) => {
         return { path: '/buyer/dashboard' }
     }
 
+    if (to.meta.guestOnlyAdmin && auth.isLoggedIn) {
+        if (auth.isAdmin) return { path: '/admin' }
+        if (auth.isSeller) return { path: '/seller/dashboard' }
+        return { path: '/buyer/dashboard' }
+    }
+
     // Halaman protected tidak bisa diakses sebelum login
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
+        if (to.meta.requiresRole === 'admin') {
+            return { path: '/admin/login' }
+        }
         return { path: '/login' }
     }
 

@@ -2,9 +2,15 @@
     <div class="min-h-screen bg-gray-50 p-6 md:p-12">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Admin Panel</h1>
-                <span class="inline-block mt-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium">Kulaan.id</span>
+            <div class="mb-8 flex justify-between items-start sm:items-center flex-col sm:flex-row gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Admin Panel</h1>
+                    <span class="inline-block mt-2 px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-medium">Kulaan.id</span>
+                </div>
+                <button @click="handleLogout" class="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 rounded-lg text-sm font-medium transition-colors flex items-center shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
             </div>
 
             <!-- Metrics Cards -->
@@ -146,7 +152,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { adminService } from '@/services/adminService';
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 const metrics = ref(null);
 const stores = ref([]);
@@ -214,6 +225,13 @@ const statusClass = (status) => {
     if (status === 'disetujui') return 'bg-green-100 text-green-800 border-green-200';
     if (status === 'dibatalkan') return 'bg-red-100 text-red-800 border-red-200';
     return 'bg-gray-100 text-gray-800 border-gray-200';
+};
+
+const handleLogout = async () => {
+    if (confirm('Apakah Anda yakin ingin logout?')) {
+        await authStore.logout();
+        router.push('/admin/login');
+    }
 };
 
 onMounted(() => {

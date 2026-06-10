@@ -29,8 +29,8 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// ── Admin (tanpa auth agar bisa diakses dari src.test/admin) ───────────
-Route::prefix('admin')->group(function () {
+// ── Admin ──────────────────────────────────────────────────────────────
+Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsureAdmin::class])->prefix('admin')->group(function () {
     Route::get('dashboard',                 [AdminController::class, 'getDashboard']);
     Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
 });
