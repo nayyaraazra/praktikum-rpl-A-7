@@ -10,6 +10,12 @@ export const buyerApi = {
     getCategories() {
         return apiClient.get('/categories')
     },
+    getStores(params = {}) {
+        return apiClient.get('/stores', { params })
+    },
+    getStore(id) {
+        return apiClient.get(`/stores/${id}`)
+    },
     createOrder(payload) {
         return apiClient.post('/orders', payload)
     },

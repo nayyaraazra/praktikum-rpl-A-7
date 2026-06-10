@@ -44,12 +44,12 @@
 
       <div class="nav-section">
         <div class="nav-section-label">Eksplorasi</div>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.stores' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           </svg>
           Toko UMKM
-        </a>
+        </router-link>
         <a class="nav-item" href="#">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />

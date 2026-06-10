@@ -10,6 +10,75 @@ use Illuminate\Http\Request;
 class StoreController extends Controller
 {
     /**
+     * GET /api/stores
+     * Ambil direktori toko UMKM (publik/buyer) yang sudah disetujui.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $query = Store::where('verification_status', 'disetujui')
+            ->withCount(['products' => function ($q) {
+                $q->where('is_active', 1);
+            }]);
+
+        if ($request->has('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function($q) use ($keyword) {
+                $q->where('store_name', 'like', "%{$keyword}%")
+                  ->orWhere('store_category', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
+        if ($request->has('category') && $request->category !== 'Semua Toko') {
+            $query->where('store_category', $request->category);
+        }
+
+        $stores = $query->paginate($request->get('per_page', 12));
+
+        // Format stores array using collect and transform
+        $formatted = $stores->getCollection()->map(function ($store) {
+            return $this->formatStore($store);
+        });
+
+        $stores->setCollection($formatted);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $stores->items(),
+            'meta'    => [
+                'current_page' => $stores->currentPage(),
+                'last_page'    => $stores->lastPage(),
+                'total'        => $stores->total(),
+            ]
+        ]);
+    }
+
+    /**
+     * GET /api/stores/{id}
+     * Ambil detail toko publik untuk buyer.
+     */
+    public function showPublic($id): JsonResponse
+    {
+        $store = Store::where('verification_status', 'disetujui')
+            ->with(['products' => function($q) {
+                $q->where('is_active', 1)->with('category');
+            }])
+            ->find($id);
+
+        if (!$store) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Toko tidak ditemukan atau belum disetujui.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => $this->formatStore($store),
+        ]);
+    }
+
+    /**
      * POST /api/store/setup
      * Simpan profil toko pertama kali (onboarding).
      */

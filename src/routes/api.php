@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
 // ── Buyer / Public ──────────────────────────────────────────────────────
 Route::get('products',     [ProductController::class, 'catalog']);
 Route::get('products/{id}', [ProductController::class, 'show']);
+Route::get('stores',       [StoreController::class, 'index']);
+Route::get('stores/{id}',  [StoreController::class, 'showPublic']);
 Route::get('categories',   function () {
     return App\Models\Category::select('id_category', 'name_category')->get();
 });
