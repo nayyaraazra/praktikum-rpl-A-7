@@ -187,7 +187,7 @@ class ProductController extends Controller
     {
         $products = Product::published()
             ->with([
-                'store:id_store,store_name,district',
+                'store:id_store,store_name,district,operating_hours',
                 'category:id_category,name_category',
             ])
             ->select('products.*')
@@ -219,7 +219,7 @@ class ProductController extends Controller
     {
         $query = Product::published()
             ->with([
-                'store:id_store,store_name,district',
+                'store:id_store,store_name,district,operating_hours',
                 'category:id_category,name_category',
             ]);
 
@@ -328,9 +328,10 @@ class ProductController extends Controller
                 : null,
             'store'        => $product->store
                 ? [
-                    'id_store'   => $product->store->id_store,
-                    'store_name' => $product->store->store_name,
-                    'district'   => $product->store->district,
+                    'id_store'        => $product->store->id_store,
+                    'store_name'      => $product->store->store_name,
+                    'district'        => $product->store->district,
+                    'operating_hours' => $product->store->operating_hours,
                 ]
                 : null,
             'category'     => $product->category

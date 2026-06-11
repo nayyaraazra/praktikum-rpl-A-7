@@ -78,6 +78,13 @@ class OrderController extends Controller
             ], 422);
         }
 
+        if ($product->store && !$product->store->isOpen()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Toko sedang tutup. Anda tidak dapat melakukan pemesanan saat ini.'
+            ], 422);
+        }
+
         if ($product->stock < $validated['quantity']) {
             return response()->json([
                 'success' => false,
