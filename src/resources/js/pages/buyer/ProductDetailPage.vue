@@ -155,6 +155,15 @@
             </div>
           </div>
 
+          <!-- Warning Banner if store is closed -->
+          <div v-if="isStoreClosed" class="store-closed-banner">
+            <span class="warning-icon">⚠️</span>
+            <div class="banner-content">
+              <strong>Toko sedang tutup</strong>
+              <p>Pemesanan hanya dapat dilakukan selama jam operasional toko.</p>
+            </div>
+          </div>
+
           <div class="qty-section">
             <div class="qty-label">Jumlah Pesanan</div>
             <div class="qty-control">
@@ -164,7 +173,7 @@
             </div>
           </div>
 
-          <button class="btn-order" :disabled="product.stock < 1" @click="orderNow">
+          <button class="btn-order" :disabled="product.stock < 1 || isStoreClosed" @click="orderNow">
             🛒 Pesan Sekarang — Rp {{ formatPrice(totalPrice) }}
           </button>
           <a v-if="waUrl" :href="waUrl" target="_blank" class="btn-whatsapp">
@@ -184,6 +193,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
+import { isStoreOpen } from '@/services/storeHelper'
 
 const route = useRoute()
 const router = useRouter()
@@ -195,6 +205,11 @@ const error = ref(false)
 const quantity = ref(1)
 const unreadCount = ref(0)
 const activeOrdersCount = ref(0)
+
+const isStoreClosed = computed(() => {
+  if (!product.value?.store) return false
+  return !isStoreOpen(product.value.store.operating_hours)
+})
 
 const userInitials = computed(() => {
   const name = authStore.user?.name || 'P'
@@ -994,5 +1009,37 @@ onMounted(() => {
 
 .btn-back-shop:hover {
   background: var(--brand-700);
+}
+
+/* Store Closed Warning Banner Styles */
+.store-closed-banner {
+  background: #FCEBEB;
+  border: 1.5px solid #E24B4A;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.warning-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.banner-content strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #E24B4A;
+  margin-bottom: 2px;
+}
+
+.banner-content p {
+  font-size: 12px;
+  color: var(--gray-600);
+  margin: 0;
+  line-height: 1.4;
 }
 </style>

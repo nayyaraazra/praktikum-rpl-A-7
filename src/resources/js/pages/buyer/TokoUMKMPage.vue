@@ -122,6 +122,7 @@
             <div class="store-card-name-row">
               <span class="store-card-name">{{ store.store_name }}</span>
               <span class="verified-icon">✓</span>
+              <span v-if="!isStoreOpen(store.operating_hours)" class="store-closed-badge">Tutup</span>
             </div>
             <div class="store-card-cat">{{ formatCategory(store.store_category) }}</div>
             <div class="store-card-info-list">
@@ -150,6 +151,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
+import { isStoreOpen } from '@/services/storeHelper'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -320,4 +322,16 @@ onMounted(() => {
 
 .btn-visit { padding: 6px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--gray-100); background: #fff; font-size: 12px; font-weight: 600; color: var(--gray-700); cursor: pointer; transition: all 0.15s; }
 .btn-visit:hover { border-color: var(--brand-400); color: var(--brand-700); background: var(--brand-50); }
+
+.store-closed-badge {
+  background: var(--red-50);
+  color: var(--red-400);
+  border: 1px solid var(--red-400);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  margin-left: 4px;
+  text-transform: uppercase;
+}
 </style>

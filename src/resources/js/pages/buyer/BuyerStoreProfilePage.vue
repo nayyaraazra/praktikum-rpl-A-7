@@ -102,6 +102,7 @@
               <div class="store-name-row">
                 <h1 class="store-name">{{ store.store_name }}</h1>
                 <span v-if="store.verification_status === 'disetujui'" class="verified-badge">Terverifikasi</span>
+                <span v-if="!isStoreOpen(store.operating_hours)" class="profile-store-closed-badge">Tutup</span>
               </div>
               <p class="store-desc">{{ store.description || 'Belum ada deskripsi toko.' }}</p>
               <div class="store-meta">
@@ -128,9 +129,16 @@
                   :to="{ name: 'buyer.product-detail', params: { id: p.id_product } }"
                   class="product-card-store"
                 >
-                  <div v-if="p.image_url" class="product-thumb-img" :style="{ backgroundImage: 'url(' + p.image_url + ')' }"></div>
+                  <div v-if="p.image_url" class="product-thumb-img" :style="{ backgroundImage: 'url(' + p.image_url + ')' }">
+                    <div v-if="!isStoreOpen(store.operating_hours)" class="product-closed-overlay">
+                      <span class="product-closed-text">TUTUP</span>
+                    </div>
+                  </div>
                   <div v-else :class="['product-thumb', thumbBgClass(i)]">
                     <span class="product-thumb-emoji">{{ productEmoji(p.name) }}</span>
+                    <div v-if="!isStoreOpen(store.operating_hours)" class="product-closed-overlay">
+                      <span class="product-closed-text">TUTUP</span>
+                    </div>
                   </div>
                   <div class="product-info">
                     <div class="product-name">{{ p.name }}</div>
@@ -191,6 +199,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
+import { isStoreOpen } from '@/services/storeHelper'
 
 const router = useRouter()
 const route = useRoute()
@@ -616,4 +625,41 @@ onMounted(() => {
   pointer-events: none;
 }
 
+/* Store Closed Badge & Overlay Styles */
+.profile-store-closed-badge {
+  background: #FCEBEB;
+  color: #E24B4A;
+  border: 1.5px solid #E24B4A;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.product-closed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(226, 75, 74, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(1.5px);
+  z-index: 5;
+}
+
+.product-closed-text {
+  background: #E24B4A;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(226, 75, 74, 0.3);
+}
 </style>
