@@ -370,16 +370,17 @@ const storeCategories = [
 ]
 
 const districts = [
-  { value: 'jebres',         label: 'Jebres' },
-  { value: 'tegalharjo',     label: 'Tegalharjo' },
-  { value: 'kepatihan_kulon', label: 'Kepatihan Kulon' },
-  { value: 'kepatihan_wetan', label: 'Kepatihan Wetan' },
-  { value: 'pucang_sawit',   label: 'Pucang Sawit' },
-  { value: 'gandekan',       label: 'Gandekan' },
-  { value: 'sewu',           label: 'Sewu' },
-  { value: 'pucangsawit',    label: 'Pucangsawit' },
-  { value: 'jagalan',        label: 'Jagalan' },
-  { value: 'mojosongo',      label: 'Mojosongo' },
+  { value: 'sudiroprajan',     label: 'Sudiroprajan' },
+  { value: 'gandekan',         label: 'Gandekan' },
+  { value: 'sewu',             label: 'Sewu' },
+  { value: 'jagalan',          label: 'Jagalan' },
+  { value: 'pucang_sawit',     label: 'Pucang Sawit' },
+  { value: 'jebres',           label: 'Jebres' },
+  { value: 'mojosongo',        label: 'Mojosongo' },
+  { value: 'tegalharjo',       label: 'Tegalharjo' },
+  { value: 'purwodiningratan', label: 'Purwodiningratan' },
+  { value: 'kepatihan_wetan',  label: 'Kepatihan Wetan' },
+  { value: 'kepatihan_kulon',  label: 'Kepatihan Kulon' },
 ]
 
 function mapCategory(oldCat) {
