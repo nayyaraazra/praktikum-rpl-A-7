@@ -85,7 +85,10 @@
         <div class="podium-wrap">
           <div class="podium-card" v-if="rank2" @click="goToProduct(rank2.id_product)">
             <div class="podium-rank">2</div>
-            <div class="podium-emoji">{{ productEmoji(rank2) }}</div>
+            <div v-if="rank2.image_url" class="podium-img-wrap">
+              <img :src="rank2.image_url" :alt="rank2.name" class="podium-img" />
+            </div>
+            <div v-else class="podium-emoji">{{ productEmoji(rank2) }}</div>
             <div class="podium-title">{{ rank2.name }}</div>
             <div class="podium-store" @click.stop="goToStore(rank2.store?.id_store)">{{ rank2.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank2.price) }}</div>
@@ -94,7 +97,10 @@
 
           <div class="podium-card rank-1" v-if="rank1" @click="goToProduct(rank1.id_product)">
             <div class="podium-rank">1</div>
-            <div class="podium-emoji">{{ productEmoji(rank1) }}</div>
+            <div v-if="rank1.image_url" class="podium-img-wrap">
+              <img :src="rank1.image_url" :alt="rank1.name" class="podium-img" />
+            </div>
+            <div v-else class="podium-emoji">{{ productEmoji(rank1) }}</div>
             <div class="podium-title">{{ rank1.name }}</div>
             <div class="podium-store" @click.stop="goToStore(rank1.store?.id_store)">{{ rank1.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank1.price) }}</div>
@@ -103,7 +109,10 @@
 
           <div class="podium-card" v-if="rank3" @click="goToProduct(rank3.id_product)">
             <div class="podium-rank">3</div>
-            <div class="podium-emoji">{{ productEmoji(rank3) }}</div>
+            <div v-if="rank3.image_url" class="podium-img-wrap">
+              <img :src="rank3.image_url" :alt="rank3.name" class="podium-img" />
+            </div>
+            <div v-else class="podium-emoji">{{ productEmoji(rank3) }}</div>
             <div class="podium-title">{{ rank3.name }}</div>
             <div class="podium-store" @click.stop="goToStore(rank3.store?.id_store)">{{ rank3.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank3.price) }}</div>
@@ -326,6 +335,34 @@ onMounted(() => {
 .podium-emoji {
   font-size: 64px;
   margin: 12px 0;
+}
+
+.podium-img-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdfdfd;
+  border: 1.5px solid var(--gray-100);
+  box-shadow: var(--shadow-xs);
+}
+
+.rank-1 .podium-img-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  border-color: var(--amber-200);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.12);
+}
+
+.podium-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .podium-title {
