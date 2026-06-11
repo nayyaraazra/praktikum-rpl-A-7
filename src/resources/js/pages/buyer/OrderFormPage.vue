@@ -177,6 +177,15 @@
         <div class="order-right">
           <div class="order-summary-card">
             <div class="order-summary-title">Ringkasan Pesanan</div>
+
+            <!-- Warning Alert if store is closed -->
+            <div v-if="isStoreClosed" class="store-closed-summary-alert">
+              <span class="warning-icon">⚠️</span>
+              <div class="warning-body">
+                <span class="warning-title">Toko Sedang Tutup</span>
+                <p class="warning-text">Anda tidak dapat mengirim pesanan saat ini karena toko sedang tutup.</p>
+              </div>
+            </div>
             <div class="order-item-row">
               <div class="order-item-thumb">
                 <span v-if="product.image_url">
@@ -207,7 +216,7 @@
             </div>
             <button
               class="btn-order"
-              :disabled="submitting || !authStore.user?.address"
+              :disabled="submitting || !authStore.user?.address || isStoreClosed"
               @click="submitOrder"
             >
               {{ submitting ? 'Mengirim...' : 'Kirim Pesanan' }}
@@ -232,6 +241,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
+import { isStoreOpen } from '@/services/storeHelper'
 
 const route = useRoute()
 const router = useRouter()
@@ -280,6 +290,11 @@ const totalPrice = computed(() => {
   return product.value.price * quantity.value
 })
 
+const isStoreClosed = computed(() => {
+  if (!product.value?.store) return false
+  return !isStoreOpen(product.value.store.operating_hours)
+})
+
 function formatPrice(price) {
   return Number(price).toLocaleString('id-ID')
 }
@@ -318,6 +333,11 @@ function validateForm() {
 }
 
 async function submitOrder() {
+  if (isStoreClosed.value) {
+    showToast('Toko sedang tutup. Pemesanan tidak dapat dikirim saat ini.', 'error')
+    return
+  }
+
   if (!validateForm()) {
     showToast('Harap lengkapi semua field wajib.', 'error')
     return
@@ -968,5 +988,32 @@ textarea.form-input-plain {
 }
 .btn-warning-link:hover {
   background: #B45309;
+}
+
+/* Store Closed Alert in Order Form Summary Card */
+.store-closed-summary-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #FCEBEB;
+  border: 1px solid #E24B4A;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.store-closed-summary-alert .warning-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #E24B4A;
+  margin-bottom: 4px;
+}
+
+.store-closed-summary-alert .warning-text {
+  font-size: 13px;
+  color: #C83F3F;
+  margin: 0;
+  line-height: 1.4;
 }
 </style>

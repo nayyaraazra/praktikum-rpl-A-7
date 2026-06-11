@@ -93,6 +93,9 @@
             <div class="podium-store" @click.stop="goToStore(rank2.store?.id_store)">{{ rank2.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank2.price) }}</div>
             <div class="podium-sold">Terjual {{ rank2.sold_count || 0 }} pcs</div>
+            <div v-if="rank2.store && !isStoreOpen(rank2.store.operating_hours)" class="podium-closed-overlay">
+              <span class="podium-closed-text">TUTUP</span>
+            </div>
           </div>
 
           <div class="podium-card rank-1" v-if="rank1" @click="goToProduct(rank1.id_product)">
@@ -105,6 +108,9 @@
             <div class="podium-store" @click.stop="goToStore(rank1.store?.id_store)">{{ rank1.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank1.price) }}</div>
             <div class="podium-sold">Terjual {{ rank1.sold_count || 0 }} pcs</div>
+            <div v-if="rank1.store && !isStoreOpen(rank1.store.operating_hours)" class="podium-closed-overlay">
+              <span class="podium-closed-text">TUTUP</span>
+            </div>
           </div>
 
           <div class="podium-card" v-if="rank3" @click="goToProduct(rank3.id_product)">
@@ -117,6 +123,9 @@
             <div class="podium-store" @click.stop="goToStore(rank3.store?.id_store)">{{ rank3.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank3.price) }}</div>
             <div class="podium-sold">Terjual {{ rank3.sold_count || 0 }} pcs</div>
+            <div v-if="rank3.store && !isStoreOpen(rank3.store.operating_hours)" class="podium-closed-overlay">
+              <span class="podium-closed-text">TUTUP</span>
+            </div>
           </div>
         </div>
 
@@ -135,6 +144,9 @@
               <div v-if="!product.image_url" class="product-card-thumb-emoji">{{ productEmoji(product) }}</div>
               <img v-else :src="product.image_url" :alt="product.name" class="product-card-img" />
               <div v-if="product.category" class="product-card-badge">{{ product.category.name_category }}</div>
+              <div v-if="product.store && !isStoreOpen(product.store.operating_hours)" class="product-closed-overlay">
+                <span class="product-closed-text">TUTUP</span>
+              </div>
             </div>
             <div class="product-card-info">
               <div class="product-card-store" @click.stop="goToStore(product.store?.id_store)">{{ product.store?.store_name || 'Toko UMKM' }}</div>
@@ -164,6 +176,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { buyerApi } from '@/services/api/buyerApi'
+import { isStoreOpen } from '@/services/storeHelper'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -440,5 +453,56 @@ onMounted(() => {
   color: var(--gray-400);
   font-size: 14px;
   margin: 0;
+}
+
+/* Store Closed Overlay Styles */
+.product-closed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(1.5px);
+  z-index: 5;
+}
+
+.product-closed-text {
+  background: #EF4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.podium-closed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(239, 68, 68, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(1.5px);
+  z-index: 5;
+}
+
+.podium-closed-text {
+  background: #EF4444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 </style>
