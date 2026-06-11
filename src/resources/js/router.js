@@ -64,6 +64,24 @@ const routes = [
         component: () => import('@/pages/buyer/ProfilePage.vue'),
         meta: { requiresAuth: true, requiresRole: 'buyer' },
     },
+    {
+        path: '/buyer/stores',
+        name: 'buyer.stores',
+        component: () => import('@/pages/buyer/TokoUMKMPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
+    },
+    {
+        path: '/buyer/store/:id',
+        name: 'buyer.store',
+        component: () => import('@/pages/buyer/BuyerStoreProfilePage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
+    },
+    {
+        path: '/buyer/popular',
+        name: 'buyer.popular',
+        component: () => import('@/pages/buyer/PopularProductsPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'buyer' },
+    },
 
     // ── Seller ───────────────────────────────────────────────────────────
     // Onboarding profil toko (US-08 langkah 2)
@@ -97,9 +115,16 @@ const routes = [
 
     // ── Admin ────────────────────────────────────────────────────────────
     {
+        path: '/admin/login',
+        name: 'admin.login',
+        component: () => import('@/pages/admin/AdminLoginPage.vue'),
+        meta: { guestOnlyAdmin: true },
+    },
+    {
         path: '/admin',
         name: 'admin',
         component: () => import('@/pages/admin/AdminPage.vue'),
+        meta: { requiresAuth: true, requiresRole: 'admin' },
     },
 
     // ── Catch-all ────────────────────────────────────────────────────────
@@ -124,8 +149,17 @@ router.beforeEach((to) => {
         return { path: '/buyer/dashboard' }
     }
 
+    if (to.meta.guestOnlyAdmin && auth.isLoggedIn) {
+        if (auth.isAdmin) return { path: '/admin' }
+        if (auth.isSeller) return { path: '/seller/dashboard' }
+        return { path: '/buyer/dashboard' }
+    }
+
     // Halaman protected tidak bisa diakses sebelum login
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
+        if (to.meta.requiresRole === 'admin') {
+            return { path: '/admin/login' }
+        }
         return { path: '/login' }
     }
 

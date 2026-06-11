@@ -180,6 +180,38 @@ class ProductController extends Controller
     }
 
     /**
+     * GET /api/products/popular
+     * Produk populer berdasarkan jumlah terjual (dari order_items) lalu rating tertinggi.
+     */
+    public function popular(): JsonResponse
+    {
+        $products = Product::published()
+            ->with([
+                'store:id_store,store_name,district',
+                'category:id_category,name_category',
+            ])
+            ->select('products.*')
+            ->selectSub(function ($q) {
+                $q->from('order_items')
+                  ->join('orders', 'orders.id_order', '=', 'order_items.id_order')
+                  ->whereColumn('order_items.id_product', 'products.id_product')
+                  ->whereNotIn('orders.status', ['dibatalkan'])
+                  ->selectRaw('COALESCE(SUM(order_items.quantity), 0)');
+            }, 'sold_count')
+            ->orderBy('sold_count', 'desc')
+            ->orderBy('rating', 'desc')
+            ->take(20)
+            ->get();
+
+        $products->transform(fn ($p) => $this->formatPopularItem($p));
+
+        return response()->json([
+            'success' => true,
+            'data'    => $products,
+        ]);
+    }
+
+    /**
      * GET /api/products
      * Katalog produk publik (buyer & guest) — hanya produk published.
      */
@@ -256,6 +288,7 @@ class ProductController extends Controller
                 : null,
             'store'        => $store
                 ? [
+                    'id_store'        => $store->id_store,
                     'store_name'      => $store->store_name,
                     'logo'            => $store->store_logo ? asset('storage/' . $store->store_logo) : null,
                     'description'     => $store->description,
@@ -295,6 +328,7 @@ class ProductController extends Controller
                 : null,
             'store'        => $product->store
                 ? [
+                    'id_store'   => $product->store->id_store,
                     'store_name' => $product->store->store_name,
                     'district'   => $product->store->district,
                 ]
@@ -305,6 +339,13 @@ class ProductController extends Controller
                 ]
                 : null,
         ];
+    }
+
+    private function formatPopularItem(Product $product): array
+    {
+        $data = $this->formatCatalogItem($product);
+        $data['sold_count'] = (int) $product->sold_count;
+        return $data;
     }
 
     private function formatProduct(Product $product): array

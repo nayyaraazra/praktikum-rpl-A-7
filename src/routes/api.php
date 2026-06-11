@@ -29,8 +29,8 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// ── Admin (tanpa auth agar bisa diakses dari src.test/admin) ───────────
-Route::prefix('admin')->group(function () {
+// ── Admin ──────────────────────────────────────────────────────────────
+Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsureAdmin::class])->prefix('admin')->group(function () {
     Route::get('dashboard',                 [AdminController::class, 'getDashboard']);
     Route::post('stores/{id_store}/verify', [AdminController::class, 'verifyStore']);
 });
@@ -69,8 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ── Buyer / Public ──────────────────────────────────────────────────────
-Route::get('products',     [ProductController::class, 'catalog']);
-Route::get('products/{id}', [ProductController::class, 'show']);
+Route::get('products',          [ProductController::class, 'catalog']);
+Route::get('products/popular',  [ProductController::class, 'popular']);
+Route::get('products/{id}',     [ProductController::class, 'show']);
+Route::get('stores',       [StoreController::class, 'index']);
+Route::get('stores/{id}',  [StoreController::class, 'showPublic']);
 Route::get('categories',   function () {
     return App\Models\Category::select('id_category', 'name_category')->get();
 });

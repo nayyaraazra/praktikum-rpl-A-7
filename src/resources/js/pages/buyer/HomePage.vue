@@ -44,18 +44,18 @@
 
       <div class="nav-section">
         <div class="nav-section-label">Eksplorasi</div>
-        <a class="nav-item" href="#">
+        <router-link class="nav-item" :to="{ name: 'buyer.stores' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           </svg>
           Toko UMKM
-        </a>
-        <a class="nav-item" href="#">
+        </router-link>
+        <router-link class="nav-item" :to="{ name: 'buyer.popular' }">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
           Produk Populer
-        </a>
+        </router-link>
       </div>
 
       <div class="sidebar-user">
@@ -215,7 +215,7 @@
               <div v-if="product.category" class="product-card-badge">{{ product.category.name_category }}</div>
             </div>
             <div class="product-card-info">
-              <div class="product-card-store">{{ product.store?.store_name || 'Toko UMKM' }}</div>
+              <div class="product-card-store" @click.stop="goToStore(product.store?.id_store)">{{ product.store?.store_name || 'Toko UMKM' }}</div>
               <div class="product-card-name">{{ product.name }}</div>
               <div class="product-card-bottom">
                 <div class="product-card-price">Rp {{ formatPrice(product.price) }}</div>
@@ -402,6 +402,11 @@ function goToPage(page) {
 
 function goToProduct(id) {
   router.push({ name: 'buyer.product-detail', params: { id } })
+}
+
+function goToStore(id) {
+  if (!id) return
+  router.push({ name: 'buyer.store', params: { id } })
 }
 
 async function fetchProducts() {
@@ -1055,6 +1060,12 @@ onUnmounted(() => {
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: .3px;
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.product-card-store:hover {
+  color: var(--brand-600);
 }
 
 .product-card-name {
