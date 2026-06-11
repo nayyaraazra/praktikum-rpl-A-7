@@ -288,6 +288,7 @@ class ProductController extends Controller
                 : null,
             'store'        => $store
                 ? [
+                    'id_store'        => $store->id_store,
                     'store_name'      => $store->store_name,
                     'logo'            => $store->store_logo ? asset('storage/' . $store->store_logo) : null,
                     'description'     => $store->description,
@@ -327,6 +328,7 @@ class ProductController extends Controller
                 : null,
             'store'        => $product->store
                 ? [
+                    'id_store'   => $product->store->id_store,
                     'store_name' => $product->store->store_name,
                     'district'   => $product->store->district,
                 ]

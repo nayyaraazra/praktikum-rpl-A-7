@@ -215,7 +215,7 @@
               <div v-if="product.category" class="product-card-badge">{{ product.category.name_category }}</div>
             </div>
             <div class="product-card-info">
-              <div class="product-card-store">{{ product.store?.store_name || 'Toko UMKM' }}</div>
+              <div class="product-card-store" @click.stop="goToStore(product.store?.id_store)">{{ product.store?.store_name || 'Toko UMKM' }}</div>
               <div class="product-card-name">{{ product.name }}</div>
               <div class="product-card-bottom">
                 <div class="product-card-price">Rp {{ formatPrice(product.price) }}</div>
@@ -402,6 +402,11 @@ function goToPage(page) {
 
 function goToProduct(id) {
   router.push({ name: 'buyer.product-detail', params: { id } })
+}
+
+function goToStore(id) {
+  if (!id) return
+  router.push({ name: 'buyer.store', params: { id } })
 }
 
 async function fetchProducts() {
@@ -1055,6 +1060,12 @@ onUnmounted(() => {
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: .3px;
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.product-card-store:hover {
+  color: var(--brand-600);
 }
 
 .product-card-name {

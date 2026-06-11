@@ -109,7 +109,7 @@
       <div v-else-if="stores.length === 0" style="padding: 40px; text-align: center; color: var(--gray-400);">Tidak ada toko ditemukan.</div>
 
       <div v-else class="stores-grid">
-        <div v-for="store in stores" :key="store.id_store" class="store-card">
+        <div v-for="store in stores" :key="store.id_store" class="store-card" @click="goToStore(store.id_store)">
           <div :class="['store-card-banner', getBannerClass(store)]">
             <div class="store-card-logo-wrap">
               <div v-if="!store.store_logo_url" class="store-card-logo" :style="getLogoStyle(store)">
@@ -120,7 +120,7 @@
           </div>
           <div class="store-card-body">
             <div class="store-card-name-row">
-              <a href="#" class="store-card-name">{{ store.store_name }}</a>
+              <span class="store-card-name">{{ store.store_name }}</span>
               <span class="verified-icon">✓</span>
             </div>
             <div class="store-card-cat">{{ formatCategory(store.store_category) }}</div>
@@ -136,7 +136,7 @@
             </div>
             <div class="store-card-footer">
               <div class="store-card-rating"><span>★</span> 4.8</div>
-              <button class="btn-visit" @click="$router.push({ name: 'buyer.store', params: { id: store.id_store } })">Kunjungi Toko</button>
+              <button class="btn-visit" @click.stop="goToStore(store.id_store)">Kunjungi Toko</button>
             </div>
           </div>
         </div>
@@ -212,6 +212,10 @@ async function fetchStores() {
   } finally {
     loading.value = false
   }
+}
+
+function goToStore(id) {
+  router.push({ name: 'buyer.store', params: { id } })
 }
 
 function getInitials(name) {

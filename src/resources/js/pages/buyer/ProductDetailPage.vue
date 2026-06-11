@@ -129,7 +129,7 @@
             <p class="detail-desc">{{ product.description }}</p>
           </div>
 
-          <div v-if="product.store" class="store-card">
+          <div v-if="product.store" class="store-card" @click="goToStore(product.store.id_store)">
           <img
             v-if="product.store?.logo"
             :src="product.store.logo"
@@ -253,6 +253,10 @@ function decrementQty() {
   if (product.value && quantity.value > product.value.min_order) {
     quantity.value--
   }
+}
+
+function goToStore(id) {
+  router.push({ name: 'buyer.store', params: { id } })
 }
 
 function orderNow() {
@@ -713,6 +717,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.store-card:hover {
+  background: var(--brand-50);
+  border-color: var(--brand-200);
 }
 
 .store-avatar {

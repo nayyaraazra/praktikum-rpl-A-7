@@ -83,29 +83,29 @@
 
       <template v-else-if="products.length > 0">
         <div class="podium-wrap">
-          <div class="podium-card" v-if="rank2">
+          <div class="podium-card" v-if="rank2" @click="goToProduct(rank2.id_product)">
             <div class="podium-rank">2</div>
             <div class="podium-emoji">{{ productEmoji(rank2) }}</div>
             <div class="podium-title">{{ rank2.name }}</div>
-            <div class="podium-store">{{ rank2.store?.store_name || '' }}</div>
+            <div class="podium-store" @click.stop="goToStore(rank2.store?.id_store)">{{ rank2.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank2.price) }}</div>
             <div class="podium-sold">Terjual {{ rank2.sold_count || 0 }} pcs</div>
           </div>
 
-          <div class="podium-card rank-1" v-if="rank1">
+          <div class="podium-card rank-1" v-if="rank1" @click="goToProduct(rank1.id_product)">
             <div class="podium-rank">1</div>
             <div class="podium-emoji">{{ productEmoji(rank1) }}</div>
             <div class="podium-title">{{ rank1.name }}</div>
-            <div class="podium-store">{{ rank1.store?.store_name || '' }}</div>
+            <div class="podium-store" @click.stop="goToStore(rank1.store?.id_store)">{{ rank1.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank1.price) }}</div>
             <div class="podium-sold">Terjual {{ rank1.sold_count || 0 }} pcs</div>
           </div>
 
-          <div class="podium-card" v-if="rank3">
+          <div class="podium-card" v-if="rank3" @click="goToProduct(rank3.id_product)">
             <div class="podium-rank">3</div>
             <div class="podium-emoji">{{ productEmoji(rank3) }}</div>
             <div class="podium-title">{{ rank3.name }}</div>
-            <div class="podium-store">{{ rank3.store?.store_name || '' }}</div>
+            <div class="podium-store" @click.stop="goToStore(rank3.store?.id_store)">{{ rank3.store?.store_name || '' }}</div>
             <div class="podium-price">Rp {{ formatPrice(rank3.price) }}</div>
             <div class="podium-sold">Terjual {{ rank3.sold_count || 0 }} pcs</div>
           </div>
@@ -128,7 +128,7 @@
               <div v-if="product.category" class="product-card-badge">{{ product.category.name_category }}</div>
             </div>
             <div class="product-card-info">
-              <div class="product-card-store">{{ product.store?.store_name || 'Toko UMKM' }}</div>
+              <div class="product-card-store" @click.stop="goToStore(product.store?.id_store)">{{ product.store?.store_name || 'Toko UMKM' }}</div>
               <div class="product-card-name">{{ product.name }}</div>
               <div class="product-card-bottom">
                 <div class="product-card-price">Rp {{ formatPrice(product.price) }}</div>
@@ -206,6 +206,11 @@ function formatPrice(price) {
 
 function goToProduct(id) {
   router.push({ name: 'buyer.product-detail', params: { id } })
+}
+
+function goToStore(id) {
+  if (!id) return
+  router.push({ name: 'buyer.store', params: { id } })
 }
 
 async function fetchPopularProducts() {
@@ -336,6 +341,12 @@ onMounted(() => {
   color: var(--gray-400);
   text-transform: uppercase;
   margin-bottom: 12px;
+  cursor: pointer;
+  transition: color .15s;
+}
+
+.podium-store:hover {
+  color: var(--brand-600);
 }
 
 .podium-price {
