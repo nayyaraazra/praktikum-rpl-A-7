@@ -4,6 +4,9 @@ export const buyerApi = {
     getProducts(params = {}) {
         return apiClient.get('/products', { params })
     },
+    getPopularProducts() {
+        return apiClient.get('/products/popular')
+    },
     getProduct(id) {
         return apiClient.get(`/products/${id}`)
     },
