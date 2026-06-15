@@ -13,22 +13,15 @@ use Illuminate\Support\Facades\DB;
 
 class SellerDashboardController extends Controller
 {
+    use HasStoreAccess;
+
     /**
      * GET /api/seller/dashboard
      * FR-12: Pemilik UMKM dapat melihat pesanan masuk & metrik toko.
      */
     public function index(Request $request): JsonResponse
     {
-        $user  = $request->user();
-        $store = $user->store;
-
-        if (! $store) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Toko belum terdaftar.',
-            ], 404);
-        }
-
+        $store = $this->getStoreOrAbort($request->user());
         $storeId = $store->id_store;
 
         // ── Metrik ────────────────────────────────────────────────────
@@ -127,7 +120,8 @@ class SellerDashboardController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $productIds = Product::where('id_store', $request->user()->store?->id_store)
+        $store = $this->getStoreOrAbort($request->user());
+        $productIds = Product::where('id_store', $store->id_store)
             ->pluck('id_product');
 
         $order = Order::whereHas('items', fn ($q) =>
@@ -148,13 +142,7 @@ class SellerDashboardController extends Controller
      */
     public function updateStatus(Request $request, int $id): JsonResponse
     {
-        $user  = $request->user();
-        $store = $user->store;
-
-        if (! $store) {
-            return response()->json(['success' => false, 'message' => 'Toko belum terdaftar.'], 404);
-        }
-
+        $store = $this->getStoreOrAbort($request->user());
         $productIds = Product::where('id_store', $store->id_store)->pluck('id_product');
 
         $order = Order::whereHas('items', fn ($q) =>

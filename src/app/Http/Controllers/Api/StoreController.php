@@ -1,14 +1,19 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
+use App\Http\Requests\SetupStoreRequest;
+use App\Http\Requests\UpdateStoreRequest;
+use App\Http\Resources\StoreResource;
 use App\Models\Store;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StoreController extends Controller
 {
+    use HasStoreAccess;
+
     /**
      * GET /api/stores
      * Ambil direktori toko UMKM (publik/buyer) yang sudah disetujui.
@@ -35,16 +40,9 @@ class StoreController extends Controller
 
         $stores = $query->paginate($request->get('per_page', 12));
 
-        // Format stores array using collect and transform
-        $formatted = $stores->getCollection()->map(function ($store) {
-            return $this->formatStore($store);
-        });
-
-        $stores->setCollection($formatted);
-
         return response()->json([
             'success' => true,
-            'data'    => $stores->items(),
+            'data'    => StoreResource::collection($stores->getCollection())->resolve(),
             'meta'    => [
                 'current_page' => $stores->currentPage(),
                 'last_page'    => $stores->lastPage(),
@@ -74,7 +72,7 @@ class StoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $this->formatStore($store),
+            'data'    => (new StoreResource($store))->resolve(),
         ]);
     }
 
@@ -82,17 +80,9 @@ class StoreController extends Controller
      * POST /api/store/setup
      * Simpan profil toko pertama kali (onboarding).
      */
-    public function setup(Request $request): JsonResponse
+    public function setup(SetupStoreRequest $request): JsonResponse
     {
-        $request->validate([
-            'store_name'      => ['required', 'string', 'max:255'],
-            'category'        => ['required', 'string'],
-            'district'        => ['required', 'string'],
-            'address'         => ['required', 'string'],
-            'operating_hours' => ['required', 'string'],
-            'description'     => ['nullable', 'string', 'max:200'],
-            'logo'            => ['nullable', 'image', 'max:2048'],
-        ]);
+        $validated = $request->validated();
 
         // Cek apakah user sudah punya toko yang disetujui — jangan timpa statusnya
         $existingStore = Store::where('id_user', $request->user()->id_user)->first();
@@ -111,13 +101,13 @@ class StoreController extends Controller
         $store = Store::updateOrCreate(
             ['id_user' => $request->user()->id_user],
             [
-                'store_name'          => $request->store_name,
-                'store_category'      => $request->category,
+                'store_name'          => $validated['store_name'],
+                'store_category'      => $validated['category'],
                 'store_logo'          => $logoPath,
-                'description'         => $request->description,
-                'address'             => $request->address,
-                'operating_hours'     => $request->operating_hours,
-                'district'            => $request->district,
+                'description'         => $validated['description'] ?? null,
+                'address'             => $validated['address'],
+                'operating_hours'     => $validated['operating_hours'],
+                'district'            => $validated['district'],
                 'verification_status' => 'menunggu',
             ]
         );
@@ -125,7 +115,7 @@ class StoreController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profil toko berhasil disimpan.',
-            'data'    => $this->formatStore($store),
+            'data'    => (new StoreResource($store))->resolve(),
         ], 201);
     }
 
@@ -135,18 +125,12 @@ class StoreController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $store = $request->user()->store()->with('products.category')->first();
-
-        if (! $store) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Toko belum terdaftar.',
-            ], 404);
-        }
+        $store = $this->getStoreOrAbort($request->user());
+        $store->load('products.category');
 
         return response()->json([
             'success' => true,
-            'data'    => $this->formatStore($store),
+            'data'    => (new StoreResource($store))->resolve(),
         ]);
     }
 
@@ -154,29 +138,10 @@ class StoreController extends Controller
      * PUT /api/seller/store
      * Perbarui profil toko seller yang login.
      */
-    public function update(Request $request): JsonResponse
+    public function update(UpdateStoreRequest $request): JsonResponse
     {
-        $store = $request->user()->store;
-
-        if (! $store) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Toko belum terdaftar.',
-            ], 404);
-        }
-
-        $validated = $request->validate([
-            'store_name'      => ['sometimes', 'required', 'string', 'max:255'],
-            'category'        => ['sometimes', 'required', 'string'],
-            'description'     => ['nullable', 'string', 'max:1000'],
-            'address'         => ['sometimes', 'required', 'string'],
-            'district'        => ['sometimes', 'required', 'string'],
-            'operating_hours' => ['sometimes', 'required', 'string'],
-            'store_category'  => ['sometimes', 'string'],
-            'instagram'       => ['nullable', 'string', 'max:255'],
-            'whatsapp'        => ['nullable', 'string', 'max:20'],
-            'store_logo'      => ['nullable', 'image', 'max:2048'],
-        ]);
+        $store = $this->getStoreOrAbort($request->user());
+        $validated = $request->validated();
 
         if (isset($validated['category'])) {
             $validated['store_category'] = $validated['category'];
@@ -192,27 +157,7 @@ class StoreController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profil toko berhasil diperbarui.',
-            'data'    => $this->formatStore($store->fresh()->load('products.category')),
+            'data'    => (new StoreResource($store->fresh()->load('products.category')))->resolve(),
         ]);
-    }
-
-    /**
-     * Helper: tambahkan URL gambar ke data store.
-     */
-    private function formatStore(Store $store): array
-    {
-        $data = $store->toArray();
-        $data['store_logo_url'] = $store->store_logo
-            ? asset('storage/' . $store->store_logo)
-            : null;
-        if (isset($data['products']) && is_array($data['products'])) {
-            foreach ($data['products'] as $i => $p) {
-                $img = $p['image_product'] ?? null;
-                $data['products'][$i]['image_url'] = $img
-                    ? asset('storage/' . $img)
-                    : null;
-            }
-        }
-        return $data;
     }
 }

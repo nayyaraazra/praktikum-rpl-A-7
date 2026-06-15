@@ -1,78 +1,7 @@
 <template>
   <div class="app-layout">
     <!-- ══ SIDEBAR ══ -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <div class="program-logo-sm">K</div>
-        <div class="brand-text">Kulaan.id</div>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-label">Menu Utama</div>
-        <router-link class="nav-item" :to="{ name: 'buyer.dashboard' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          Cari Produk
-        </router-link>
-        <router-link class="nav-item" :to="{ name: 'buyer.orders' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M16 10a4 4 0 0 1-8 0" />
-          </svg>
-          Pesanan Saya
-          <span v-if="activeOrdersCount > 0" class="nav-badge">{{ activeOrdersCount }}</span>
-        </router-link>
-        <router-link class="nav-item" :to="{ name: 'buyer.notifications' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-          Notifikasi
-          <span v-if="unreadCount > 0" class="nav-badge" style="background:var(--brand-500);">{{ unreadCount }}</span>
-        </router-link>
-        <router-link class="nav-item" :to="{ name: 'buyer.profile' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          Profil Saya
-        </router-link>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-label">Eksplorasi</div>
-        <router-link class="nav-item active" :to="{ name: 'buyer.stores' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          </svg>
-          Toko UMKM
-        </router-link>
-        <router-link class="nav-item" :to="{ name: 'buyer.popular' }">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          Produk Populer
-        </router-link>
-      </div>
-
-      <div class="sidebar-user">
-        <div class="avatar">{{ userInitials }}</div>
-        <div class="sidebar-user-info">
-          <div class="user-name">{{ authStore.user?.name || 'Pembeli' }}</div>
-          <div class="user-role">Pembeli</div>
-        </div>
-        <button class="logout-icon-btn" @click="handleLogout" title="Keluar">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-        </button>
-      </div>
-    </aside>
+    <BuyerSidebar />
 
     <!-- ══ MAIN ══ -->
     <main class="main-content">
@@ -147,6 +76,7 @@
 </template>
 
 <script setup>
+import BuyerSidebar from '@/components/common/BuyerSidebar.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -157,8 +87,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const searchQuery = ref('')
-const unreadCount = ref(0)
-const activeOrdersCount = ref(0)
+
+
 const stores = ref([])
 const loading = ref(true)
 const selectedCategory = ref('Semua Toko')
@@ -182,11 +112,7 @@ const storeCategories = [
 
 let debounceTimer = null
 
-const userInitials = computed(() => {
-  const name = authStore.user?.name || 'P'
-  const parts = name.split(' ')
-  return parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0][0]
-})
+
 
 function onSearchInput() {
   clearTimeout(debounceTimer)
@@ -249,38 +175,15 @@ function formatCategory(val) {
   return found ? found.label : val
 }
 
-async function fetchUnreadNotificationsCount() {
-  try {
-    const res = await buyerApi.getNotifications()
-    if (res.data.success) {
-      unreadCount.value = res.data.data.filter(n => n.is_read === 0 || n.is_read === false).length
-    }
-  } catch (err) {
-    console.error('Failed to fetch unread notifications count:', err)
-  }
-}
 
-async function fetchActiveOrdersCount() {
-  try {
-    const res = await buyerApi.getOrders()
-    if (res.data.success) {
-      activeOrdersCount.value = res.data.data.filter(
-        o => o.status === 'menunggu' || o.status === 'diproses'
-      ).length
-    }
-  } catch (err) {
-    console.error('Failed to fetch active orders count:', err)
-  }
-}
 
-async function handleLogout() {
-  await authStore.logout()
-  router.push({ name: 'login' })
-}
+
+
+
 
 onMounted(() => {
-  fetchUnreadNotificationsCount()
-  fetchActiveOrdersCount()
+  
+  
   fetchStores()
 })
 </script>

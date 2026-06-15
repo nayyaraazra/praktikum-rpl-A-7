@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -24,12 +26,11 @@ class OrderController extends Controller
         $orders = Order::where('id_user', $user->id_user)
             ->with(['items.product.store'])
             ->latest('order_date')
-            ->get()
-            ->map(fn($order) => $this->formatOrder($order));
+            ->get();
 
         return response()->json([
             'success' => true,
-            'data' => $orders
+            'data'    => OrderResource::collection($orders)->resolve()
         ]);
     }
 
@@ -47,7 +48,7 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatOrder($order)
+            'data'    => (new OrderResource($order))->resolve()
         ]);
     }
 
@@ -55,19 +56,10 @@ class OrderController extends Controller
      * POST /api/orders
      * Buat pesanan baru dari buyer (checkout langsung).
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreOrderRequest $request): JsonResponse
     {
         $user = $request->user();
-
-        $validated = $request->validate([
-            'id_product'       => ['required', 'exists:products,id_product'],
-            'quantity'         => ['required', 'integer', 'min:1'],
-            'name'             => ['required', 'string', 'max:255'],
-            'phone_number'     => ['required', 'string', 'max:20'],
-            'shipping_address' => ['required', 'string'],
-            'payment_method'   => ['required', 'in:cod,transfer'],
-            'note'             => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $product = Product::with('store')->findOrFail($validated['id_product']);
 
@@ -153,7 +145,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pesanan berhasil dibuat.',
-                'data'    => $this->formatOrder($order->load(['items.product.store']))
+                'data'    => (new OrderResource($order->load(['items.product.store'])))->resolve()
             ], 201);
 
         } catch (\Exception $e) {
@@ -164,35 +156,5 @@ class OrderController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
-    }
-
-    private function formatOrder(Order $order): array
-    {
-        return [
-            'id_order'         => $order->id_order,
-            'id_user'          => $order->id_user,
-            'total_order'      => $order->total_order,
-            'status'           => $order->status,
-            'payment_method'   => $order->payment_method,
-            'shipping_address' => $order->shipping_address,
-            'note'             => $order->note,
-            'order_date'       => $order->order_date ? $order->order_date->toIso8601String() : null,
-            'items'            => $order->items->map(fn($item) => [
-                'id_order_detail'   => $item->id_order_detail,
-                'quantity'          => $item->quantity,
-                'price_at_purchase' => $item->price_at_purchase,
-                'product'           => $item->product ? [
-                    'id_product' => $item->product->id_product,
-                    'name'       => $item->product->name,
-                    'unit'       => $item->product->unit,
-                    'image_url'  => $item->product->image_product ? asset('storage/' . $item->product->image_product) : null,
-                    'store'      => $item->product->store ? [
-                        'id_store'     => $item->product->store->id_store,
-                        'store_name'   => $item->product->store->store_name,
-                        'phone_number' => $item->product->store->owner?->phone_number,
-                    ] : null,
-                ] : null,
-            ]),
-        ];
     }
 }
