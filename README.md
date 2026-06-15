@@ -49,8 +49,12 @@ kulaan-project/
     └── vite.config.js    # Konfigurasi utama bundling dan kompilasi aset frontend menggunakan Vite
 ```
 ## Fitur yang Sudah Ada
-* US-01: Register Account
-* US-02: Login Account
+
+| Nama Fitur | Status        | Screenshot                       |
+|------------|---------------|----------------------------------|
+|* US-01: Register Account    | Selesai | <img width="945" height="492" alt="image" src="https://github.com/user-attachments/assets/dfc8bed9-810b-40cc-8542-b860fd0d4225" />|
+|* US-02: Login Account       | Selesai |  <img width="960" height="496" alt="image" src="https://github.com/user-attachments/assets/5f526077-0340-449d-b3a0-d6e7a9df4585" />|
+|* US-03: Search Product      | Selesai |  <img width="949" height="533" alt="image" src="https://github.com/user-attachments/assets/9260752e-5b8a-4c92-a74f-170545a235ff" />|
 
 
 ## Setup & Run Project
