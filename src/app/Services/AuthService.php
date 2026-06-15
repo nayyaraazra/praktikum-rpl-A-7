@@ -19,6 +19,35 @@ class AuthService
      */
     public function register(array $data): array
     {
+        $existingUser = User::where('email', $data['email'])->first();
+
+        if ($existingUser) {
+            if (in_array($data['role'], $existingUser->roles ?? [])) {
+                throw new \RuntimeException('Email sudah terdaftar untuk peran ini.');
+            }
+
+            $phoneUser = User::where('phone_number', $data['phone_number'])->first();
+            if ($phoneUser && $phoneUser->id_user !== $existingUser->id_user) {
+                throw new \RuntimeException('Nomor telepon sudah terdaftar.');
+            }
+
+            $roles = $existingUser->roles ?? [];
+            $roles[] = $data['role'];
+            
+            $existingUser->update([
+                'roles' => $roles,
+            ]);
+
+            $token = $existingUser->createToken('auth_token')->plainTextToken;
+
+            return ['user' => $existingUser, 'token' => $token];
+        }
+
+        $phoneUser = User::where('phone_number', $data['phone_number'])->first();
+        if ($phoneUser) {
+            throw new \RuntimeException('Nomor telepon sudah terdaftar.');
+        }
+
         $user = User::create([
             'name'         => $data['name'],
             'email'        => $data['email'],
