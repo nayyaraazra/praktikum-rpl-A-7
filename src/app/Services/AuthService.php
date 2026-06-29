@@ -94,6 +94,55 @@ class AuthService
     }
 
     /**
+     * Autentikasi atau Registrasi via Google.
+     */
+    public function loginOrRegisterWithGoogle(array $googleData): array
+    {
+        $googleId = $googleData['google_id'];
+        $email = $googleData['email'];
+        $name = $googleData['name'];
+
+        // 1. Cari user berdasarkan google_id
+        $user = User::where('google_id', $googleId)->first();
+
+        if (! $user) {
+            // 2. Cari user berdasarkan email (account linking)
+            $user = User::where('email', $email)->first();
+
+            if ($user) {
+                // Link account
+                $user->update([
+                    'google_id' => $googleId,
+                ]);
+            } else {
+                // 3. Register user baru (default role: buyer)
+                $user = User::create([
+                    'name'         => $name,
+                    'email'        => $email,
+                    'google_id'    => $googleId,
+                    'password'     => null,
+                    'phone_number' => null,
+                    'roles'        => ['buyer'],
+                ]);
+            }
+        }
+
+        // Hapus token lama agar tidak menumpuk
+        $user->tokens()->delete();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Cek status verifikasi toko jika user ternyata punya role seller
+        $storeStatus = null;
+        if ($user->isSeller()) {
+            $store       = $user->store;
+            $storeStatus = $store?->verification_status;
+        }
+
+        return compact('user', 'token', 'storeStatus');
+    }
+
+    /**
      * Hapus semua token aktif milik user (logout).
      */
     public function logout(User $user): void

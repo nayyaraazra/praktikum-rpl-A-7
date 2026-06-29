@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\NotificationController;
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']); // US-01, US-08
     Route::post('login',    [AuthController::class, 'login']);    // US-02, US-09
+    Route::post('google',   [AuthController::class, 'loginWithGoogle']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
