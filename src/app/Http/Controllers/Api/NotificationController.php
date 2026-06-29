@@ -18,7 +18,7 @@ class NotificationController extends Controller
         $user = $request->user();
         
         $notifications = $user->notifications()
-            ->where('message', 'not like', 'Pesanan baru masuk%')
+            ->forBuyer()
             ->latest('created_at')
             ->get();
 
@@ -37,7 +37,7 @@ class NotificationController extends Controller
         $user = $request->user();
 
         $user->notifications()
-            ->where('message', 'not like', 'Pesanan baru masuk%')
+            ->forBuyer()
             ->update(['is_read' => 1]);
 
         return response()->json([
