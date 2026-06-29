@@ -212,8 +212,14 @@ class ProductController extends Controller
             $query->where('price', '<=', $maxPrice);
         }
 
-        // Sort by rating DESC
-        $query->orderBy('rating', 'desc');
+        // Sort by popularity if requested, otherwise by latest
+        if ($request->boolean('popular')) {
+            $query->where('rating', '>=', 4.5)
+                  ->orderBy('rating', 'desc')
+                  ->orderBy('review_count', 'desc');
+        } else {
+            $query->latest();
+        }
 
         // Paginate 12 per page
         $perPage = min((int) $request->input('per_page', 12), 48);

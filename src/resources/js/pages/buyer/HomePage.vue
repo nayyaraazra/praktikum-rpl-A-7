@@ -44,13 +44,13 @@
 
       <div class="nav-section">
         <div class="nav-section-label">Eksplorasi</div>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="#" @click.prevent="handleExplore('toko')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           </svg>
           Toko UMKM
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="#" @click.prevent="handleExplore('populer')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
@@ -241,6 +241,11 @@
         <button class="page-btn" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">&raquo;</button>
       </div>
     </main>
+
+    <!-- Toast -->
+    <div :class="['toast', toastType, toastVisible && 'show']" role="alert" aria-live="polite">
+      {{ toastMsg }}
+    </div>
   </div>
 </template>
 
@@ -252,6 +257,37 @@ import { buyerApi } from '@/services/api/buyerApi'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+// Toast
+const toastMsg     = ref('')
+const toastType    = ref('')
+const toastVisible = ref(false)
+let toastTimer     = null
+
+function showToast(msg, type = '', duration = 3200) {
+  clearTimeout(toastTimer)
+  toastMsg.value     = msg
+  toastType.value    = type
+  toastVisible.value = true
+  toastTimer = setTimeout(() => { toastVisible.value = false }, duration)
+}
+
+const isPopularOnly = ref(false)
+
+function handleExplore(type) {
+  if (type === 'toko') {
+    isPopularOnly.value = false
+    showToast('Fitur Jelajah Toko UMKM sedang dalam pengembangan.', '')
+  } else if (type === 'populer') {
+    isPopularOnly.value = true
+    searchQuery.value = ''
+    selectedCategory.value = null
+    selectedPrice.value = 'all'
+    currentPage.value = 1
+    fetchProducts()
+    showToast('Menampilkan produk terpopuler berdasarkan rating tertinggi!', 'success')
+  }
+}
 
 const searchInput = ref(null)
 const searchQuery = ref('')
@@ -374,6 +410,7 @@ function formatPrice(price) {
 }
 
 function onSearchInput() {
+  isPopularOnly.value = false
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     currentPage.value = 1
@@ -382,12 +419,14 @@ function onSearchInput() {
 }
 
 function selectCategory(id) {
+  isPopularOnly.value = false
   selectedCategory.value = id
   currentPage.value = 1
   fetchProducts()
 }
 
 function selectPrice(value) {
+  isPopularOnly.value = false
   selectedPrice.value = value
   showPriceFilter.value = false
   currentPage.value = 1
@@ -414,6 +453,9 @@ async function fetchProducts() {
       const [min, max] = selectedPrice.value.split('-')
       if (min) params.min_price = min
       if (max) params.max_price = max
+    }
+    if (isPopularOnly.value) {
+      params.popular = 1
     }
     const res = await buyerApi.getProducts(params)
     products.value = res.data.data
