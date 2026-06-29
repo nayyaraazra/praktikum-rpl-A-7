@@ -19,6 +19,35 @@ class AuthService
      */
     public function register(array $data): array
     {
+        $existingUser = User::where('email', $data['email'])->first();
+
+        if ($existingUser) {
+            if (in_array($data['role'], $existingUser->roles ?? [])) {
+                throw new \RuntimeException('Email sudah terdaftar untuk peran ini.');
+            }
+
+            $phoneUser = User::where('phone_number', $data['phone_number'])->first();
+            if ($phoneUser && $phoneUser->id_user !== $existingUser->id_user) {
+                throw new \RuntimeException('Nomor telepon sudah terdaftar.');
+            }
+
+            $roles = $existingUser->roles ?? [];
+            $roles[] = $data['role'];
+            
+            $existingUser->update([
+                'roles' => $roles,
+            ]);
+
+            $token = $existingUser->createToken('auth_token')->plainTextToken;
+
+            return ['user' => $existingUser, 'token' => $token];
+        }
+
+        $phoneUser = User::where('phone_number', $data['phone_number'])->first();
+        if ($phoneUser) {
+            throw new \RuntimeException('Nomor telepon sudah terdaftar.');
+        }
+
         $user = User::create([
             'name'         => $data['name'],
             'email'        => $data['email'],
@@ -55,55 +84,6 @@ class AuthService
         $token = $user->createToken('auth_token')->plainTextToken;
 
         // Untuk seller: cek status verifikasi toko (AC US-09)
-        $storeStatus = null;
-        if ($user->isSeller()) {
-            $store       = $user->store;
-            $storeStatus = $store?->verification_status;
-        }
-
-        return compact('user', 'token', 'storeStatus');
-    }
-
-    /**
-     * Autentikasi atau Registrasi via Google.
-     */
-    public function loginOrRegisterWithGoogle(array $googleData): array
-    {
-        $googleId = $googleData['google_id'];
-        $email = $googleData['email'];
-        $name = $googleData['name'];
-
-        // 1. Cari user berdasarkan google_id
-        $user = User::where('google_id', $googleId)->first();
-
-        if (! $user) {
-            // 2. Cari user berdasarkan email (account linking)
-            $user = User::where('email', $email)->first();
-
-            if ($user) {
-                // Link account
-                $user->update([
-                    'google_id' => $googleId,
-                ]);
-            } else {
-                // 3. Register user baru (default role: buyer)
-                $user = User::create([
-                    'name'         => $name,
-                    'email'        => $email,
-                    'google_id'    => $googleId,
-                    'password'     => null,
-                    'phone_number' => null,
-                    'roles'        => ['buyer'],
-                ]);
-            }
-        }
-
-        // Hapus token lama agar tidak menumpuk
-        $user->tokens()->delete();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Cek status verifikasi toko jika user ternyata punya role seller
         $storeStatus = null;
         if ($user->isSeller()) {
             $store       = $user->store;

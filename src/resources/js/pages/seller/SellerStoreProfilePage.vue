@@ -149,52 +149,115 @@
             <label class="field-label">Kategori Usaha</label>
             <select v-model="editForm.category" class="form-input">
               <option value="">Pilih kategori</option>
-              <option value="makanan_minuman">Makanan &amp; Minuman</option>
-              <option value="fashion_batik">Fashion &amp; Batik</option>
-              <option value="kerajinan">Kerajinan Tangan</option>
-              <option value="elektronik">Elektronik</option>
-              <option value="kecantikan">Kecantikan</option>
-              <option value="pertanian">Pertanian</option>
-              <option value="jasa">Jasa</option>
-              <option value="lainnya">Lainnya</option>
+              <option v-for="cat in storeCategories" :key="cat.value" :value="cat.value">
+                {{ cat.icon }} {{ cat.label }}
+              </option>
             </select>
+            <span v-if="editErrors.category || editErrors.store_category" class="field-error">
+              {{ editErrors.category || editErrors.store_category }}
+            </span>
           </div>
           <div class="field">
             <label class="field-label">Deskripsi Toko</label>
             <textarea v-model="editForm.description" class="form-input" rows="3" maxlength="200"></textarea>
+            <span v-if="editErrors.description" class="field-error">{{ editErrors.description }}</span>
           </div>
           <div class="field">
             <label class="field-label">Kecamatan / Kelurahan</label>
             <select v-model="editForm.district" class="form-input">
               <option value="">Pilih kelurahan</option>
-              <option value="Jebres">Jebres</option>
-              <option value="Gandekan">Gandekan</option>
-              <option value="Jagalan">Jagalan</option>
-              <option value="Kepatihan Kulon">Kepatihan Kulon</option>
-              <option value="Kepatihan Wetan">Kepatihan Wetan</option>
-              <option value="Mojosongo">Mojosongo</option>
-              <option value="Pucang Sawit">Pucang Sawit</option>
-              <option value="Purwodiningratan">Purwodiningratan</option>
-              <option value="Sewu">Sewu</option>
-              <option value="Tegalharjo">Tegalharjo</option>
+              <option v-for="d in districts" :key="d.value" :value="d.value">{{ d.label }}</option>
             </select>
+            <span v-if="editErrors.district" class="field-error">{{ editErrors.district }}</span>
           </div>
           <div class="field">
             <label class="field-label">Alamat Lengkap</label>
             <textarea v-model="editForm.address" class="form-input" rows="2"></textarea>
+            <span v-if="editErrors.address" class="field-error">{{ editErrors.address }}</span>
           </div>
+          <!-- Jam Operasional dengan Toggle & Tombol Hari (Sama seperti Onboarding) -->
           <div class="field">
             <label class="field-label">Jam Operasional</label>
-            <input v-model="editForm.operating_hours" class="form-input" placeholder="contoh: 08:00 - 17:00 WIB" />
+            
+            <!-- Toggle buka setiap hari -->
+            <div class="toggle-row">
+              <label class="toggle-label" for="openEveryDay">Buka setiap hari (termasuk hari libur)</label>
+              <button
+                type="button"
+                role="switch"
+                :aria-checked="editForm.open_every_day"
+                id="openEveryDay"
+                :class="['toggle-switch', editForm.open_every_day && 'active']"
+                @click="editForm.open_every_day = !editForm.open_every_day"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+
+            <!-- Hari buka (jika tidak setiap hari) -->
+            <div v-if="!editForm.open_every_day" class="field" style="margin-top: 12px;">
+              <label class="field-label">Hari Buka</label>
+              <div class="days-grid">
+                <button
+                  v-for="day in weekdays"
+                  :key="day.value"
+                  type="button"
+                  :aria-pressed="editForm.open_days?.includes(day.value)"
+                  :class="['day-btn', editForm.open_days?.includes(day.value) && 'selected']"
+                  @click="toggleDay(day.value)"
+                >
+                  {{ day.label }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Jam buka & tutup -->
+            <div class="time-row" style="margin-top: 12px;">
+              <div class="field" style="flex:1; margin-bottom:0;">
+                <label class="field-label" for="openTime">Jam Buka</label>
+                <div class="input-wrap">
+                  <input
+                    v-model="editForm.open_time"
+                    type="time" id="openTime"
+                    class="form-input"
+                  />
+                </div>
+              </div>
+
+              <div class="time-separator">
+                <span>sampai</span>
+              </div>
+
+              <div class="field" style="flex:1; margin-bottom:0;">
+                <label class="field-label" for="closeTime">Jam Tutup</label>
+                <div class="input-wrap">
+                  <input
+                    v-model="editForm.close_time"
+                    type="time" id="closeTime"
+                    class="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview jam operasional -->
+            <div v-if="operatingHoursSummary" class="hours-preview" style="margin-top: 14px;">
+              <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>{{ operatingHoursSummary }}</span>
+            </div>
+            
+            <span v-if="editErrors.operating_hours" class="field-error">{{ editErrors.operating_hours }}</span>
           </div>
           <div class="grid-2">
             <div class="field">
               <label class="field-label">WhatsApp</label>
               <input v-model="editForm.whatsapp" class="form-input" placeholder="08123456789" />
+              <span v-if="editErrors.whatsapp" class="field-error">{{ editErrors.whatsapp }}</span>
             </div>
             <div class="field">
               <label class="field-label">Instagram</label>
               <input v-model="editForm.instagram" class="form-input" placeholder="username" />
+              <span v-if="editErrors.instagram" class="field-error">{{ editErrors.instagram }}</span>
             </div>
           </div>
           <div v-if="editErrors._" class="error-msg">{{ editErrors._ }}</div>
@@ -290,13 +353,200 @@ function showToast(msg, type = '', duration = 3000) {
   toastTimer = setTimeout(() => { toastVisible.value = false }, duration)
 }
 
+const storeCategories = [
+  { value: 'pakaian',                   icon: '👕', label: 'Pakaian' },
+  { value: 'fashion & aksesoris',        icon: '🕶️', label: 'Fashion & Aksesoris' },
+  { value: 'makanan & minuman',          icon: '🍱', label: 'Makanan & Minuman' },
+  { value: 'perawatan & kecantikan',     icon: '💄', label: 'Perawatan & Kecantikan' },
+  { value: 'perlengkapan rumah',         icon: '🏠', label: 'Perlengkapan Rumah' },
+  { value: 'hobi & koleksi',             icon: '🎨', label: 'Hobi & Koleksi' },
+  { value: 'kesehatan',                  icon: '💊', label: 'Kesehatan' },
+  { value: 'olahraga & outdoor',         icon: '🏕️', label: 'Olahraga & Outdoor' },
+  { value: 'buku & alat tulis',          icon: '📚', label: 'Buku & Alat Tulis' },
+  { value: 'kerajinan tangan',           icon: '🧶', label: 'Kerajinan Tangan' },
+  { value: 'sembako & kebutuhan pokok',  icon: '🌾', label: 'Sembako & Kebutuhan Pokok' },
+  { value: 'Jasa & Layanan',             icon: '🛠️', label: 'Jasa & Layanan' },
+  { value: 'Katering',                   icon: '🍲', label: 'Katering' },
+]
+
+const districts = [
+  { value: 'sudiroprajan',     label: 'Sudiroprajan' },
+  { value: 'gandekan',         label: 'Gandekan' },
+  { value: 'sewu',             label: 'Sewu' },
+  { value: 'jagalan',          label: 'Jagalan' },
+  { value: 'pucang_sawit',     label: 'Pucang Sawit' },
+  { value: 'jebres',           label: 'Jebres' },
+  { value: 'mojosongo',        label: 'Mojosongo' },
+  { value: 'tegalharjo',       label: 'Tegalharjo' },
+  { value: 'purwodiningratan', label: 'Purwodiningratan' },
+  { value: 'kepatihan_wetan',  label: 'Kepatihan Wetan' },
+  { value: 'kepatihan_kulon',  label: 'Kepatihan Kulon' },
+]
+
+function mapCategory(oldCat) {
+  if (!oldCat) return ''
+  const mapping = {
+    'makanan_minuman': 'makanan & minuman',
+    'Makanan & Minuman': 'makanan & minuman',
+    'fashion_batik': 'fashion & aksesoris',
+    'Fashion & Batik': 'fashion & aksesoris',
+    'jeans': 'fashion & aksesoris',
+    'kerajinan': 'kerajinan tangan',
+    'Kerajinan Tangan': 'kerajinan tangan',
+    'kecantikan': 'perawatan & kecantikan',
+    'Kecantikan & Perawatan': 'perawatan & kecantikan',
+    'buku': 'buku & alat tulis',
+    'pertanian': 'sembako & kebutuhan pokok',
+    'Pertanian & Hasil Bumi': 'sembako & kebutuhan pokok',
+    'Elektronik & Aksesori': 'fashion & aksesoris',
+    'Jasa & Layanan': 'Jasa & Layanan',
+    'Lainnya': 'lain lain',
+    'lainnya': 'lain lain',
+  }
+  return mapping[oldCat] || oldCat
+}
+
+function mapDistrict(d) {
+  if (!d) return ''
+  return d.toLowerCase().trim().replace(/\s+/g, '_')
+}
+
+const weekdays = [
+  { value: 'sen', label: 'Sen' },
+  { value: 'sel', label: 'Sel' },
+  { value: 'rab', label: 'Rab' },
+  { value: 'kam', label: 'Kam' },
+  { value: 'jum', label: "Jum'" },
+  { value: 'sab', label: 'Sab' },
+  { value: 'min', label: 'Min' },
+]
+
+function parseOperatingHours(str) {
+  const result = {
+    open_every_day: true,
+    open_days: [],
+    open_time: '08:00',
+    close_time: '17:00'
+  }
+
+  if (!str) return result
+
+  // Normalize separators and clean up spaces
+  const normalizedStr = str.replace(/\s+/g, ' ').trim()
+
+  // 1. Extract times using regex matching HH:MM or HH.MM
+  const timeRegex = /(\d{2}[:\.]\d{2})/g
+  const times = normalizedStr.match(timeRegex)
+  if (times && times.length >= 2) {
+    result.open_time = times[0].replace('.', ':')
+    result.close_time = times[1].replace('.', ':')
+  }
+
+  // 2. Parse days
+  const parts = normalizedStr.split(',')
+  const daysPart = parts.length > 1 ? parts[0].trim() : normalizedStr.trim()
+
+  const lowerDays = daysPart.toLowerCase()
+
+  if (lowerDays.includes('setiap hari') || lowerDays.includes('setiap-hari')) {
+    result.open_every_day = true
+    result.open_days = []
+    return result
+  }
+
+  result.open_every_day = false
+
+  const weekdayMapping = {
+    'senin': 'sen', 'sen': 'sen',
+    'selasa': 'sel', 'sel': 'sel',
+    'rabu': 'rab', 'rab': 'rab',
+    'kamis': 'kam', 'kam': 'kam',
+    'jumat': 'jum', "jum'at": 'jum', 'jum': 'jum',
+    'sabtu': 'sab', 'sab': 'sab',
+    'minggu': 'min', 'min': 'min'
+  }
+
+  const weekdayOrder = ['sen', 'sel', 'rab', 'kam', 'jum', 'sab', 'min']
+
+  // Check for ranges like "Senin–Sabtu" or "Senin - Jumat"
+  const rangeRegex = /(senin|selasa|rabu|kamis|jumat|sabtu|minggu|sen|sel|rab|kam|jum|sab|min)\s*[\-–]\s*(senin|selasa|rabu|kamis|jumat|sabtu|minggu|sen|sel|rab|kam|jum|sab|min)/
+  const rangeMatch = lowerDays.match(rangeRegex)
+
+  if (rangeMatch) {
+    const startKey = weekdayMapping[rangeMatch[1]]
+    const endKey = weekdayMapping[rangeMatch[2]]
+    if (startKey && endKey) {
+      const startIndex = weekdayOrder.indexOf(startKey)
+      const endIndex = weekdayOrder.indexOf(endKey)
+      if (startIndex !== -1 && endIndex !== -1) {
+        const days = []
+        let i = startIndex
+        while (true) {
+          days.push(weekdayOrder[i])
+          if (i === endIndex) break
+          i = (i + 1) % 7
+        }
+        result.open_days = days
+        return result
+      }
+    }
+  }
+
+  // Otherwise, split and check individual days
+  const words = lowerDays.replace(/[,\/]/g, ' ').split(/\s+/)
+  const days = []
+  words.forEach(w => {
+    const cleanWord = w.replace(/[^a-z']/g, '')
+    if (weekdayMapping[cleanWord]) {
+      const dayVal = weekdayMapping[cleanWord]
+      if (!days.includes(dayVal)) {
+        days.push(dayVal)
+      }
+    }
+  })
+
+  if (days.length > 0) {
+    result.open_days = days.sort((a, b) => weekdayOrder.indexOf(a) - weekdayOrder.indexOf(b))
+  }
+
+  return result
+}
+
+const operatingHoursSummary = computed(() => {
+  if (!editForm.value.open_time || !editForm.value.close_time) return ''
+  const dayText = editForm.value.open_every_day
+    ? 'Setiap hari'
+    : editForm.value.open_days?.length === 0
+      ? ''
+      : editForm.value.open_days?.map(d => weekdays.find(w => w.value === d)?.label).join(', ')
+  if (!dayText) return `${editForm.value.open_time} – ${editForm.value.close_time}`
+  return `${dayText}, ${editForm.value.open_time} – ${editForm.value.close_time}`
+})
+
+function toggleDay(day) {
+  if (!editForm.value.open_days) {
+    editForm.value.open_days = []
+  }
+  const idx = editForm.value.open_days.indexOf(day)
+  if (idx === -1) {
+    editForm.value.open_days.push(day)
+  } else {
+    editForm.value.open_days.splice(idx, 1)
+  }
+}
+
 function openEditModal() {
+  const parseObj = parseOperatingHours(store.value?.operating_hours)
   editForm.value = {
     store_name:      store.value?.store_name || '',
-    category:        store.value?.store_category || '',
+    category:        mapCategory(store.value?.store_category),
     description:     store.value?.description || '',
-    district:        store.value?.district || '',
+    district:        mapDistrict(store.value?.district),
     address:         store.value?.address || '',
+    open_every_day:  parseObj.open_every_day,
+    open_days:       parseObj.open_days,
+    open_time:       parseObj.open_time,
+    close_time:      parseObj.close_time,
     operating_hours: store.value?.operating_hours || '',
     whatsapp:        store.value?.whatsapp || '',
     instagram:       store.value?.instagram || '',
@@ -329,8 +579,11 @@ function closeEditModal() {
 
 function buildStoreFormData() {
   const fd = new FormData()
+  const ignoreKeys = ['open_every_day', 'open_days', 'open_time', 'close_time']
   Object.keys(editForm.value).forEach(k => {
-    fd.append(k, editForm.value[k])
+    if (!ignoreKeys.includes(k)) {
+      fd.append(k, editForm.value[k])
+    }
   })
   if (logoFile.value) {
     fd.append('store_logo', logoFile.value)
@@ -341,6 +594,13 @@ function buildStoreFormData() {
 async function handleSave() {
   saving.value      = true
   editErrors.value  = {}
+
+  // Compile operating_hours
+  const dayText = editForm.value.open_every_day
+    ? 'Setiap hari'
+    : editForm.value.open_days.map(d => weekdays.find(w => w.value === d)?.label).join(', ')
+  editForm.value.operating_hours = `${dayText}, ${editForm.value.open_time} – ${editForm.value.close_time}`
+
   try {
     const hasLogo = logoFile.value instanceof File
     const payload = hasLogo ? buildStoreFormData() : editForm.value
@@ -875,6 +1135,105 @@ textarea.form-input { resize: vertical; min-height: 60px; }
 }
 .btn-submit:hover { background: #175F9E; }
 .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Toggle switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #FAFAF9;
+  border: 1.5px solid #E8E7E2;
+  border-radius: 8px;
+}
+.toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5C5B54;
+}
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  border-radius: 100px;
+  background: #E8E7E2;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.toggle-switch.active {
+  background: rgb(24,95,165);
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
+
+/* Days grid */
+.days-grid {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.day-btn {
+  padding: 6px 12px;
+  border: 1.5px solid #E8E7E2;
+  border-radius: 100px;
+  background: #FAFAF9;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5C5B54;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.day-btn:hover {
+  border-color: rgb(24,95,165);
+  color: rgb(24,95,165);
+}
+.day-btn.selected {
+  border-color: rgb(24,95,165);
+  background: #E8F1FB;
+  color: #124880;
+}
+
+/* Time row */
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.time-separator {
+  padding-top: 20px;
+  font-size: 13px;
+  color: #8A8980;
+  font-weight: 600;
+}
+
+/* Hours preview */
+.hours-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #EAF3DE;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3B6D11;
+}
 
 /* Toast */
 .toast {

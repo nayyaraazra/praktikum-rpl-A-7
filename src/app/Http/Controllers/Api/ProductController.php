@@ -3,59 +3,48 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductCatalogResource;
+use App\Http\Resources\ProductDetailResource;
+use App\Http\Resources\ProductPopularResource;
+use App\Http\Resources\ProductSellerResource;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    use HasStoreAccess;
+
     /**
      * GET /api/seller/products
      * Daftar semua produk milik toko seller yang login.
      */
     public function index(Request $request): JsonResponse
     {
-        $store = $request->user()->store;
-
-        if (! $store) {
-            return response()->json(['success' => false, 'message' => 'Toko belum terdaftar.'], 404);
-        }
+        $store = $this->getStoreOrAbort($request->user());
 
         $products = Product::where('id_store', $store->id_store)
             ->with('category:id_category,name_category')
             ->latest()
-            ->get()
-            ->map(fn($p) => $this->formatProduct($p));
+            ->get();
 
-        return response()->json(['success' => true, 'data' => $products]);
+        return response()->json([
+            'success' => true,
+            'data'    => ProductSellerResource::collection($products)->resolve()
+        ]);
     }
 
     /**
      * POST /api/seller/products
      * Tambah produk baru.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        $store = $request->user()->store;
-
-        if (! $store) {
-            return response()->json(['success' => false, 'message' => 'Toko belum terdaftar.'], 404);
-        }
-
-        $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'price'       => ['required', 'numeric', 'min:0'],
-            'stock'       => ['required', 'integer', 'min:0'],
-            'unit'        => ['required', 'string', 'max:50'],
-            'min_order'   => ['required', 'integer', 'min:1'],
-            'category_name' => ['required', 'string', 'max:100'],
-            'is_active'   => ['boolean'],
-            'image'       => ['nullable', 'image', 'max:2048'],
-        ]);
+        $store = $this->getStoreOrAbort($request->user());
+        $validated = $request->validated();
 
         // Cari atau buat kategori
         $category = Category::firstOrCreate(
@@ -85,7 +74,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil ditambahkan.',
-            'data'    => $this->formatProduct($product->load('category')),
+            'data'    => (new ProductSellerResource($product->load('category')))->resolve(),
         ], 201);
     }
 
@@ -93,22 +82,11 @@ class ProductController extends Controller
      * PUT /api/seller/products/{id}
      * Edit produk (hanya milik toko sendiri).
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateProductRequest $request, int $id): JsonResponse
     {
-        $store   = $request->user()->store;
-        $product = Product::where('id_store', $store?->id_store)->findOrFail($id);
-
-        $validated = $request->validate([
-            'name'          => ['sometimes', 'string', 'max:255'],
-            'description'   => ['nullable', 'string', 'max:1000'],
-            'price'         => ['sometimes', 'numeric', 'min:0'],
-            'stock'         => ['sometimes', 'integer', 'min:0'],
-            'unit'          => ['sometimes', 'string', 'max:50'],
-            'min_order'     => ['sometimes', 'integer', 'min:1'],
-            'category_name' => ['sometimes', 'string', 'max:100'],
-            'is_active'     => ['boolean'],
-            'image'         => ['nullable', 'image', 'max:2048'],
-        ]);
+        $store   = $this->getStoreOrAbort($request->user());
+        $product = Product::where('id_store', $store->id_store)->findOrFail($id);
+        $validated = $request->validated();
 
         if (isset($validated['category_name'])) {
             $category = Category::firstOrCreate(
@@ -127,7 +105,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil diperbarui.',
-            'data'    => $this->formatProduct($product->fresh()->load('category')),
+            'data'    => (new ProductSellerResource($product->fresh()->load('category')))->resolve(),
         ]);
     }
 
@@ -137,8 +115,8 @@ class ProductController extends Controller
      */
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $store   = $request->user()->store;
-        $product = Product::where('id_store', $store?->id_store)->findOrFail($id);
+        $store   = $this->getStoreOrAbort($request->user());
+        $product = Product::where('id_store', $store->id_store)->findOrFail($id);
 
         $product->delete();
 
@@ -175,7 +153,37 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $this->formatDetailItem($product),
+            'data'    => (new ProductDetailResource($product))->resolve(),
+        ]);
+    }
+
+    /**
+     * GET /api/products/popular
+     * Produk populer berdasarkan jumlah terjual (dari order_items) lalu rating tertinggi.
+     */
+    public function popular(): JsonResponse
+    {
+        $products = Product::published()
+            ->with([
+                'store:id_store,store_name,district,operating_hours',
+                'category:id_category,name_category',
+            ])
+            ->select('products.*')
+            ->selectSub(function ($q) {
+                $q->from('order_items')
+                  ->join('orders', 'orders.id_order', '=', 'order_items.id_order')
+                  ->whereColumn('order_items.id_product', 'products.id_product')
+                  ->whereNotIn('orders.status', ['dibatalkan'])
+                  ->selectRaw('COALESCE(SUM(order_items.quantity), 0)');
+            }, 'sold_count')
+            ->orderBy('sold_count', 'desc')
+            ->orderBy('rating', 'desc')
+            ->take(20)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => ProductPopularResource::collection($products)->resolve(),
         ]);
     }
 
@@ -187,7 +195,7 @@ class ProductController extends Controller
     {
         $query = Product::published()
             ->with([
-                'store:id_store,store_name,district',
+                'store:id_store,store_name,district,operating_hours',
                 'category:id_category,name_category',
             ]);
 
@@ -212,25 +220,16 @@ class ProductController extends Controller
             $query->where('price', '<=', $maxPrice);
         }
 
-        // Sort by popularity if requested, otherwise by latest
-        if ($request->boolean('popular')) {
-            $query->where('rating', '>=', 4.5)
-                  ->orderBy('rating', 'desc')
-                  ->orderBy('review_count', 'desc');
-        } else {
-            $query->latest();
-        }
+        // Sort by rating DESC
+        $query->orderBy('rating', 'desc');
 
         // Paginate 12 per page
         $perPage = min((int) $request->input('per_page', 12), 48);
         $products = $query->paginate($perPage);
 
-        // Transform items
-        $products->getCollection()->transform(fn($p) => $this->formatCatalogItem($p));
-
         return response()->json([
             'success' => true,
-            'data'    => $products->items(),
+            'data'    => ProductCatalogResource::collection($products->getCollection())->resolve(),
             'meta'    => [
                 'current_page' => $products->currentPage(),
                 'last_page'    => $products->lastPage(),
@@ -238,87 +237,5 @@ class ProductController extends Controller
                 'total'        => $products->total(),
             ],
         ]);
-    }
-
-    private function formatDetailItem(Product $product): array
-    {
-        $store = $product->store;
-
-        return [
-            'id_product'   => $product->id_product,
-            'name'         => $product->name,
-            'description'  => $product->description,
-            'price'        => $product->price,
-            'stock'        => $product->stock,
-            'unit'         => $product->unit,
-            'min_order'    => $product->min_order,
-            'rating'       => $product->rating,
-            'review_count' => $product->review_count,
-            'image_url'    => $product->image_product
-                ? asset('storage/' . $product->image_product)
-                : null,
-            'category'     => $product->category
-                ? ['name_category' => $product->category->name_category]
-                : null,
-            'store'        => $store
-                ? [
-                    'store_name'      => $store->store_name,
-                    'logo'            => $store->store_logo ? asset('storage/' . $store->store_logo) : null,
-                    'description'     => $store->description,
-                    'address'         => $store->address,
-                    'district'        => $store->district,
-                    'operating_hours' => $store->operating_hours,
-                    'phone_number'    => $store->owner?->phone_number,
-                    'payment_accounts' => $store->paymentAccounts->map(fn($pa) => [
-                        'bank_name'      => $pa->bank_name,
-                        'account_number' => $pa->account_number,
-                        'account_name'   => $pa->account_name,
-                        'qris_code'      => $pa->qris_code,
-                    ]),
-                ]
-                : null,
-            'reviews'      => $product->reviews->map(fn($r) => [
-                'rating'     => $r->rating,
-                'comment'    => $r->comment,
-                'user'       => $r->user ? ['name' => $r->user->name] : null,
-                'created_at' => $r->created_at,
-            ]),
-        ];
-    }
-
-    private function formatCatalogItem(Product $product): array
-    {
-        return [
-            'id_product'   => $product->id_product,
-            'name'         => $product->name,
-            'price'        => $product->price,
-            'unit'         => $product->unit,
-            'stock'        => $product->stock,
-            'rating'       => $product->rating,
-            'review_count' => $product->review_count,
-            'image_url'    => $product->image_product
-                ? asset('storage/' . $product->image_product)
-                : null,
-            'store'        => $product->store
-                ? [
-                    'store_name' => $product->store->store_name,
-                    'district'   => $product->store->district,
-                ]
-                : null,
-            'category'     => $product->category
-                ? [
-                    'name_category' => $product->category->name_category,
-                ]
-                : null,
-        ];
-    }
-
-    private function formatProduct(Product $product): array
-    {
-        $data = $product->toArray();
-        $data['image_url'] = $product->image_product
-            ? asset('storage/' . $product->image_product)
-            : null;
-        return $data;
     }
 }

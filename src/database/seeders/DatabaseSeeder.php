@@ -5,21 +5,21 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // ← Baris ini yang krusial kita tambahin jir!
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
+use WithoutModelEvents;
  
     public function run(): void
     {
         // Admin user
         User::firstOrCreate(
-            ['email' => 'admin@kulaan.id'],
+            ['email' => env('ADMIN_EMAIL', 'admin@kulaan.id')],
             [
                 'name'         => 'Admin Kulaan',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'phone_number' => '081200000000',
+                'password'     => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'phone_number' => '0812' . rand(10000000, 99999999),
                 'roles'        => ['admin'],
             ]
         );

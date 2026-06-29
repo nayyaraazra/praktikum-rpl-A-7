@@ -25,4 +25,15 @@ class Notification extends Model
     {
         return $this->belongsTo(Order::class, 'id_order', 'id_order');
     }
+
+    /**
+     * Scope a query to only include buyer notifications.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForBuyer($query)
+    {
+        return $query->where('message', 'not like', 'Pesanan baru masuk%');
+    }
 }

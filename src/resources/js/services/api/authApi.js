@@ -9,10 +9,6 @@ export const authApi = {
         return apiClient.post('/auth/login', payload)
     },
 
-    loginWithGoogle(payload) {
-        return apiClient.post('/auth/google', payload)
-    },
-
     logout() {
         return apiClient.post('/auth/logout')
     },

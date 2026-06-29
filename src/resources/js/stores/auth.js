@@ -27,12 +27,6 @@ export const useAuthStore = defineStore('auth', () => {
         return data // data.data.notice berisi pesan verifikasi untuk seller
     }
 
-    async function loginWithGoogle(payload) {
-        const { data } = await authApi.loginWithGoogle(payload)
-        persistSession(data.data.user, data.data.token)
-        return data
-    }
-
     async function logout() {
         try {
             await authApi.logout()
@@ -66,6 +60,6 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         user, token,
         isLoggedIn, isBuyer, isSeller, isAdmin,
-        register, login, loginWithGoogle, logout, fetchCurrentUser,
+        register, login, logout, fetchCurrentUser,
     }
 })

@@ -4,11 +4,20 @@ export const buyerApi = {
     getProducts(params = {}) {
         return apiClient.get('/products', { params })
     },
+    getPopularProducts() {
+        return apiClient.get('/products/popular')
+    },
     getProduct(id) {
         return apiClient.get(`/products/${id}`)
     },
     getCategories() {
         return apiClient.get('/categories')
+    },
+    getStores(params = {}) {
+        return apiClient.get('/stores', { params })
+    },
+    getStore(id) {
+        return apiClient.get(`/stores/${id}`)
     },
     createOrder(payload) {
         return apiClient.post('/orders', payload)
