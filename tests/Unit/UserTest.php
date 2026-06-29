@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+// P10 Unit Test - AAA Pattern (Arrange, Act, Assert)
+
 use Tests\TestCase;
 use App\Models\User;
 
