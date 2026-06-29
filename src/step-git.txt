@@ -1,0 +1,15 @@
+git fetch --all (Ambil semua branch dari GitHub)
+git checkout dev (Pindah ke branch dev)
+git pull origin dev (update code dari org lain)
+Setelah pull, jalankan:
+  php artisan migrate
+  php artisan config:clear
+  php artisan cache:clear
+git checkout -b feature/[nama-branch-kamu] (buat branch kerja masing-masing)
+
+(TULIS KODE KLIAN)
+
+git add .
+git commit -m "(keterangan commit)" 
+git push origin feature/[nama-branch-kamu] (push di branch dulu ygy)
+pull request lewat github
