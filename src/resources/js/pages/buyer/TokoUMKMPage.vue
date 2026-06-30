@@ -189,6 +189,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  background-color: var(--gray-50);
+  background-image: radial-gradient(var(--gray-200) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--gray-800);
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px;
+  max-width: 1100px;
+}
+
 .category-row { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .category-row::-webkit-scrollbar { display: none; }
 .category-pill { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--radius-full); border: 1.5px solid var(--gray-100); background: #fff; font-size: 13px; font-weight: 500; color: var(--gray-600); cursor: pointer; white-space: nowrap; transition: all .15s; box-shadow: var(--shadow-xs); }

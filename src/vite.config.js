@@ -9,10 +9,24 @@ export default defineConfig({
         vue(),
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
+            refresh: [
+                'resources/views/**',
+                'resources/js/**',
+                'resources/css/**',
+                'routes/**',
+            ],
         }),
         tailwindcss(),
     ],
+    server: {
+        watch: {
+            ignored: [
+                '**/kulaan_db',
+                '**/storage/**',
+                '**/database/**',
+            ],
+        },
+    },
     resolve: {
         alias: {
             // Alias @ → resources/js
@@ -21,3 +35,4 @@ export default defineConfig({
         },
     },
 })
+
