@@ -19,7 +19,7 @@ class StoreOrderRequest extends FormRequest
             'name'             => ['required', 'string', 'max:255'],
             'phone_number'     => ['required', 'string', 'max:20'],
             'shipping_address' => ['required', 'string'],
-            'payment_method'   => ['required', 'in:cod,transfer'],
+            'payment_method'   => ['required', 'in:cod,transfer,midtrans'],
             'note'             => ['nullable', 'string', 'max:1000'],
         ];
     }

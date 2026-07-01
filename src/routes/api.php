@@ -79,3 +79,7 @@ Route::get('categories',   function () {
     return App\Models\Category::select('id_category', 'name_category')->get();
 });
 
+// ── Midtrans Webhook Callback (Publik) ──────────────────────────────────
+Route::post('payment/callback', [\App\Http\Controllers\Api\PaymentCallbackController::class, 'handle']);
+
+

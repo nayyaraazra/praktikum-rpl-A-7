@@ -96,7 +96,7 @@
                 <div class="payment-icon">🏦</div>
                 <div>
                   <div class="payment-name">Transfer Bank</div>
-                  <div class="payment-desc">Konfirmasi via WhatsApp setelah transfer</div>
+                  <div class="payment-desc">Bayar otomatis via Virtual Account (BCA, Mandiri, BNI, dll.)</div>
                 </div>
               </div>
               <div
@@ -108,7 +108,7 @@
                 <div class="payment-icon">📱</div>
                 <div>
                   <div class="payment-name">QRIS</div>
-                  <div class="payment-desc">Scan kode QR dari penjual</div>
+                  <div class="payment-desc">Bayar instan via Scan Kode QR (GoPay, OVO, ShopeePay, dll.)</div>
                 </div>
               </div>
             </div>
@@ -303,33 +303,54 @@ async function submitOrder() {
       name: form.name,
       phone_number: form.phone_number,
       shipping_address: address,
-      payment_method: selectedPayment.value === 'cod' ? 'cod' : 'transfer',
+      payment_method: selectedPayment.value === 'cod' ? 'cod' : 'midtrans',
       note: form.note,
     }
 
     const res = await buyerApi.createOrder(payload)
     if (res.data.success) {
       showToast('Pesanan berhasil dibuat!', 'success')
-      // Refetch user data so profile name/phone changes sync
       await authStore.fetchCurrentUser()
       
-      // Redirect to whatsapp with chat message
-      const storePhone = product.value.store?.phone_number
-      if (storePhone) {
-        const cleanedPhone = storePhone.replace(/[^0-9]/g, '')
-        const msg = encodeURIComponent(
-          `Halo, saya ${form.name} telah memesan ${product.value.name} sebanyak ${quantity.value} ${product.value.unit} dengan total Rp ${formatPrice(totalPrice.value)} melalui Kulaan.id.\n\nAlamat: ${address}\nCatatan: ${form.note || '-'}\nMetode Pembayaran: ${selectedPayment.value.toUpperCase()}`
-        )
-        const waUrl = `https://wa.me/${cleanedPhone}?text=${msg}`
-        
-        setTimeout(() => {
-          window.open(waUrl, '_blank')
-          router.push({ name: 'buyer.dashboard' })
-        }, 1500)
+      const order = res.data.data
+      
+      if (payload.payment_method === 'midtrans' && order.snap_token) {
+        window.snap.pay(order.snap_token, {
+          onSuccess: function (result) {
+            showToast('Pembayaran berhasil!', 'success')
+            router.push({ name: 'buyer.dashboard' })
+          },
+          onPending: function (result) {
+            showToast('Menunggu pembayaran Anda.', 'warning')
+            router.push({ name: 'buyer.dashboard' })
+          },
+          onError: function (result) {
+            showToast('Pembayaran gagal, silakan coba lagi.', 'error')
+          },
+          onClose: function () {
+            showToast('Pembayaran tertunda/dibatalkan.', 'warning')
+            router.push({ name: 'buyer.dashboard' })
+          }
+        })
       } else {
-        setTimeout(() => {
-          router.push({ name: 'buyer.dashboard' })
-        }, 1500)
+        // Redirect to whatsapp with chat message (existing COD flow)
+        const storePhone = product.value.store?.phone_number
+        if (storePhone) {
+          const cleanedPhone = storePhone.replace(/[^0-9]/g, '')
+          const msg = encodeURIComponent(
+            `Halo, saya ${form.name} telah memesan ${product.value.name} sebanyak ${quantity.value} ${product.value.unit} dengan total Rp ${formatPrice(totalPrice.value)} melalui Kulaan.id.\n\nAlamat: ${address}\nCatatan: ${form.note || '-'}\nMetode Pembayaran: COD`
+          )
+          const waUrl = `https://wa.me/${cleanedPhone}?text=${msg}`
+          
+          setTimeout(() => {
+            window.open(waUrl, '_blank')
+            router.push({ name: 'buyer.dashboard' })
+          }, 1500)
+        } else {
+          setTimeout(() => {
+            router.push({ name: 'buyer.dashboard' })
+          }, 1500)
+        }
       }
     }
   } catch (err) {
