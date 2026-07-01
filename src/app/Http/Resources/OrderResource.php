@@ -15,6 +15,8 @@ class OrderResource extends JsonResource
             'total_order'      => $this->total_order,
             'status'           => $this->status,
             'payment_method'   => $this->payment_method,
+            'snap_token'       => $this->snap_token,
+            'payment_status'   => $this->payment_status,
             'shipping_address' => $this->shipping_address,
             'note'             => $this->note,
             'order_date'       => $this->order_date ? $this->order_date->toIso8601String() : null,
