@@ -514,7 +514,7 @@ onMounted(() => {
 function initGoogleClient() {
   if (typeof google === 'undefined' || !google.accounts) return
   
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '1035251433434-mockclientid.apps.googleusercontent.com'
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '910610709279-fl6j181b1jgt0stfjqv95gqp2ukv548k.apps.googleusercontent.com'
   
   googleClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
@@ -564,7 +564,7 @@ function initGoogleClient() {
 }
 
 function handleGoogleLogin() {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '910610709279-fl6j181b1jgt0stfjqv95gqp2ukv548k.apps.googleusercontent.com'
   if (clientId && clientId !== 'YOUR_GOOGLE_CLIENT_ID' && !clientId.includes('mockclientid')) {
     if (!googleClient) {
       showToast('Menyiapkan Google Auth...')
