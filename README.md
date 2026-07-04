@@ -83,17 +83,17 @@ Berikut merupakan daftar lengkap fitur aplikasi berdasarkan dokumen perencanaan 
 | **US-01** | Register Account | Pendaftaran akun pembeli baru dengan validasi data email & nomor telepon. | Pembeli | Selesai | <img width="945" height="492" alt="image" src="https://github.com/user-attachments/assets/dfc8bed9-810b-40cc-8542-b860fd0d4225" /> |
 | **US-02** | Login Account | Otentikasi pembeli menggunakan email dan password dengan perlindungan error generik. | Pembeli | Selesai | <img width="960" height="496" alt="image" src="https://github.com/user-attachments/assets/5f526077-0340-449d-b3a0-d6e7a9df4585" /> |
 | **US-03** | Search Products | Pencarian produk berbasis kata kunci (semantic search engine). | Pembeli | Selesai | <img width="949" height="533" alt="image" src="https://github.com/user-attachments/assets/9260752e-5b8a-4c92-a74f-170545a235ff" /> |
-| **US-04** | Filter Products | Menyaring katalog produk berdasarkan kategori dan rentang harga. | Pembeli | Selesai | *(Akan dilengkapi)* |
-| **US-05** | View Product Details | Menampilkan rincian detail produk, deskripsi, harga, foto, dan informasi toko. | Pembeli | Selesai | *(Akan dilengkapi)* |
-| **US-06** | Fill Order Form | Form pemesanan produk sederhana (nama, jumlah, catatan) tanpa payment gateway. | Pembeli | Selesai | *(Akan dilengkapi)* |
-| **US-07** | Notifikasi Pemesanan | Notifikasi status pesanan (menunggu, dikonfirmasi, ditolak) di riwayat pemesanan. | Pembeli | Selesai | *(Akan dilengkapi)* |
-| **US-08** | Register & Store Profile | Registrasi dua langkah bagi penjual: isi data akun lalu lengkapi profil toko. | Pemilik UMKM | Selesai | *(Akan dilengkapi)* |
-| **US-09** | Login Account (Seller) | Otentikasi pemilik UMKM untuk masuk ke dashboard manajemen toko. | Pemilik UMKM | Selesai | *(Akan dilengkapi)* |
-| **US-10** | Hubungi Penjual | Fitur kontak langsung dari halaman detail produk menggunakan tautan WhatsApp. | Pembeli | Selesai | *(Akan dilengkapi)* |
-| **US-11** | Manage Store Profile | Mengelola dan memperbarui informasi profil toko (nama, kontak, alamat, jam operasional). | Pemilik UMKM | Selesai | *(Akan dilengkapi)* |
-| **US-12** | Receive Orders | Melihat daftar pesanan masuk beserta rincian data pemesanan di dashboard penjual. | Pemilik UMKM | Selesai | *(Akan dilengkapi)* |
-| **US-13** | Verify Store Information | Admin meninjau data pendaftaran toko dan melakukan persetujuan/penolakan verifikasi. | Admin | Selesai | *(Akan dilengkapi)* |
-| **US-14** | Monitor System Activity | Dashboard ringkasan statistik aktivitas platform (jumlah toko, pesanan, dsb). | Admin | Selesai | *(Akan dilengkapi)* |
+| **US-04** | Filter Products | Menyaring katalog produk berdasarkan kategori dan rentang harga. | Pembeli | Selesai | <img width="948" height="499" alt="image" src="https://github.com/user-attachments/assets/f99fe082-bed4-4941-bdb3-75466cc436d7" />|
+| **US-05** | View Product Details | Menampilkan rincian detail produk, deskripsi, harga, foto, dan informasi toko. | Pembeli | Selesai |<img width="957" height="495" alt="image" src="https://github.com/user-attachments/assets/c9c5c2ef-6371-4702-a853-fcc0275026b2" />|
+| **US-06** | Fill Order Form | Form pemesanan produk sederhana (nama, jumlah, catatan) tanpa payment gateway. | Pembeli | Selesai |<img width="949" height="500" alt="image" src="https://github.com/user-attachments/assets/3a98af6c-c3c0-4aed-bef5-beef62b123c1" />|
+| **US-07** | Notifikasi Pemesanan | Notifikasi status pesanan (menunggu, dikonfirmasi, ditolak) di riwayat pemesanan. | Pembeli | Selesai | <img width="948" height="499" alt="image" src="https://github.com/user-attachments/assets/cbd70013-d31b-40dd-9ad8-10495a7e4321" />|
+| **US-08** | Register & Store Profile | Registrasi dua langkah bagi penjual: isi data akun lalu lengkapi profil toko. | Pemilik UMKM | Selesai | <img width="947" height="504" alt="image" src="https://github.com/user-attachments/assets/2f047a7b-5887-4d56-af63-52f925f84bcb" />|
+| **US-09** | Login Account (Seller) | Otentikasi pemilik UMKM untuk masuk ke dashboard manajemen toko. | Pemilik UMKM | Selesai | <img width="950" height="499" alt="image" src="https://github.com/user-attachments/assets/f142710b-5fcd-42ae-ae61-ac54d5179259" />|
+| **US-10** | Hubungi Penjual | Fitur kontak langsung dari halaman detail produk menggunakan tautan WhatsApp. | Pembeli | Selesai | <img width="960" height="497" alt="image" src="https://github.com/user-attachments/assets/7c42fcbf-2e2f-4c65-b419-ad937cc8576e" /> |
+| **US-11** | Manage Store Profile | Mengelola dan memperbarui informasi profil toko (nama, kontak, alamat, jam operasional). | Pemilik UMKM | Selesai | <img width="959" height="499" alt="image" src="https://github.com/user-attachments/assets/e3d82904-2b69-4c21-bf9b-4403738f4e22" /> |
+| **US-12** | Receive Orders | Melihat daftar pesanan masuk beserta rincian data pemesanan di dashboard penjual. | Pemilik UMKM | Selesai | <img width="960" height="502" alt="image" src="https://github.com/user-attachments/assets/089190fd-06bb-4f25-afa9-54467dc8be44" /> |
+| **US-13** | Verify Store Information | Admin meninjau data pendaftaran toko dan melakukan persetujuan/penolakan verifikasi. | Admin | Selesai | <img width="960" height="529" alt="image" src="https://github.com/user-attachments/assets/2527dabb-3c62-49c5-a9b0-feb5168e250d" /> |
+| **US-14** | Monitor System Activity | Dashboard ringkasan statistik aktivitas platform (jumlah toko, data toko, dsb). | Admin | Selesai | <img width="960" height="533" alt="image" src="https://github.com/user-attachments/assets/daed28c5-8dc3-49f4-8e36-1f791b402755" /> |
 
 ---
 
