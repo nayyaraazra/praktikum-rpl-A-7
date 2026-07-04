@@ -5,7 +5,7 @@
 [![Tailwind CSS Version](https://img.shields.io/badge/Tailwind_CSS-4.0-blue.svg?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 [![PHP Version](https://img.shields.io/badge/PHP-8.3-777BB4.svg?style=flat-square&logo=php)](https://php.net)
 [![MySQL Version](https://img.shields.io/badge/MySQL-8.x-4479A1.svg?style=flat-square&logo=mysql)](https://mysql.com)
-[![Build Status](https://github.com/nayyaraazra/praktikum-rpl-A-7/actions/workflows/laravel.yml/badge.svg)](https://github.com/nayyaraazra/praktikum-rpl-A-7/actions)
+<!-- [![Build Status](https://github.com/nayyaraazra/praktikum-rpl-A-7/actions/workflows/l/badge.svg)]) -->
 
 ## 📌 Tentang Proyek
 
@@ -19,7 +19,8 @@ Saat ini, pelaku UMKM lokal di Kelurahan Jebres masih mengandalkan platform tida
 
 ### Solusi
 **KULAAN.id** hadir sebagai platform katalog digital terpusat yang menawarkan:
-- **Pencarian Semantik (Semantic Search):** Integrasi Google Gemini API dan Elasticsearch untuk membantu pembeli menemukan produk dengan pencarian berbasis makna (misalnya, mengetik "oleh-oleh murah khas Solo" akan otomatis merekomendasikan produk batik atau kuliner lokal).
+<!-- - **Pencarian Semantik (Semantic Search):** Integrasi Google Gemini API dan Elasticsearch untuk membantu pembeli menemukan produk dengan pencarian berbasis makna (misalnya, mengetik "oleh-oleh murah khas Solo" akan otomatis merekomendasikan produk batik atau kuliner lokal). -->
+- **Pencarian Produk dengan Filter:**Fitur untuk membantu pembeli menemukan produk dengan pencarian berbasis kata kunci, kategori, dan rentang harga
 - **Katalog Terstruktur:** Informasi produk, deskripsi toko, kategori, dan harga tersaji secara rapi dan mudah dinavigasi.
 - **Pemesanan & Kontak Cepat:** Form pemesanan sederhana yang terintegrasi dengan WhatsApp untuk memudahkan komunikasi transaksi langsung.
 - **Verifikasi Toko & Dashboard:** Dashboard bagi pemilik UMKM untuk mengelola produk dan pesanan, serta dashboard Admin Kelurahan untuk melakukan validasi keabsahan data toko.
