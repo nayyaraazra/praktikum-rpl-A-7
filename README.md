@@ -20,7 +20,7 @@ Saat ini, pelaku UMKM lokal di Kelurahan Jebres masih mengandalkan platform tida
 ### Solusi
 **KULAAN.id** hadir sebagai platform katalog digital terpusat yang menawarkan:
 <!-- - **Pencarian Semantik (Semantic Search):** Integrasi Google Gemini API dan Elasticsearch untuk membantu pembeli menemukan produk dengan pencarian berbasis makna (misalnya, mengetik "oleh-oleh murah khas Solo" akan otomatis merekomendasikan produk batik atau kuliner lokal). -->
-- **Pencarian Produk dengan Filter:**Fitur untuk membantu pembeli menemukan produk dengan pencarian berbasis kata kunci, kategori, dan rentang harga
+- **Pencarian Produk dengan Filter:** Fitur untuk membantu pembeli menemukan produk dengan pencarian berbasis kata kunci, kategori, dan rentang harga
 - **Katalog Terstruktur:** Informasi produk, deskripsi toko, kategori, dan harga tersaji secara rapi dan mudah dinavigasi.
 - **Pemesanan & Kontak Cepat:** Form pemesanan sederhana yang terintegrasi dengan WhatsApp untuk memudahkan komunikasi transaksi langsung.
 - **Verifikasi Toko & Dashboard:** Dashboard bagi pemilik UMKM untuk mengelola produk dan pesanan, serta dashboard Admin Kelurahan untuk melakukan validasi keabsahan data toko.
@@ -43,8 +43,6 @@ Saat ini, pelaku UMKM lokal di Kelurahan Jebres masih mengandalkan platform tida
 | **Frontend** | Vue.js 3, Vite, Tailwind CSS 4, Pinia, Vue Router | Kerangka kerja frontend responsif, modern, dan interaktif. |
 | **Backend** | Laravel 11 / 13 | Core backend API, autentikasi (Sanctum), routing, dan MVC. |
 | **Database** | MySQL 8 | Basis data relasional utama. |
-| **Integrasi AI** | Google Gemini API | Digunakan untuk NLP dan Semantic Search. |
-| **Search Engine** | Elasticsearch | Mesin pencari performa tinggi untuk pencarian produk. |
 | **Lainnya** | Composer, Node.js & npm, Git | Package manager dan version control. |
 
 ---
@@ -83,7 +81,7 @@ Berikut merupakan daftar lengkap fitur aplikasi berdasarkan dokumen perencanaan 
 |:---:|---|---|:---:|:---:|---|
 | **US-01** | Register Account | Pendaftaran akun pembeli baru dengan validasi data email & nomor telepon. | Pembeli | Selesai | <img width="945" height="492" alt="image" src="https://github.com/user-attachments/assets/dfc8bed9-810b-40cc-8542-b860fd0d4225" /> |
 | **US-02** | Login Account | Otentikasi pembeli menggunakan email dan password dengan perlindungan error generik. | Pembeli | Selesai | <img width="960" height="496" alt="image" src="https://github.com/user-attachments/assets/5f526077-0340-449d-b3a0-d6e7a9df4585" /> |
-| **US-03** | Search Products | Pencarian produk berbasis kata kunci (semantic search engine). | Pembeli | Selesai | <img width="949" height="533" alt="image" src="https://github.com/user-attachments/assets/9260752e-5b8a-4c92-a74f-170545a235ff" /> |
+| **US-03** | Search Products | Pencarian produk berbasis kata kunci. | Pembeli | Selesai | <img width="949" height="533" alt="image" src="https://github.com/user-attachments/assets/9260752e-5b8a-4c92-a74f-170545a235ff" /> |
 | **US-04** | Filter Products | Menyaring katalog produk berdasarkan kategori dan rentang harga. | Pembeli | Selesai | <img width="948" height="499" alt="image" src="https://github.com/user-attachments/assets/f99fe082-bed4-4941-bdb3-75466cc436d7" />|
 | **US-05** | View Product Details | Menampilkan rincian detail produk, deskripsi, harga, foto, dan informasi toko. | Pembeli | Selesai |<img width="957" height="495" alt="image" src="https://github.com/user-attachments/assets/c9c5c2ef-6371-4702-a853-fcc0275026b2" />|
 | **US-06** | Fill Order Form | Form pemesanan produk sederhana (nama, jumlah, catatan) tanpa payment gateway. | Pembeli | Selesai |<img width="949" height="500" alt="image" src="https://github.com/user-attachments/assets/3a98af6c-c3c0-4aed-bef5-beef62b123c1" />|
