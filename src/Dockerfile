@@ -13,18 +13,20 @@ RUN docker-php-ext-install pdo_mysql mbstring pcntl bcmath gd zip
 # Enable mod_rewrite Apache
 RUN a2enmod rewrite
 
-# Konfigurasi VirtualHost Apache untuk Laravel public directory
-RUN printf '<VirtualHost *:${PORT}>\n\
-    ServerName localhost\n\
+# Konfigurasi VirtualHost Apache secara statis dan pasti
+RUN printf '<VirtualHost *>\n\
     DocumentRoot /app/public\n\
     <Directory /app/public>\n\
         Options -Indexes +FollowSymLinks\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+    ErrorLog /dev/stderr\n\
+    TransferLog /dev/stdout\n\
 </VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+
+# Global ServerName agar tidak ada warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
