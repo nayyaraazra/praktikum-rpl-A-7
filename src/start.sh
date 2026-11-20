@@ -25,21 +25,26 @@ DB_PORT="${DB_PORT:-3306}"
 DB_DATABASE="${DB_DATABASE:-railway}"
 DB_USERNAME="${DB_USERNAME:-root}"
 DB_PASSWORD="${DB_PASSWORD:-}"
-SESSION_DRIVER=cookie
+SESSION_DRIVER=file
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
 FILESYSTEM_DISK=public
 SANCTUM_STATEFUL_DOMAINS="${SANCTUM_STATEFUL_DOMAINS:-praktikum-rpl-a-7-production.up.railway.app}"
 EOF
 
+echo "=== Preparing storage directories and clearing stale caches ==="
+rm -f bootstrap/cache/*.php
+rm -rf storage/framework/views/*.php
+mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
+chmod -R 777 storage bootstrap/cache
+
 echo "=== Running artisan commands ==="
 php artisan config:clear || true
+php artisan view:clear || true
+php artisan route:clear || true
+php artisan package:discover --ansi || true
 php artisan storage:link || true
 php artisan migrate --force || true
-
-# Berikan izin ke Apache (www-data) untuk menulis storage dan cache
-chown -R www-data:www-data /app/storage /app/bootstrap/cache || true
-chmod -R 775 /app/storage /app/bootstrap/cache || true
 
 echo "=== Testing Apache syntax ==="
 apache2ctl -t || true
