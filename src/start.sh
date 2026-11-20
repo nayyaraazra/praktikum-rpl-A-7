@@ -6,6 +6,11 @@ TARGET_PORT="${PORT:-8080}"
 echo "Configuring Apache to listen on port ${TARGET_PORT}..."
 echo "Listen ${TARGET_PORT}" > /etc/apache2/ports.conf
 
+# Matikan modul MPM ganda agar Apache tidak error AH00534
+a2dismod mpm_event 2>/dev/null || true
+a2dismod mpm_worker 2>/dev/null || true
+a2enmod mpm_prefork 2>/dev/null || true
+
 # Buat .env dari environment variables Railway (lengkap dengan fallback default)
 cat > .env <<EOF
 APP_NAME="${APP_NAME:-KULAAN.id}"

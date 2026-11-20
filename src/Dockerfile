@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y \
 # Install ekstensi PHP untuk Laravel
 RUN docker-php-ext-install pdo_mysql mbstring pcntl bcmath gd zip
 
-# Enable mod_rewrite Apache
-RUN a2enmod rewrite
+# Pastikan HANYA mpm_prefork yang aktif (matikan mpm_event & mpm_worker penyebab AH00534)
+RUN a2dismod mpm_event || true \
+    && a2dismod mpm_worker || true \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # Konfigurasi VirtualHost Apache secara statis dan pasti
 RUN printf '<VirtualHost *>\n\
