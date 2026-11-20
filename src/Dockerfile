@@ -10,13 +10,21 @@ RUN apt-get update && apt-get install -y \
 # Install ekstensi PHP untuk Laravel
 RUN docker-php-ext-install pdo_mysql mbstring pcntl bcmath gd zip
 
-# Enable mod_rewrite Apache untuk routing Laravel
+# Enable mod_rewrite Apache
 RUN a2enmod rewrite
 
-# Arahkan DocumentRoot Apache ke /app/public
-ENV APACHE_DOCUMENT_ROOT=/app/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Konfigurasi VirtualHost Apache untuk Laravel public directory
+RUN printf '<VirtualHost *:${PORT}>\n\
+    ServerName localhost\n\
+    DocumentRoot /app/public\n\
+    <Directory /app/public>\n\
+        Options -Indexes +FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -26,7 +34,7 @@ COPY . .
 # .env dummy untuk build aset Vite & artisan
 RUN cp .env.example .env
 
-# Install dependensi & build frontend Vue (Vite)
+# Install dependensi PHP & build frontend Vue (Vite)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN npm install
 RUN npm run build

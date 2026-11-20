@@ -1,19 +1,22 @@
 #!/bin/sh
-set -e
 
 echo "=== KULAAN.id Startup ==="
 
-# Set Apache listening port sesuai environment variable PORT dari Railway
-TARGET_PORT=${PORT:-8080}
-sed -i "s/Listen 80/Listen ${TARGET_PORT}/g" /etc/apache2/ports.conf
-sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${TARGET_PORT}>/g" /etc/apache2/sites-available/000-default.conf
+export PORT=${PORT:-8080}
+
+# Update ports.conf agar Apache hanya mendengarkan port $PORT
+echo "Listen ${PORT}" > /etc/apache2/ports.conf
+
+# Masukkan PORT dan ServerName ke konfigurasi Apache
+echo "export PORT=${PORT}" >> /etc/apache2/envvars
+grep -q "ServerName localhost" /etc/apache2/apache2.conf || echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Buat .env dari environment variables Railway
 cat > .env <<EOF
 APP_NAME=${APP_NAME:-KULAAN.id}
 APP_ENV=${APP_ENV:-production}
 APP_KEY=${APP_KEY:-}
-APP_DEBUG=${APP_DEBUG:-false}
+APP_DEBUG=${APP_DEBUG:-true}
 APP_URL=${APP_URL:-http://localhost}
 ASSET_URL=${APP_URL:-http://localhost}
 DB_CONNECTION=${DB_CONNECTION:-mysql}
@@ -38,5 +41,8 @@ php artisan migrate --force 2>/dev/null || true
 chown -R www-data:www-data /app/storage /app/bootstrap/cache || true
 chmod -R 775 /app/storage /app/bootstrap/cache || true
 
-echo "=== Starting Apache Web Server on port ${TARGET_PORT} ==="
+echo "=== Testing Apache config ==="
+apache2ctl configtest || true
+
+echo "=== Starting Apache Web Server on port ${PORT} ==="
 exec apache2-foreground
