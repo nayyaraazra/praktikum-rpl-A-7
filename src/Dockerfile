@@ -33,5 +33,5 @@ RUN npm run build
 # Port default Railway
 EXPOSE 8080
 
-# Jalankan storage:link, migrasi database (toleran jika sudah ada), dan start server Laravel
-CMD sh -c "php artisan storage:link || true; php artisan migrate --force || true; php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+# Jalankan storage:link, migrasi database di background agar tidak memblokir server, dan langsung start web server
+CMD sh -c "php artisan storage:link || true; (php artisan migrate --force &); exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
